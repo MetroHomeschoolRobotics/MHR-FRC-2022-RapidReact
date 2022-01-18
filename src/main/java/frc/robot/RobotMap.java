@@ -3,8 +3,10 @@ package frc.robot;
 public class RobotMap {
     //CAN ids
     //drivetrain motor controllers
-    public static int leftFrontMotor = 0;
-    public static int leftRearMotor = 1;
-    public static int rightFrontMotor = 2;
-    public static int rightRearMotor = 3;
+    public static int leftFrontMotor = 1;
+    public static int leftRearMotor = 2;
+    public static int rightFrontMotor = 3;
+    public static int rightRearMotor = 4;
+    public static int leftShooterMotor = 5;
+    public static int rightShooterMotor = 6;
 }

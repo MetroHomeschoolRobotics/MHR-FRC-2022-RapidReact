@@ -63,12 +63,14 @@ public class Drivetrain extends SubsystemBase {
     return frontRight.getEncoder().getPosition()*ticksToDistanceFactor;
   }
   
+//TODO: make encoder speed functions and a function to get Odometry
+
   public void resetEncoders() {//reset both encoders to the zero position. 
     frontLeft.getEncoder().setPosition(0);
     frontRight.getEncoder().setPosition(0);
   }
   public double getGyro() {
-    return navx.getAngle();
+    return navx.getAngle();//TODO: convert this to a Rotation2d type and use it in trajectory following
   }
 
   public CANSparkMax getMotor(int position) {

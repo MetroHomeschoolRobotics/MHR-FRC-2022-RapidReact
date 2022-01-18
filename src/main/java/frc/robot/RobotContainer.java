@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,9 +30,10 @@ public class RobotContainer {
   //Define instances of the subsystem classes (final means that the object the variable refers to is unchangeable, but the data in the object is.)
   //we will use s_ as a prefix to designate subsystems and c_ as a prefix to designate commands. 
   private final Drivetrain s_drivetrain = new Drivetrain();
-
+  private final Shooter s_shooter = new Shooter();
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
+  private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
 
 
   //Create the autonomous command chooser.
@@ -39,8 +41,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
+    init();  
   }
 
   /**
@@ -63,9 +64,15 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {      
+    final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
+    rightBumper.whileHeld(c_spinShooter);
+  }
+
+  private void init() {
     setDefaultCommands();
     setAutoChooserOptions();
     setUpMotors();
+    configureButtonBindings();
   }
 
   /**
