@@ -31,10 +31,12 @@ public class RobotContainer {
   //we will use s_ as a prefix to designate subsystems and c_ as a prefix to designate commands. 
   private final Drivetrain s_drivetrain = new Drivetrain();
   private final Shooter s_shooter = new Shooter();
+  private final Intake s_intake = new Intake();
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
-
+  private final RunIntake c_runIntake = new RunIntake(s_intake);
+  private final RunIntake c_reverseIntake = new RunIntake(s_intake);
 
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -57,21 +59,20 @@ public class RobotContainer {
   private void setAutoChooserOptions() {
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
   }
-  private void setUpMotors() {
-    //set right side of drivetrain to inverted
-    s_drivetrain.getMotor(3).setInverted(true);
-    s_drivetrain.getMotor(4).setInverted(true);
-  }
 
+//view joystick button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
   private void configureButtonBindings() {      
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
-    rightBumper.whileHeld(c_spinShooter);
+    rightBumper.whileHeld(c_runIntake);
+    final JoystickButton leftBumper = new JoystickButton(_driverController, 4 );
+    leftBumper.whileHeld(c_reverseIntake);
+    final JoystickButton aButton = new JoystickButton(_driverController, 0 );
+    aButton.whileHeld(c_spinShooter);
   }
 
   private void init() {
     setDefaultCommands();
     setAutoChooserOptions();
-    setUpMotors();
     configureButtonBindings();
   }
 

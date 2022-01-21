@@ -4,20 +4,24 @@
 
 package frc.robot.subsystems;
 import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+//import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Launcher. */
   public Shooter() {
 
   }
-  private TalonSRX leftShooterMotor = new TalonSRX(RobotMap.leftShooterMotor);
-  private TalonSRX rightShooterMotor = new TalonSRX(RobotMap.rightShooterMotor);
+  private Spark leftShooterMotor = new Spark(RobotMap.leftShooterMotor);
+  private Spark rightShooterMotor = new Spark(RobotMap.rightShooterMotor);
 
-  public TalonSRX getMotor(int motor) {
+  //private TalonSRX aimingMotor = new TalonSRX(RobotMap.armMotor);
+  
+
+  public Spark getMotor(int motor) {
     if(motor == 0) {
       return leftShooterMotor;
     } else {
@@ -26,8 +30,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooter(double speed) {
-    leftShooterMotor.set(ControlMode.PercentOutput, speed); //TODO change this to ControlMode.Velocity and use an encoder. 
-    rightShooterMotor.set(ControlMode.PercentOutput,-speed);
+    leftShooterMotor.set(speed); 
+    rightShooterMotor.set(-speed);
   }
 
   @Override

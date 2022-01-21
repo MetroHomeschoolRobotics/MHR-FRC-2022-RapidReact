@@ -9,6 +9,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.*;
 import frc.robot.RobotMap;
 import com.kauailabs.navx.frc.AHRS;
@@ -16,10 +21,8 @@ import com.kauailabs.navx.frc.AHRS;
 
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
-  
-  public Drivetrain() {
-  }
 
+  
   //create sparkmax motor controllers
   private CANSparkMax frontLeft = new CANSparkMax(RobotMap.leftFrontMotor, MotorType.kBrushless);
   private CANSparkMax rearLeft = new CANSparkMax(RobotMap.leftRearMotor, MotorType.kBrushless);
@@ -30,17 +33,33 @@ public class Drivetrain extends SubsystemBase {
   private MotorControllerGroup leftMotorGroup = new MotorControllerGroup(frontLeft, rearLeft);
   private MotorControllerGroup rightMotorGroup = new MotorControllerGroup(frontRight, rearRight);
   
-  private AHRS navx = new AHRS();
+  private AHRS navx = new AHRS(SPI.Port.kMXP);
 
   private double ticksToDistanceFactor = 1/(42*10.71*6*Math.PI);//Neo motor encoders count 42 ticks per revolution. Every 10.71 revolutions (the gear ratio of the chassis) the wheels go around once. Each time the wheels go around the robot travels the circumference of the 6 in wheel. 
   //use CANSparkMax.getEncoder() to get the RelativeEncoder type. 
+
+  
+  private static final double kGearRatio = 10.71;//gear ratio, in inches
+  private static final double kWheelRadiusInches = 3.0; //radius of wheels, in inches
+  private static final double kDrivetrainWidth = 0;//TODO measure this distance between centers of wheels, in inches. 
+  private static final double kTicksPerRevolution = 42;//number of ticks per revolution of the encoder. For neo motor encoder, this is 42. 
+
   
 
+  private DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(kDrivetrainWidth));
   private DifferentialDrive differentialDrivetrain = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
+
+
+  public Drivetrain() {
+    rightMotorGroup.setInverted(true);
+	navx.reset();
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+	SmartDashboard.putNumber("Gyro", -navx.getAngle());
+	
   }
   
   public void move(double x, double y, boolean turnInPlace) {//Use the curvature drive, aka cheesydrive driver control method. This is optimized for high speed control. 
@@ -69,8 +88,9 @@ public class Drivetrain extends SubsystemBase {
     frontLeft.getEncoder().setPosition(0);
     frontRight.getEncoder().setPosition(0);
   }
-  public double getGyro() {
-    return navx.getAngle();//TODO: convert this to a Rotation2d type and use it in trajectory following
+
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(-navx.getAngle());
   }
 
   public CANSparkMax getMotor(int position) {

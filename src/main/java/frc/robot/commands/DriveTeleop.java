@@ -15,6 +15,7 @@ public class DriveTeleop extends CommandBase {
   private XboxController _driverController;
   private double forward;
   private double turn;
+  private boolean turnInPlace;
   private SlewRateLimiter filter = new SlewRateLimiter(0.5);
   public DriveTeleop(Drivetrain drivetrain, XboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -33,11 +34,16 @@ public class DriveTeleop extends CommandBase {
     forward = _driverController.getLeftY();
     turn = _driverController.getLeftX();
     forward=Math.pow(forward,2);
+    if(forward<.3) {
+      turnInPlace = true;
+    } else {
+      turnInPlace = false;
+    }
     turn = Math.pow(turn,2);    //Inputs are squared, allowing for finer control with the same max input
     if(!_driverController.getRightBumper()) {
       forward = filter.calculate(forward);//A slew rate limiter is used to cap acceleration. (if a button is not held)
     }
-    _drivetrain.move(turn, forward, _driverController.getLeftBumper());
+    _drivetrain.move(turn, forward, turnInPlace);
   }
 
   // Called once the command ends or is interrupted.
