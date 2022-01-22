@@ -51,8 +51,8 @@ public class Drivetrain extends SubsystemBase {
 
 
   public Drivetrain() {
-    rightMotorGroup.setInverted(true);
 	navx.reset();
+  rightMotorGroup.setInverted(true);
   }
 
   @Override
@@ -61,17 +61,18 @@ public class Drivetrain extends SubsystemBase {
 	SmartDashboard.putNumber("Gyro", -navx.getAngle());
 	
   }
+  public void move(double forward, double spin) {
+    if(forward<.3) {
+      differentialDrivetrain.arcadeDrive(forward/2, spin/2);
+    } else {
+      differentialDrivetrain.curvatureDrive(forward/2, spin/2,false);
+    }
+  }
   
-  public void move(double x, double y, boolean turnInPlace) {//Use the curvature drive, aka cheesydrive driver control method. This is optimized for high speed control. 
-    differentialDrivetrain.curvatureDrive(y, x, turnInPlace);
-  }
-
-  public void moveArcadeDrive(double x, double y) {//Use the arcade drive method. This is how we have driven in the past. 
-    differentialDrivetrain.arcadeDrive(y, x);
-  }
-
   public void moveTankDrive(double left, double right) {//Control each side's motors individually. 
-    differentialDrivetrain.tankDrive(left,right);
+    //differentialDrivetrain.tankDrive(left,right,true);
+    leftMotorGroup.set(-left/2);
+    rightMotorGroup.set(right/2);
   }
 
   public double getLeftEncoderDistance() {//get how far the wheels on the LEFT side of the robot have travelled. (Units are in inches)

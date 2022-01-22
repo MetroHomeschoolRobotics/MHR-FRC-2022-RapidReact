@@ -36,7 +36,7 @@ public class RobotContainer {
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
-  private final RunIntake c_reverseIntake = new RunIntake(s_intake);
+  private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
 
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -64,9 +64,9 @@ public class RobotContainer {
   private void configureButtonBindings() {      
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
     rightBumper.whileHeld(c_runIntake);
-    final JoystickButton leftBumper = new JoystickButton(_driverController, 4 );
+    final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
     leftBumper.whileHeld(c_reverseIntake);
-    final JoystickButton aButton = new JoystickButton(_driverController, 0 );
+    final JoystickButton aButton = new JoystickButton(_driverController, 1 );
     aButton.whileHeld(c_spinShooter);
   }
 

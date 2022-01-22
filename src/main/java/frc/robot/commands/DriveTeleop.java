@@ -14,7 +14,7 @@ public class DriveTeleop extends CommandBase {
   private Drivetrain _drivetrain;
   private XboxController _driverController;
   private double forward;
-  private double turn;
+  private double spin;
   private boolean turnInPlace;
   private SlewRateLimiter filter = new SlewRateLimiter(0.5);
   public DriveTeleop(Drivetrain drivetrain, XboxController driverController) {
@@ -31,25 +31,16 @@ public class DriveTeleop extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    forward = _driverController.getLeftY();
-    turn = _driverController.getLeftX();
-    forward=Math.pow(forward,2);
-    if(forward<.3) {
-      turnInPlace = true;
-    } else {
-      turnInPlace = false;
-    }
-    turn = Math.pow(turn,2);    //Inputs are squared, allowing for finer control with the same max input
-    if(!_driverController.getRightBumper()) {
-      forward = filter.calculate(forward);//A slew rate limiter is used to cap acceleration. (if a button is not held)
-    }
-    _drivetrain.move(turn, forward, turnInPlace);
+    forward = -_driverController.getLeftY();
+    spin = _driverController.getLeftX();
+    //_drivetrain.moveTankDrive(left, right);
+    _drivetrain.move(forward, spin);
   }
 
-  // Called once the command ends or is interrupted.
+  // Called once the command en%ds or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _drivetrain.move(0,0,false);
+    _drivetrain.moveTankDrive(0,0);
   }
 
   // Returns true when the command should end.

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 //import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,21 +14,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Launcher. */
   public Shooter() {
-
+    SmartDashboard.putNumber("Shooter_speed", .6);
   }
   private Spark leftShooterMotor = new Spark(RobotMap.leftShooterMotor);
   private Spark rightShooterMotor = new Spark(RobotMap.rightShooterMotor);
 
   //private TalonSRX aimingMotor = new TalonSRX(RobotMap.armMotor);
-  
-
-  public Spark getMotor(int motor) {
-    if(motor == 0) {
-      return leftShooterMotor;
-    } else {
-      return rightShooterMotor;
-    }
-  }
 
   public void setShooter(double speed) {
     leftShooterMotor.set(speed); 
