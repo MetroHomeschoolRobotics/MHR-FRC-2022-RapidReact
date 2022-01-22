@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.*;
 import frc.robot.RobotMap;
 import com.kauailabs.navx.frc.AHRS;
@@ -30,7 +31,7 @@ public class Drivetrain extends SubsystemBase {
   //private MotorControllerGroup rightMotorGroup = new MotorControllerGroup(frontRight, rearRight);
   
   
-  private AHRS navx = new AHRS(SPI.Port.kMXP);
+  private AHRS navx = new AHRS(Port.kUSB1);
 
   
   //use CANSparkMax.getEncoder() to get the RelativeEncoder type. 
@@ -57,6 +58,7 @@ public class Drivetrain extends SubsystemBase {
   rearRight.setInverted(true);
   rearLeft.follow(frontLeft);
   rearRight.follow(frontRight);
+  resetEncoders();
   }
 
   @Override
@@ -65,6 +67,8 @@ public class Drivetrain extends SubsystemBase {
   SmartDashboard.putData(differentialDrivetrain);
 	SmartDashboard.putNumber("Gyro", -navx.getAngle());
   SmartDashboard.putData(navx);
+  SmartDashboard.putNumber("Front Left Encoder", encoderToInches(frontLeft.getEncoder().getPosition()));
+  SmartDashboard.putNumber("Front Right Encoder", encoderToInches(frontRight.getEncoder().getPosition()));
   }
 
   public void move(double forward, double spin) {
@@ -86,11 +90,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   //Trajectory Methods
-  public double ticksToMeters(double ticks) {
-    ticks/=kTicksPerRevolution; //now we have revolutions of the motor shaft
-    ticks/=kGearRatio;//Now we have revolutions of the drive wheels
-    ticks*=Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI; //Now we have meters
-    return ticks;
+  public double encoderToInches(double encoder) {
+    encoder/=kGearRatio;//Now we have revolutions of the drive wheels
+    encoder/=kWheelRadiusInches*2*Math.PI; //Now we have inches
+    return encoder;
   }
   public double getHeading() {
     return -navx.getAngle();
