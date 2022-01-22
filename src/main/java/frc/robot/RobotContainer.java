@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -37,7 +38,8 @@ public class RobotContainer {
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
-
+  private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
+  
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
 
@@ -61,13 +63,15 @@ public class RobotContainer {
   }
 
 //view joystick button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
-  private void configureButtonBindings() {      
+  private void configureButtonBindings() {   
+    SmartDashboard.putNumber("desired angle", 0);   
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
     rightBumper.whileHeld(c_runIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
     leftBumper.whileHeld(c_reverseIntake);
     final JoystickButton aButton = new JoystickButton(_driverController, 1 );
     aButton.whileHeld(c_spinShooter);
+    SmartDashboard.putData("turn to 0",c_turntoangle);
   }
 
   private void init() {

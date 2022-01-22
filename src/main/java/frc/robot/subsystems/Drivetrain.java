@@ -65,7 +65,7 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   SmartDashboard.putData(differentialDrivetrain);
-	SmartDashboard.putNumber("Gyro", -navx.getAngle());
+	SmartDashboard.putNumber("Gyro", navx.getAngle());
   SmartDashboard.putData(navx);
   SmartDashboard.putNumber("Front Left Encoder", encoderToInches(frontLeft.getEncoder().getPosition()));
   SmartDashboard.putNumber("Front Right Encoder", encoderToInches(frontRight.getEncoder().getPosition()));
@@ -73,6 +73,11 @@ public class Drivetrain extends SubsystemBase {
 
   public void move(double forward, double spin) {
       differentialDrivetrain.arcadeDrive(forward, spin,true);
+  }
+
+  public void moveManual(double forward, double spin) {
+    frontLeft.set(forward+spin);
+    frontRight.set(forward-spin);
   }
   
 
@@ -96,7 +101,7 @@ public class Drivetrain extends SubsystemBase {
     return encoder;
   }
   public double getHeading() {
-    return -navx.getAngle();
+    return navx.getAngle();
   }
   public void zeroHeading() {
     navx.reset();

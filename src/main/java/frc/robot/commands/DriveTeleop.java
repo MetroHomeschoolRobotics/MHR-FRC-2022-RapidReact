@@ -39,7 +39,7 @@ public class DriveTeleop extends CommandBase {
     SmartDashboard.putNumber("forward", forward);
   }
 
-  // Called once the command en%ds or is interrupted.
+  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     _drivetrain.move(0,0);
