@@ -35,13 +35,6 @@ public class Drivetrain extends SubsystemBase {
   //private MotorControllerGroup leftMotorGroup = new MotorControllerGroup(frontLeft, rearLeft);
   //private MotorControllerGroup rightMotorGroup = new MotorControllerGroup(frontRight, rearRight);
   
-
-  //Drive constraints for auto
-  public static final double kMaxSpeedMetersPerSecond = 3;
-  public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-  public static final double kRamseteB = 2;
-  public static final double kRamseteZeta = 0.7;
-  public static final double kTrackWidthMeters = .69;
   
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
@@ -58,11 +51,6 @@ public class Drivetrain extends SubsystemBase {
   AHRS gyro = new AHRS(SPI.Port.kMXP);
 
 
-  //variables for trajectory work; will be used only in autonomous
-  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
-  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
-  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.3, 1.96, 0.06);
-  Pose2d pose = new Pose2d();
 
   private DifferentialDrive differentialDrivetrain = new DifferentialDrive(frontLeft, frontRight);
   
@@ -82,8 +70,7 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
   SmartDashboard.putData(differentialDrivetrain);
 	SmartDashboard.putNumber("Gyro", -navx.getAngle());
-	odometry.update(navx.getRotation2d(), ticksToMeters(frontLeft.getEncoder().getPosition()), ticksToMeters(frontRight.getEncoder().getPosition()));
-
+  SmartDashboard.putData(navx);
   }
 
   public void move(double forward, double spin) {
@@ -111,31 +98,11 @@ public class Drivetrain extends SubsystemBase {
     ticks*=Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI; //Now we have meters
     return ticks;
   }
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(-navx.getAngle());
-  }
-  public DifferentialDriveWheelSpeeds getSpeeds() {
-    return new DifferentialDriveWheelSpeeds(
-        frontLeft.getEncoder().getVelocity() / kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches) / 60,
-        frontRight.getEncoder().getVelocity() / kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches) / 60
-    );
+  public double getHeading() {
+    return -navx.getAngle();
   }
   public void zeroHeading() {
     navx.reset();
-  }
-  public double getTurnRate() {
-    return -navx.getRate();
-  }
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
-  public void tankDriveVoltage(double left, double right) {//Control each side's motors individually. 
-  frontLeft.setVoltage(left);
-  frontRight.setVoltage(right);
-  differentialDrivetrain.feed();
-  }
-  public double getAverageEncoderDistance() {
-    return (frontLeft.getEncoder().getPosition() + frontRight.getEncoder().getPosition()) / 2.0;
   }
 
   
