@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -15,8 +16,7 @@ public class DriveTeleop extends CommandBase {
   private XboxController _driverController;
   private double forward;
   private double spin;
-  private boolean turnInPlace;
-  private SlewRateLimiter filter = new SlewRateLimiter(0.5);
+  //private SlewRateLimiter filter = new SlewRateLimiter(0.5);
   public DriveTeleop(Drivetrain drivetrain, XboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     _drivetrain = drivetrain;
@@ -33,14 +33,17 @@ public class DriveTeleop extends CommandBase {
   public void execute() {
     forward = -_driverController.getLeftY();
     spin = _driverController.getLeftX();
-    //_drivetrain.moveTankDrive(left, right);
     _drivetrain.move(forward, spin);
+    if(_driverController.getLeftTriggerAxis()>.5) {
+      
+    }
+    SmartDashboard.putNumber("forward", forward);
   }
 
   // Called once the command en%ds or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _drivetrain.moveTankDrive(0,0);
+    _drivetrain.move(0,0);
   }
 
   // Returns true when the command should end.
