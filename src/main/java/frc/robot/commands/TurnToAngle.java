@@ -37,9 +37,7 @@ public class TurnToAngle extends CommandBase {
     turnController.enableContinuousInput(-180, 180);
     turnController.setTolerance(5, 10);
     turnController.setIntegratorRange(-.5, .5);
-    if(!(Math.abs(_drivetrain.getHeading()-_angle)<60)) {
-      turnController.setI(.003);
-    } else if(!(Math.abs(_drivetrain.getHeading()-_angle)<60)){
+    if(!(Math.abs(_drivetrain.getHeading()-_angle)<45)){
       turnController.setI(0);
     }
     SmartDashboard.putData(turnController);
