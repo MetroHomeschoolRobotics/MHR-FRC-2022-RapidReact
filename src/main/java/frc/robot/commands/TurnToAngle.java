@@ -12,9 +12,9 @@ import frc.robot.subsystems.Drivetrain;
 public class TurnToAngle extends CommandBase {
   /** Creates a new TurnToAngle. */
   //these settings work best to get closest to the target angle
-  private double kP = .005;
-  private double kI = .004;
-  private double kD = 0;
+  private double kP = .017;
+  private double kI = 0;
+  private double kD = 0.0025;
 
   private double _angle;
   private Drivetrain _drivetrain;
@@ -35,11 +35,11 @@ public class TurnToAngle extends CommandBase {
   @Override
   public void initialize() {
     turnController.enableContinuousInput(-180, 180);
-    turnController.setTolerance(5, 10);
+    turnController.setTolerance(3, 5);
     turnController.setIntegratorRange(-.5, .5);
-    if(!(Math.abs(_drivetrain.getHeading()-_angle)<45)){
-      turnController.setI(0);
-    }
+    //if(!(Math.abs(_drivetrain.getHeading()-_angle)<45)){
+      //turnController.setI(0);
+    //}
     SmartDashboard.putData(turnController);
   }
 
@@ -53,13 +53,11 @@ public class TurnToAngle extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     _drivetrain.move(0,0);
-    turnController.setI(.004);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
-    return turnController.atSetpoint();
+        return turnController.atSetpoint();
   }
 }
