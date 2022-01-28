@@ -58,6 +58,9 @@ public class Drivetrain extends SubsystemBase {
   rearRight.setInverted(true);
   rearLeft.follow(frontLeft);
   rearRight.follow(frontRight);
+  System.out.println(frontLeft.getEncoder().getPositionConversionFactor());
+  frontLeft.getEncoder().setPositionConversionFactor((kWheelRadiusInches*2*Math.PI)/(kGearRatio));
+  frontRight.getEncoder().setPositionConversionFactor((kWheelRadiusInches*2*Math.PI)/(kGearRatio));
   resetEncoders();
   }
 
@@ -67,8 +70,8 @@ public class Drivetrain extends SubsystemBase {
   SmartDashboard.putData(differentialDrivetrain);
 	SmartDashboard.putNumber("Gyro", navx.getAngle());
   SmartDashboard.putData(navx);
-  SmartDashboard.putNumber("Front Left Encoder", encoderToInches(frontLeft.getEncoder().getPosition()));
-  SmartDashboard.putNumber("Front Right Encoder", encoderToInches(frontRight.getEncoder().getPosition()));
+  SmartDashboard.putNumber("Front Left Encoder", frontLeft.getEncoder().getPosition());
+  SmartDashboard.putNumber("Front Right Encoder", frontRight.getEncoder().getPosition());
   }
 
   public void move(double forward, double spin) {
@@ -78,6 +81,10 @@ public class Drivetrain extends SubsystemBase {
   public void moveManual(double forward, double spin) {
     frontLeft.set(forward+spin);
     frontRight.set(forward-spin);
+  }
+  public void moveTank(double left, double right) {
+    frontLeft.set(left);
+    frontRight.set(right);
   }
   
 

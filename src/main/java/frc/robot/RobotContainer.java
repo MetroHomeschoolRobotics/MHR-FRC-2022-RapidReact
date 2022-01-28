@@ -11,6 +11,8 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -39,6 +41,7 @@ public class RobotContainer {
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
   private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
+  private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
   
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -60,6 +63,13 @@ public class RobotContainer {
   }
   private void setAutoChooserOptions() {
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
+    _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
+      new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
+      new DriveDistance(s_drivetrain, -120),//insert limelight command
+      new ParallelRaceGroup(new WaitCommand(5), new SpinShooter(s_shooter), new RunIntake(s_intake))
+      ));
+
+      SmartDashboard.putData("Auto Mode", _autoChooser);
   }
 
 //view joystick button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
@@ -72,6 +82,7 @@ public class RobotContainer {
     final JoystickButton aButton = new JoystickButton(_driverController, 1 );
     aButton.whileHeld(c_spinShooter);
     SmartDashboard.putData("turn to 0",c_turntoangle);
+    SmartDashboard.putData("drive one foot",c_driveDistance);
   }
 
   private void init() {
