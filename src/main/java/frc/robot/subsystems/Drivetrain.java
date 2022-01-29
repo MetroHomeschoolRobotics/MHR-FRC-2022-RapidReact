@@ -66,8 +66,7 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-  SmartDashboard.putData(differentialDrivetrain);
+    // This method will be called once per scheduler run  
 	SmartDashboard.putNumber("Gyro", navx.getAngle());
   SmartDashboard.putData(navx);
   SmartDashboard.putNumber("Front Left Encoder", frontLeft.getEncoder().getPosition());

@@ -35,6 +35,7 @@ public class RobotContainer {
   private final Drivetrain s_drivetrain = new Drivetrain();
   private final Shooter s_shooter = new Shooter();
   private final Intake s_intake = new Intake();
+  private final Vision s_vision = new Vision();
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
@@ -42,6 +43,7 @@ public class RobotContainer {
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
   private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
   private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
+  private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
   
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -76,11 +78,13 @@ public class RobotContainer {
   private void configureButtonBindings() {   
     SmartDashboard.putNumber("desired angle", 0);   
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
-    rightBumper.whileHeld(c_runIntake);
+    rightBumper.whileHeld(c_reverseIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
-    leftBumper.whileHeld(c_reverseIntake);
-    final JoystickButton aButton = new JoystickButton(_driverController, 1 );
-    aButton.whileHeld(c_spinShooter);
+    leftBumper.whileHeld(c_runIntake);
+    final JoystickButton bButton = new JoystickButton(_driverController, 2 );
+    bButton.whileHeld(c_spinShooter);
+    final JoystickButton aButton = new JoystickButton(_driverController, 1);
+    aButton.whileHeld(c_aimDrivetrain);
     SmartDashboard.putData("turn to 0",c_turntoangle);
     SmartDashboard.putData("drive one foot",c_driveDistance);
   }

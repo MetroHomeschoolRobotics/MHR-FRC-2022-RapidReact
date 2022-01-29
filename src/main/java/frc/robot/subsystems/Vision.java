@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.*;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -19,6 +20,7 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("target visible", limelight.getLatestResult().hasTargets());
   }
 
   public void setIntakeDriverMode(int state) { //0 = off; 1 = on; 2 = blink
