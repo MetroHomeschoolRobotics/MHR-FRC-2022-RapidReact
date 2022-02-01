@@ -20,8 +20,8 @@ public class AimDrivetrain extends CommandBase {
   private double distanceError;
   private double turnError;
 
-  private PIDController drivePID = new PIDController(0.1, 0, 0.001);
-  private PIDController aimPID = new PIDController(0.02, 0, 0.002);
+  private PIDController drivePID = new PIDController(0.05, 0, 0);
+  private PIDController aimPID = new PIDController(0.015, 0, 0.0002);
   public AimDrivetrain(Vision vision, Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(vision);
@@ -44,7 +44,11 @@ public class AimDrivetrain extends CommandBase {
       PhotonTrackedTarget target = _vision.getLimelightTarget();
       turnError = target.getYaw();
       distanceError = target.getPitch();
-      _drivetrain.moveManual(-drivePID.calculate(distanceError,0),-aimPID.calculate(turnError, 0));
+      if(Math.abs(turnError)>2) {
+        _drivetrain.moveManual(0,-aimPID.calculate(turnError, 0));
+      } else {
+        _drivetrain.moveManual(-drivePID.calculate(distanceError,0), 0);
+      }
     }
   }
 
