@@ -15,6 +15,7 @@ public class SpinShooter extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     _shooter = shooter;
     addRequirements(shooter);
+    SmartDashboard.putNumber("RPM", 1000);
   }
 
   // Called when the command is initially scheduled.
@@ -26,7 +27,7 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _shooter.setShooter(SmartDashboard.getNumber("Shooter_speed", 0));
+    _shooter.setShooter(SmartDashboard.getNumber("RPM", 0));
   }
 
   // Called once the command ends or is interrupted.
