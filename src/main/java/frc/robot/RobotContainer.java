@@ -39,15 +39,17 @@ public class RobotContainer {
   private final Intake s_intake = new Intake();
   private final Vision s_vision = new Vision();
   private final Arm s_arm = new Arm();
+  private final Pneumatics s_pneumatics = new Pneumatics();
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
-  private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
+  private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
   private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
   private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
   private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
   private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
+  private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
 
   
   //Create the autonomous command chooser.
@@ -74,7 +76,7 @@ public class RobotContainer {
     _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
       new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
       new DriveDistance(s_drivetrain, -120),//insert limelight command
-      new ParallelRaceGroup(new WaitCommand(5), new SpinShooter(s_shooter), new RunIntake(s_intake))
+      new ParallelRaceGroup(new WaitCommand(5), new SpinShooter(s_shooter, _driverController), new RunIntake(s_intake))
       ));
 
       SmartDashboard.putData("Auto Mode", _autoChooser);
@@ -93,6 +95,8 @@ public class RobotContainer {
     aButton.whileHeld(c_aimDrivetrain);
     final JoystickButton yButton = new JoystickButton(_driverController, 4);
     yButton.whileHeld(c_targetBall);
+    final JoystickButton startButton = new JoystickButton(_driverController, 8);
+    startButton.whenPressed(c_toggleCompressor);
     SmartDashboard.putData("turn to 0",c_turntoangle);
     SmartDashboard.putData("drive one foot",c_driveDistance);
   }
