@@ -21,9 +21,10 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("target visible", limelight.getLatestResult().hasTargets());
+    SmartDashboard.putBoolean("IntakeHasTarget", intakeHasTarget());
   }
 
-  public void setIntakeDriverMode(int state) { //0 = off; 1 = on; 2 = blink
+  public void setLimelightLEDS(int state) { //0 = off; 1 = on; 2 = blink
     if(state == 0) {
       limelight.setLED(VisionLEDMode.kOff);
     } else if(state ==1) {
@@ -35,6 +36,14 @@ public class Vision extends SubsystemBase {
 
   public PhotonPipelineResult getIntakeCameraResult() {
     return intakeCamera.getLatestResult();
+  }
+
+  public void setLimelightDriverMode(boolean state) {
+    limelight.setDriverMode(state);
+  }
+
+  public void setIntakeDriverMode(boolean state) {
+    intakeCamera.setDriverMode(state);
   }
 
   public PhotonPipelineResult getLimelightResult() {

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+//import javax.xml.catalog.GroupEntry.PreferType;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.*;
@@ -36,6 +38,7 @@ public class RobotContainer {
   private final Shooter s_shooter = new Shooter();
   private final Intake s_intake = new Intake();
   private final Vision s_vision = new Vision();
+  private final Arm s_arm = new Arm();
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter);
@@ -44,6 +47,8 @@ public class RobotContainer {
   private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
   private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
   private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
+  private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
+
   
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -51,6 +56,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     init();  
+    s_vision.setLimelightLEDS(0);
   }
 
   /**
@@ -85,6 +91,8 @@ public class RobotContainer {
     bButton.whileHeld(c_spinShooter);
     final JoystickButton aButton = new JoystickButton(_driverController, 1);
     aButton.whileHeld(c_aimDrivetrain);
+    final JoystickButton yButton = new JoystickButton(_driverController, 4);
+    yButton.whileHeld(c_targetBall);
     SmartDashboard.putData("turn to 0",c_turntoangle);
     SmartDashboard.putData("drive one foot",c_driveDistance);
   }
