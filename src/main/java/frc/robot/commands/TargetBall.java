@@ -17,12 +17,12 @@ public class TargetBall extends CommandBase {
   private Vision _vision;
   private Drivetrain _drivetrain;
 
-  private PIDController drivePID = new PIDController(0.05, 0, 0);
+  //private PIDController drivePID = new PIDController(0.05, 0, 0);
   private PIDController aimPID = new PIDController(0.015, 0, 0.0002);
 
   private double turnError;
   private PhotonTrackedTarget currentTarget;
-  private double distanceError;
+  //private double distanceError;
 
   public TargetBall(Vision vision, Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -45,7 +45,7 @@ public class TargetBall extends CommandBase {
     if(_vision.intakeHasTarget()){
         currentTarget = _vision.getIntakeTarget();
         turnError = currentTarget.getYaw();
-        distanceError = currentTarget.getPitch();
+        //distanceError = currentTarget.getPitch();
         if(/*Math.abs(turnError)>2*/true) {
           _drivetrain.moveManual(0.5, -aimPID.calculate(turnError, 0));
         }

@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
   private double kFF = 0.000015;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxRPM = 5700;
+  //private double maxRPM = 5700;
 
   public Shooter() {
     SmartDashboard.putNumber("Shooter_speed", .6);
