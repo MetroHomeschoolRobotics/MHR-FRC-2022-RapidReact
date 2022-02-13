@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Launcher. */
   
-  private CANSparkMax leftShooterMotor = new CANSparkMax(RobotMap.leftShooterMotor, MotorType.kBrushless);
+  /*private CANSparkMax leftShooterMotor = new CANSparkMax(RobotMap.leftShooterMotor, MotorType.kBrushless);
   private CANSparkMax rightShooterMotor = new CANSparkMax(RobotMap.rightShooterMotor, MotorType.kBrushless);
 
   private SparkMaxPIDController leftPID;
@@ -58,12 +58,12 @@ public class Shooter extends SubsystemBase {
   public void setShooter(double rpm) {
     leftPID.setReference(rpm, ControlType.kVelocity); 
     rightPID.setReference(rpm, ControlType.kVelocity); 
-  }
+  }*/
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("left rps", leftShooterMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("right rps", rightShooterMotor.getEncoder().getVelocity());
+   /* SmartDashboard.putNumber("left rps", leftShooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("right rps", rightShooterMotor.getEncoder().getVelocity());*/
   }
 }
