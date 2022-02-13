@@ -52,11 +52,11 @@ public class RobotContainer {
   
   //Define instances of the commands
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
- // private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
   private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
   private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
+  // private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
   //private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
  // private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
   //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
