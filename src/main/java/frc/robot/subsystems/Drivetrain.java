@@ -26,10 +26,10 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   
   //create sparkmax motor controllers
-  private CANSparkMax frontLeft = new CANSparkMax(RobotMap.leftFrontMotor, MotorType.kBrushless);
-  private CANSparkMax rearLeft = new CANSparkMax(RobotMap.leftRearMotor, MotorType.kBrushless);
-  private CANSparkMax frontRight = new CANSparkMax(RobotMap.rightFrontMotor, MotorType.kBrushless);
-  private CANSparkMax rearRight = new CANSparkMax(RobotMap.rightRearMotor, MotorType.kBrushless);
+  private static CANSparkMax frontLeft = new CANSparkMax(RobotMap.leftFrontMotor, MotorType.kBrushless);
+  private static CANSparkMax rearLeft = new CANSparkMax(RobotMap.leftRearMotor, MotorType.kBrushless);
+  private static CANSparkMax frontRight = new CANSparkMax(RobotMap.rightFrontMotor, MotorType.kBrushless);
+  private static CANSparkMax rearRight = new CANSparkMax(RobotMap.rightRearMotor, MotorType.kBrushless);
   //group each of the left and right motor controllers together so their inputs are the same
   //private MotorControllerGroup leftMotorGroup = new MotorControllerGroup(frontLeft, rearLeft);
   //private MotorControllerGroup rightMotorGroup = new MotorControllerGroup(frontRight, rearRight);
@@ -46,6 +46,8 @@ public class Drivetrain extends SubsystemBase {
   //variables to convert encoder distances to meters.  
   private static final double kGearRatio = 10.71;//gear ratio, in inches
   private static final double kWheelRadiusInches = 3.0; //radius of wheels, in inches  
+  private static double currentLeftZero = 0;
+  private static double currentRightZero = 0;
 
   private final DifferentialDriveOdometry m_odometry;
 
@@ -79,9 +81,9 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run  
 	SmartDashboard.putNumber("Gyro", navx.getAngle());
   SmartDashboard.putData(navx);
-  SmartDashboard.putNumber("Front Left Encoder", frontLeft.getEncoder().getPosition());
-  SmartDashboard.putNumber("Front Right Encoder", frontRight.getEncoder().getPosition());
-  m_odometry.update(gyro.getRotation2d(), frontLeft.getEncoder().getPosition(), frontRight.getEncoder().getPosition());
+  SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
+  SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());
+  m_odometry.update(gyro.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
   m_field.setRobotPose(getPose());
   }
 
@@ -128,7 +130,7 @@ public class Drivetrain extends SubsystemBase {
 
 
   public double getLeftEncoderDistance() {//get how far the wheels on the LEFT side of the robot have travelled. 
-    return frontLeft.getEncoder().getPosition();
+    return frontLeft.getEncoder().getPosition()-currentLeftZero;
   }
 
   public void setMaxOutput(double maxOutput) {
@@ -136,7 +138,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getRightEncoderDistance() {//get how far the wheels on the RIGHT side of the robot have travelled. 
-    return frontRight.getEncoder().getPosition();
+    return frontRight.getEncoder().getPosition()-currentRightZero;
   }
 
   //Trajectory Methods
@@ -155,7 +157,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getAverageEncoderDistance() {
-    return (frontLeft.getEncoder().getPosition() + frontRight.getEncoder().getPosition())/2;
+    return (getLeftEncoderDistance() + getRightEncoderDistance())/2;
   }
 
   public double getTurnRate() {
@@ -171,8 +173,10 @@ public class Drivetrain extends SubsystemBase {
 
 
   public void resetEncoders() {//reset both encoders to the zero position. 
-    frontLeft.getEncoder().setPosition(0);
-    frontRight.getEncoder().setPosition(0);
+    currentLeftZero = frontLeft.getEncoder().getPosition();
+    currentRightZero = frontRight.getEncoder().getPosition();
+    //frontLeft.getEncoder().setPosition(0);
+    //frontRight.getEncoder().setPosition(0);
   }
 
   
