@@ -4,12 +4,22 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import com.pathplanner.lib.PathPlanner;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 //import javax.xml.catalog.GroupEntry.PreferType;
 
@@ -20,6 +30,7 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -61,6 +72,8 @@ public class RobotContainer {
  // private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
   //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
 
+  DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 10);
+  TrajectoryConfig config = new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationMetersPerSecondSquared).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
   
   //Create the autonomous command chooser.
   SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
@@ -68,6 +81,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     init();  
+    UsbCamera camera = CameraServer.startAutomaticCapture();
     //s_vision.setLimelightLEDS(0);
   }
 
@@ -83,6 +97,12 @@ public class RobotContainer {
   }
   private void setAutoChooserOptions() {
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
+    _autoChooser.addOption("Test traj", createTrajectoryCommand(
+      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        new Pose2d(3, 0, new Rotation2d(0)),
+        config)
+    ));
     _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
       new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
       new DriveDistance(s_drivetrain, -120)//insert limelight command
@@ -118,11 +138,10 @@ public class RobotContainer {
   }
 
 
-  public Command createTrajectoryCommand(String trajectoryName, double maxVel, double maxAccel) {
-    Trajectory _trajectoryToFollow = PathPlanner.loadPath(trajectoryName, maxVel, maxAccel);
+  public Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
+    //Trajectory _trajectoryToFollow = PathPlanner.loadPath(trajectoryName, maxVel, maxAccel);
     var leftController = new PIDController(Constants.kP, 0, 0);
     var rightController = new PIDController(Constants.kP, 0, 0);
-    //var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 10);
     s_drivetrain.getField2d().getObject("traj").setTrajectory(_trajectoryToFollow);
     RamseteController ramseteThing = new RamseteController(Constants.kRamseteB, Constants.kRamseteZ);
     RamseteCommand ramseteCommand = new RamseteCommand(
@@ -139,7 +158,7 @@ public class RobotContainer {
       },
       s_drivetrain);
       s_drivetrain.resetOdometry(_trajectoryToFollow.getInitialPose());
-      return ramseteCommand;
+      return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), s_drivetrain), ramseteCommand);
   }
 
   /**

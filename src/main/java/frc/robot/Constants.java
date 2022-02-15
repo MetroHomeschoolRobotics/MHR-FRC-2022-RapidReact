@@ -32,7 +32,7 @@ public final class Constants {
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(trackWidth);
 
     public static final double kMaxSpeedMetersPerSecond = 2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
     public static final double kRamseteB = 2;
     public static final double kRamseteZ = .7;

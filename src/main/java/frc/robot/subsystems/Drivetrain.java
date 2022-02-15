@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.*;
 import frc.robot.RobotMap;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
 
 
 public class Drivetrain extends SubsystemBase {
@@ -35,8 +37,9 @@ public class Drivetrain extends SubsystemBase {
   //private MotorControllerGroup rightMotorGroup = new MotorControllerGroup(frontRight, rearRight);
   
   
-  private AHRS navx = new AHRS(Port.kUSB1);
-
+  //private AHRS gyro = new AHRS(Port.kUSB1);
+  private ADIS16448_IMU gyro = new ADIS16448_IMU();
+  //AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   private final Field2d m_field = new Field2d();
   
@@ -46,12 +49,12 @@ public class Drivetrain extends SubsystemBase {
   //variables to convert encoder distances to meters.  
   private static final double kGearRatio = 10.71;//gear ratio, in inches
   private static final double kWheelRadiusInches = 3.0; //radius of wheels, in inches  
-  private static double currentLeftZero = 0;
-  private static double currentRightZero = 0;
+  //private static double currentLeftZero = 0;
+  //private static double currentRightZero = 0;
 
   private final DifferentialDriveOdometry m_odometry;
 
-  AHRS gyro = new AHRS(SPI.Port.kMXP);
+  
 
 
 
@@ -62,7 +65,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putData("field", m_field);
   differentialDrivetrain.setMaxOutput(1);
   differentialDrivetrain.setDeadband(.01);
-	navx.reset();
+	gyro.reset();
   frontRight.setInverted(true);
   rearRight.setInverted(true);
   rearLeft.follow(frontLeft);
@@ -73,17 +76,17 @@ public class Drivetrain extends SubsystemBase {
   frontRight.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
   //frontRight.getEncoder().setVelocityConversionFactor(frontRight.getEncoder().getPositionConversionFactor());
   resetEncoders();
-  m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+  m_odometry = new DifferentialDriveOdometry(getRotation2d());
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run  
-	SmartDashboard.putNumber("Gyro", navx.getAngle());
-  SmartDashboard.putData(navx);
+	SmartDashboard.putNumber("Gyro", getHeading());
+  SmartDashboard.putData(gyro);
   SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
   SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());
-  m_odometry.update(gyro.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+  m_odometry.update(getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
   m_field.setRobotPose(getPose());
   }
 
@@ -118,7 +121,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(pose, gyro.getRotation2d());
+    m_odometry.resetPosition(pose, getRotation2d());
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -130,7 +133,7 @@ public class Drivetrain extends SubsystemBase {
 
 
   public double getLeftEncoderDistance() {//get how far the wheels on the LEFT side of the robot have travelled. 
-    return frontLeft.getEncoder().getPosition()-currentLeftZero;
+    return frontLeft.getEncoder().getPosition();
   }
 
   public void setMaxOutput(double maxOutput) {
@@ -138,7 +141,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getRightEncoderDistance() {//get how far the wheels on the RIGHT side of the robot have travelled. 
-    return frontRight.getEncoder().getPosition()-currentRightZero;
+    return frontRight.getEncoder().getPosition();
   }
 
   //Trajectory Methods
@@ -165,18 +168,21 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getHeading() {
-    return navx.getAngle();
+    return gyro.getAngle();
+  }
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(getHeading());
   }
   public void zeroHeading() {
-    navx.reset();
+    gyro.reset();
   }
 
 
   public void resetEncoders() {//reset both encoders to the zero position. 
-    currentLeftZero = frontLeft.getEncoder().getPosition();
-    currentRightZero = frontRight.getEncoder().getPosition();
-    //frontLeft.getEncoder().setPosition(0);
-    //frontRight.getEncoder().setPosition(0);
+    //currentLeftZero = frontLeft.getEncoder().getPosition();
+    //currentRightZero = frontRight.getEncoder().getPosition();
+    frontLeft.getEncoder().setPosition(0);
+    frontRight.getEncoder().setPosition(0);
   }
 
   
