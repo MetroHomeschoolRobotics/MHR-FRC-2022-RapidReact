@@ -19,10 +19,10 @@ public class Pneumatics extends SubsystemBase {
   }
   
   public boolean getCompressorState() {
-    return compressor.enabled();
+    return compressor.enabled();//get if the compressor is on or off
   }
 
-  public void setCompressor(boolean on){
+  public void setCompressor(boolean on){//turn the compressor on and off to save voltage
     if(on){
       compressor.enableDigital();
     } else{

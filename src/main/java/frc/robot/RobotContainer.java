@@ -6,8 +6,6 @@ package frc.robot;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathPlanner;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
@@ -30,7 +28,6 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -72,6 +69,7 @@ public class RobotContainer {
  // private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
   //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
 
+  //Constraints for trajectory following (limits voltage useage, acceleration, and speed)
   DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 10);
   TrajectoryConfig config = new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationMetersPerSecondSquared).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
   
@@ -81,7 +79,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     init();  
+    //USB camera in rio for usb port testing
     UsbCamera camera = CameraServer.startAutomaticCapture();
+    //Set limelight lights to off when robot is turned on; used to not blind people
     //s_vision.setLimelightLEDS(0);
   }
 
@@ -92,29 +92,37 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
 
+  //For repeating commands in teleop, we set them as default commands to make them run when the subsystem is not required elsewhere
   private void setDefaultCommands() {
+    //Drivetrain defaults to joystick driving
     CommandScheduler.getInstance().setDefaultCommand(s_drivetrain, c_driveTeleop);
   }
+
+  //Set up the auto chooser drop down
   private void setAutoChooserOptions() {
+    //1. Just don't move
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
+    //2. Trajectory testing option
     _autoChooser.addOption("Test traj", createTrajectoryCommand(
       TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
         new Pose2d(3, 0, new Rotation2d(0)),
         config)
     ));
+    //3. Drive 10 ft back and 10 ft forward to pick up a ball and then shoot it. (Incomplete, to be replaced by trajectory based commands)
     _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
       new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
       new DriveDistance(s_drivetrain, -120)//insert limelight command
      // new ParallelRaceGroup(new WaitCommand(5), new SpinShooter(s_shooter, _driverController), new RunIntake(s_intake))
       ));
 
+      //Put the chooser on the dashboard
       SmartDashboard.putData("Auto Mode", _autoChooser);
   }
 
 //view joystick button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
-  private void configureButtonBindings() {   
-    SmartDashboard.putNumber("desired angle", 0);   
+//This is where we bind commands to joysticks
+  private void configureButtonBindings() {      
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
     rightBumper.whileHeld(c_reverseIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
@@ -127,46 +135,51 @@ public class RobotContainer {
    // yButton.whileHeld(c_targetBall);
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
     //startButton.whenPressed(c_toggleCompressor);
-    SmartDashboard.putData("turn to 0",c_turntoangle);
-    SmartDashboard.putData("drive one foot",c_driveDistance);
   }
-
-  private void init() {
-    setDefaultCommands();
-    setAutoChooserOptions();
-    configureButtonBindings();
-  }
-
-
+  
+  //Trajectory Code 
   public Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
-    //Trajectory _trajectoryToFollow = PathPlanner.loadPath(trajectoryName, maxVel, maxAccel);
+    //PID controllers to control velocity of each side
     var leftController = new PIDController(Constants.kP, 0, 0);
     var rightController = new PIDController(Constants.kP, 0, 0);
+    //Print the trajectory path to the field widget. 
     s_drivetrain.getField2d().getObject("traj").setTrajectory(_trajectoryToFollow);
+    //Ramsete controller to handle trajectory following
+    //Ramsete stands for italian Robotica Articolata e Mobile per i SErvizi e le TEcnologie, the title of a paper on nonlinear controllers like the WPILib Ramsete commands. 
     RamseteController ramseteThing = new RamseteController(Constants.kRamseteB, Constants.kRamseteZ);
+    //Ramsete trajectory following command. 
     RamseteCommand ramseteCommand = new RamseteCommand(
-      _trajectoryToFollow,
-      s_drivetrain::getPose, 
-      ramseteThing, 
-      new SimpleMotorFeedforward(Constants.ks, Constants.kv,Constants.ka),
-      Constants.kDriveKinematics,
-      s_drivetrain::getWheelSpeeds,
-      leftController,
+      _trajectoryToFollow,//The trajectory we will be using
+      s_drivetrain::getPose, //the method to get the current robot position
+      ramseteThing, //the ramsete controller
+      new SimpleMotorFeedforward(Constants.ks, Constants.kv,Constants.ka),//The feedforward loop for the drivetrain
+      Constants.kDriveKinematics,//The drive kinematics (track width supplier)
+      s_drivetrain::getWheelSpeeds, //The method to get the speeds of the chassis wheels
+      leftController,//The PID controllers to set chassis wheel speeds with
       rightController,
-      (leftVolts, rightVolts) -> {
+      (leftVolts, rightVolts) -> {//The method to output voltage to the motors
         s_drivetrain.tankDriveVolts(leftVolts, rightVolts);
       },
-      s_drivetrain);
-      s_drivetrain.resetOdometry(_trajectoryToFollow.getInitialPose());
-      return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), s_drivetrain), ramseteCommand);
-  }
+      s_drivetrain);//The subsystem to require
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return _autoChooser.getSelected();
+      //We now return a command that zeroes the robot's pose when the command starts and then runs the trajectory command
+      return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), s_drivetrain), ramseteCommand);
+    }
+    
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+      //Set the autonomous routine to be what the chooser says. To change auto commands go to the setAutoChooserOptions() method
+      return _autoChooser.getSelected();
+    }
+    
+    //This function is run by the constructor whenever the robot starts
+    private void init() {
+      setDefaultCommands();
+      setAutoChooserOptions();
+      configureButtonBindings();
+    }
   }
-}

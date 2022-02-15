@@ -10,11 +10,10 @@ public class RobotMap {
 
     
     //PWM ports
-    //intake & indexing
     //Shooter motors
     public static int leftShooterMotor = 1;
     public static int rightShooterMotor = 2;
-    //intake motor
+    //intake & indexing
     public static int intakeMotorPort = 0;
 
 }

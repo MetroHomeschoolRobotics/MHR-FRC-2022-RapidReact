@@ -11,14 +11,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
+  //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   public Arm() {}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //Print armpot value to the dashboard every cycle
     SmartDashboard.putNumber("Arm Potentiometer Value", armPot.get());
   }
+  //Get current armpot value
   public double getArmPot() {
       return armPot.get();
   }

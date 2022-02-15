@@ -19,23 +19,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Launcher. */
   
+  //Create shooter SparkMax motor controllers
   private CANSparkMax leftShooterMotor = new CANSparkMax(RobotMap.leftShooterMotor, MotorType.kBrushless);
   private CANSparkMax rightShooterMotor = new CANSparkMax(RobotMap.rightShooterMotor, MotorType.kBrushless);
 
+  //SparkMax PID controllers
   private SparkMaxPIDController leftPID;
   private SparkMaxPIDController rightPID;
   
-  private double kP = 6e-5;
-  private double kI = 0;
-  private double kD = 0;
-  private double kIz = 0;
-  private double kFF = 0.000015;
-  private double kMaxOutput = 1;
-  private double kMinOutput = -1;
-  //private double maxRPM = 5700;
+  //PID constants taken from SparkMax example
+  private double kP = 6e-5; //proportional
+  private double kI = 0; //Integral (0 because low torque application)
+  private double kD = 0; //Differential (0 because no need to stop as we get close)
+  private double kIz = 0; //Integration zone (area where integral is used, is zero because integral is 0)
+  private double kFF = 0.000015; //Feed forward (predictive adjustments)
+  private double kMaxOutput = 1; //Full speed forward
+  private double kMinOutput = -1; //full speed backward
 
   public Shooter() {
-    SmartDashboard.putNumber("Shooter_speed", .6);
+    //Set up PID controllers
     leftPID = leftShooterMotor.getPIDController();
     rightPID = rightShooterMotor.getPIDController();
     leftPID.setP(kP);
@@ -50,19 +52,22 @@ public class Shooter extends SubsystemBase {
     rightPID.setIZone(kIz);
     rightPID.setFF(kFF);
     rightPID.setOutputRange(kMinOutput, kMaxOutput);
+    //Invert Right motor
     rightShooterMotor.setInverted(true);
   }
 
   //private TalonSRX aimingMotor = new TalonSRX(RobotMap.armMotor);
 
-  public void setShooter(double rpm) {
-    leftPID.setReference(rpm, ControlType.kVelocity); 
-    rightPID.setReference(rpm, ControlType.kVelocity); 
+  public void setShooter(double rps) {
+    //Set PID controllers to run to a certain revolutions per second
+    leftPID.setReference(rps, ControlType.kVelocity); 
+    rightPID.setReference(rps, ControlType.kVelocity); 
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //Print current velocities to the dashboard. 
     SmartDashboard.putNumber("left rps", leftShooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("right rps", rightShooterMotor.getEncoder().getVelocity());
   }

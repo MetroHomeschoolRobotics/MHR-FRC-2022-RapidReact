@@ -11,6 +11,7 @@ import frc.robot.RobotMap;
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {}
+  //Spark motor controller on pwm to run intake motor
   private Spark intakeMotor = new Spark(RobotMap.intakeMotorPort);
   
 
@@ -18,11 +19,8 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
-  public Spark getIntakeMotor() {
-    return intakeMotor;
-  }
 
-  public void setIntake(double speed) {
+  public void setIntake(double speed) {//Set intake motor to a percentage output
     intakeMotor.set(speed);
   }
 

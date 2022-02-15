@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Main {
   private Main() {}
-
+  //DO NOT TOUCH THIS CLASS
   /**
    * Main initialization function. Do not perform any initialization here.
    *
