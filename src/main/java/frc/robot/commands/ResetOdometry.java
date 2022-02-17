@@ -9,14 +9,21 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Drivetrain;
 
 public class ResetOdometry extends InstantCommand {
-  public ResetOdometry(Pose2d poseToSet, Drivetrain drivetrain) {
+  private Drivetrain drivetrain;
+  private Pose2d poseToSet;
+  public ResetOdometry(Pose2d _poseToSet, Drivetrain _drivetrain) {
     //resets drivetrain odometry to a specific pose. 
     //Used in the RobotContainer's createTrajectoryCommand(Trajectory) method to zero robot trajectory before the trajectory starts. 
     // Use addRequirements() here to declare subsystem dependencies.
+    drivetrain = _drivetrain;
+    poseToSet = _poseToSet;
+    addRequirements(drivetrain);
     drivetrain.resetOdometry(poseToSet);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    drivetrain.resetOdometry(poseToSet);
+  }
 }

@@ -28,6 +28,7 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -70,7 +71,7 @@ public class RobotContainer {
   //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
 
   //Constraints for trajectory following (limits voltage useage, acceleration, and speed)
-  DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 10);
+  DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 6);
   TrajectoryConfig config = new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationMetersPerSecondSquared).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
   
   //Create the autonomous command chooser.
@@ -103,12 +104,20 @@ public class RobotContainer {
     //1. Just don't move
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
     //2. Trajectory testing option
-    _autoChooser.addOption("Test traj", createTrajectoryCommand(
-      /*TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config)*/
-    ));
+    _autoChooser.addOption("Test traj", new SequentialCommandGroup(createTrajectoryCommand(
+      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(new Translation2d(1, 0), new Translation2d(2, 1)),
+        new Pose2d(0, 0, new Rotation2d(0)),
+        config)
+    ),
+    createTrajectoryCommand(
+      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(new Translation2d(1, 0), new Translation2d(0, 2), new Translation2d(1,0)),
+        new Pose2d(0, 0, new Rotation2d(0)),
+        config)
+    )
+    )
+    );
     //3. Drive 10 ft back and 10 ft forward to pick up a ball and then shoot it. (Incomplete, to be replaced by trajectory based commands)
     _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
       new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
@@ -135,15 +144,12 @@ public class RobotContainer {
    // yButton.whileHeld(c_targetBall);
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
     //startButton.whenPressed(c_toggleCompressor);
+    SmartDashboard.putData(new resetGyro(s_drivetrain));
   }
   
   //Trajectory Code 
-  public Command createTrajectoryCommand(/*Trajectory _trajectoryToFollow*/) {
+  public Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
     //PID controllers to control velocity of each side
-    Trajectory _trajectoryToFollow = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-    List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-    new Pose2d(3, 0, new Rotation2d(0)),
-    config);
     var leftController = new PIDController(Constants.kP, 0, 0);
     var rightController = new PIDController(Constants.kP, 0, 0);
     //Print the trajectory path to the field widget. 
@@ -153,20 +159,21 @@ public class RobotContainer {
     RamseteController ramseteThing = new RamseteController(Constants.kRamseteB, Constants.kRamseteZ);
     //Ramsete trajectory following command. 
     RamseteCommand ramseteCommand = new RamseteCommand(
-      _trajectoryToFollow,//The trajectory we will be using
-      s_drivetrain::getPose, //the method to get the current robot position
-      ramseteThing, //the ramsete controller
-      new SimpleMotorFeedforward(Constants.ks, Constants.kv,Constants.ka),//The feedforward loop for the drivetrain
-      Constants.kDriveKinematics,//The drive kinematics (track width supplier)
-      s_drivetrain::getWheelSpeeds, //The method to get the speeds of the chassis wheels
-      leftController,//The PID controllers to set chassis wheel speeds with
+      _trajectoryToFollow,
+      s_drivetrain::getPose,
+      ramseteThing,
+      new SimpleMotorFeedforward(Constants.ks, Constants.kv,Constants.ka),
+      Constants.kDriveKinematics,
+      s_drivetrain::getWheelSpeeds,
+      leftController,
       rightController,
-      (leftVolts, rightVolts) -> {//The method to output voltage to the motors
+      (leftVolts, rightVolts) -> {
         s_drivetrain.tankDriveVolts(leftVolts, rightVolts);
       },
       s_drivetrain);//The subsystem to require
-
+      s_drivetrain.resetOdometry(_trajectoryToFollow.getInitialPose());
       //We now return a command that zeroes the robot's pose when the command starts and then runs the trajectory command
+      //return ramseteCommand;
       return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), s_drivetrain), ramseteCommand);
     }
     

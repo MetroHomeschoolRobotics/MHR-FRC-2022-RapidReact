@@ -36,13 +36,13 @@ public class Drivetrain extends SubsystemBase {
 
 
   //private ADIS16448_IMU gyro = new ADIS16448_IMU(ADIS16448_IMU.IMUAxis.kZ, SPI.Port.kMXP, ADIS16448_IMU.CalibrationTime._1s);
-  private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  //private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   //using this constructor to prevent a known WPILib Issue
   //see https://docs.wpilib.org/en/latest/docs/yearly-overview/known-issues.html#adis16448-not-reading-values-in-java
   
   //We may switch back to navx at some point in the future
   //private AHRS gyro = new AHRS(Port.kUSB1); //constructor for USB navx
-  //private AHRS gyro = new AHRS(SPI.Port.kMXP); //constructor for MXP navx
+  private AHRS gyro = new AHRS(SPI.Port.kMXP); //constructor for MXP navx
 
   //Create field2d widget to view robot pose and trajectory in glass
   private final Field2d m_field = new Field2d();
@@ -65,13 +65,14 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putData("field", m_field);
     differentialDrivetrain.setMaxOutput(1);
     differentialDrivetrain.setDeadband(.01);
-    gyro.reset();
+    gyro.calibrate();
     //Right side must spin in reverse for robot to drive forward
     frontRight.setInverted(true);
     rearRight.setInverted(true);
     //Rear motors have the same output as front motors because they are in the same gearboxes
     rearLeft.follow(frontLeft);
     rearRight.follow(frontRight);
+    
     //Convert drivetrain motor revolutions to distances of robot travel (in meters)
     frontLeft.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
     frontRight.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
@@ -178,7 +179,7 @@ public class Drivetrain extends SubsystemBase {
     return gyro.getAngle();
   }
   public Rotation2d getRotation2d() {//current heading in trajectory following format
-    return Rotation2d.fromDegrees(getHeading());
+    return Rotation2d.fromDegrees(-getHeading());
   }
   public void zeroHeading() {//reset gyro heading to 0
     gyro.reset();
