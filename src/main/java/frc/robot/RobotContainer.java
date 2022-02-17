@@ -104,10 +104,10 @@ public class RobotContainer {
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
     //2. Trajectory testing option
     _autoChooser.addOption("Test traj", createTrajectoryCommand(
-      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+      /*TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
         new Pose2d(3, 0, new Rotation2d(0)),
-        config)
+        config)*/
     ));
     //3. Drive 10 ft back and 10 ft forward to pick up a ball and then shoot it. (Incomplete, to be replaced by trajectory based commands)
     _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
@@ -138,8 +138,12 @@ public class RobotContainer {
   }
   
   //Trajectory Code 
-  public Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
+  public Command createTrajectoryCommand(/*Trajectory _trajectoryToFollow*/) {
     //PID controllers to control velocity of each side
+    Trajectory _trajectoryToFollow = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
+    List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+    new Pose2d(3, 0, new Rotation2d(0)),
+    config);
     var leftController = new PIDController(Constants.kP, 0, 0);
     var rightController = new PIDController(Constants.kP, 0, 0);
     //Print the trajectory path to the field widget. 

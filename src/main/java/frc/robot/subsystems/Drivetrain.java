@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.*;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -32,8 +33,10 @@ public class Drivetrain extends SubsystemBase {
   private static CANSparkMax rearLeft = new CANSparkMax(RobotMap.leftRearMotor, MotorType.kBrushless);
   private static CANSparkMax frontRight = new CANSparkMax(RobotMap.rightFrontMotor, MotorType.kBrushless);
   private static CANSparkMax rearRight = new CANSparkMax(RobotMap.rightRearMotor, MotorType.kBrushless);
-  
-  private ADIS16448_IMU gyro = new ADIS16448_IMU(ADIS16448_IMU.IMUAxis.kZ, SPI.Port.kMXP, ADIS16448_IMU.CalibrationTime._1s);
+
+
+  //private ADIS16448_IMU gyro = new ADIS16448_IMU(ADIS16448_IMU.IMUAxis.kZ, SPI.Port.kMXP, ADIS16448_IMU.CalibrationTime._1s);
+  private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   //using this constructor to prevent a known WPILib Issue
   //see https://docs.wpilib.org/en/latest/docs/yearly-overview/known-issues.html#adis16448-not-reading-values-in-java
   
@@ -51,6 +54,8 @@ public class Drivetrain extends SubsystemBase {
 
   //Odometry variable for trajectory following; stores the robot's current position
   private final DifferentialDriveOdometry m_odometry;
+
+  double currentGyroZero = 0;
 
   //DifferentialDrive object to help manage motors
   private DifferentialDrive differentialDrivetrain = new DifferentialDrive(frontLeft, frontRight);
@@ -80,6 +85,7 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {// This method will be called once per scheduler run
   //Print Gyro compass to the dashboard  
 	SmartDashboard.putData(gyro);
+  SmartDashboard.putNumber("gyro angle", getHeading());
   //Print encoder distances to the dashboard
   SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
   SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());
