@@ -27,7 +27,7 @@ public class Vision extends SubsystemBase {
   }
   public void setLights(boolean on) {
     if(on) {
-      limelight.getEntry("ledMode").setNumber(0);
+      limelight.getEntry("ledMode").setNumber(3);
     } else {
       limelight.getEntry("ledMode").setNumber(1);
     }
