@@ -15,20 +15,28 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    //-------------------------//
-    //-------TRAJECTORY--------//
-    //-------CONSTANTS---------//
-    //-------------------------//
-
+/**
+ * Trajectory Constants
+ * Gains are calculated by the SysID tool from WPILib. 
+ * SysID settings: 
+ * Analysis Type: Drivetrain
+ * Motor Controllers
+ * Pair 0: SparkMax, Left: 1, Right: 3; right inverted
+ * Pair 1: SparkMax, Left: 2, Right: 4; right inverted
+ * Encoder Selection: Encoder Port
+ * Gyro: Navx; MXP port
+ * Encoder parameters: counts per revolution: 1, 10.71:1 gearing
+ * Logger parameters: Units per rotation: .4788
+ * 
+ * In Feedback analysis: Gain preset is Rev Brushless Encoder Port
+ * Convert gains to encoder counts is OFF. 
+ * 
+ * Leave all other settings at default. Run the 4 tests for both drivetrain and angular drivetrain. 
+ */
     //Feedforward constants from linear tests
     public static final double ks = .16282;//volts
     public static final double kv = 2.8616;//volt seconds per meter
     public static final double ka = 0.48652;//volt seconds squared per meter
-
-    //Feedforward constants from angular tests
-    public static final double ksAngular = .30662;//volts
-    public static final double kvAngular = 204.87;//volt seconds per meter
-    public static final double kaAngular = 19.645;//volt seconds squared per meter
 
     //Track width from angular tests
     public static final double trackWidth = .60508; //meters
@@ -36,15 +44,8 @@ public final class Constants {
     //Proportional constant from linear tests
     public static final double kP = 3.6888E-08; //voltage per velocity
 
-    //Proportional constant from angular tests
-    public static final double kPAngular = 0.0042148; //voltage per velocity
-
     //Object to tell trajectory how to vary speed for track width
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(trackWidth); 
-
-    //Max velocity and acceleration we want the program to run
-    public static final double kMaxSpeedMetersPerSecond = 2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
     //Ramsete constants recommended by WPILib as "consistent" for all sorts of robots. 
     //Results of changes unknown. 

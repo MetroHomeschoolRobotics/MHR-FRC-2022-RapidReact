@@ -6,35 +6,31 @@ package frc.robot;
 
 import java.util.List;
 
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-
-//import javax.xml.catalog.GroupEntry.PreferType;
-
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.vision.VisionThread;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.TrajectoryHelper;
+import frc.robot.commands.DriveTeleop;
+import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.RunIntake;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,154 +39,134 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private UsbCamera intakeCam;
+  private static final int IMG_WIDTH = 320;
+  private static final int IMG_HEIGHT = 240;
+  private VisionThread visionThread;
+  private double centerX = 0.0;
+  private double centerY = 0.0;
+  private final Object imgLock = new Object();
+  private RedBalls redBallPipeline = new RedBalls();
+  private BlueBalls blueBallPipeline = new BlueBalls();
+  /**
+   * Constructor
+   */
+  public RobotContainer() {
+    setDefaultCommands();  //Sets the default commands for each subsystem
+    setAutoChooserOptions();  //Sets up autonomous routines
+    configureButtonBindings();  //Configures button bindings for joysticks
+    setUpIntakeVision();
+  }
 
-  //Create joystick objects. Our team uses two Xbox controllers. Xbox controllers are given port numbers by the driver station software
-  //Our convention is that port 0 is used for the driver controller and port 1 is used for the manipulator driver controller. (sortof like a weapons specialist)
+  /**Intake Vision Pipeline Code */
+  private void setUpIntakeVision() {
+    intakeCam = CameraServer.startAutomaticCapture(); //Starts USB camera on RIO. 
+      intakeCam.setResolution(IMG_WIDTH, IMG_HEIGHT);
+        visionThread = new VisionThread(intakeCam, redBallPipeline, pipeline -> {
+        if (!pipeline.filterContoursOutput().isEmpty()) {
+          Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+          synchronized (imgLock) {
+            centerX = r.x + (r.width / 2);
+            centerY = r.y + (r.height / 2);
+          }
+          SmartDashboard.putNumber("centerX", centerX);
+          SmartDashboard.putNumber("centerY", centerY);
+        }
+    });
+    visionThread.start();
+  }
+  /**
+   * Create joysticks objects. We use xbox controllers. 
+   These will be used for button bindings in the configureButtonBindings() method is called. 
+   */
   private XboxController _driverController = new XboxController(0);
   //private XboxController _manipulatorController = new XboxController(1);
 
-  //Define instances of the subsystem classes (final means that the object the variable refers to is unchangeable, but the data in the object is.)
-  //we will use s_ as a prefix to designate subsystems and c_ as a prefix to designate commands. 
-  private final Drivetrain s_drivetrain = new Drivetrain();
-  private final Intake s_intake = new Intake();
-  private final Arm s_arm = new Arm();
+  /**
+   * Define instances of the commands. These are static, so only one instance ever exists. 
+   * They are final, so they cannot be overwritten, and they are public,
+   *  so we can access them from helper classes. 
+   */
+  public static final Drivetrain s_drivetrain = new Drivetrain();
+  public static final Intake s_intake = new Intake();
+  public static final Arm s_arm = new Arm();
   //TODO: comment these back in
-  //private final Shooter s_shooter = new Shooter();
-  //private final Vision s_vision = new Vision();
-  //private final Pneumatics s_pneumatics = new Pneumatics();
+  //public static final  Shooter s_shooter = new Shooter();
+  //public static final Vision s_vision = new Vision();
+  //public static final Pneumatics s_pneumatics = new Pneumatics();
   
-  //Define instances of the commands
+  /**
+   * These are the commands. Instances of these commands are bound to buttons. 
+   * Auto commands should not be stated here because
+   * each instance can only be used once in command groups. 
+   */
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
-  private final TurnToAngle c_turntoangle = new TurnToAngle(0, s_drivetrain);
-  private final DriveDistance c_driveDistance = new DriveDistance(s_drivetrain, 60);
-  // private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
+  //private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
   //private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
- // private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
+  //private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
   //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
-
-  //Constraints for trajectory following (limits voltage useage, acceleration, and speed)
-  DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, 6);
-  TrajectoryConfig config = new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationMetersPerSecondSquared).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
   
-  //Create the autonomous command chooser.
-  SendableChooser<Command> _autoChooser = new SendableChooser<>();//creates a menu of commands that we will put on the dashboard. This will enable us to choose our auto routine before matches.  
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    init();  
-    //USB camera in rio for usb port testing
-    UsbCamera camera = CameraServer.startAutomaticCapture();
-    //Set limelight lights to off when robot is turned on; used to not blind people
-    //s_vision.setLimelightLEDS(0);
-  }
+  /**
+   * This is a menu displayed on the dashboard that we use to select autonomous routines
+   */
+  SendableChooser<Command> _autoChooser = new SendableChooser<>();
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Set default commands for the subsystems. 
+   * Default commands run when a subsystem has no other commands running. 
+   * Example: drivetrain should default to joysticks when not being used by automatic driving classes. 
    */
-
-  //For repeating commands in teleop, we set them as default commands to make them run when the subsystem is not required elsewhere
   private void setDefaultCommands() {
-    //Drivetrain defaults to joystick driving
     CommandScheduler.getInstance().setDefaultCommand(s_drivetrain, c_driveTeleop);
   }
 
-  //Set up the auto chooser drop down
+  /**
+   * Set autonomous routine options
+   * Current options: 
+   * 1. Don't move. 
+   * 2. Test trajectory code. 
+   */
   private void setAutoChooserOptions() {
-    //1. Just don't move
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
-    //2. Trajectory testing option
-    _autoChooser.addOption("Test traj", new SequentialCommandGroup(createTrajectoryCommand(
-      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(1, 0), new Translation2d(2, 1)),
-        new Pose2d(0, 0, new Rotation2d(0)),
-        config)
-    ),
-    createTrajectoryCommand(
-      TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(1, 0), new Translation2d(0, 2), new Translation2d(1,0)),
-        new Pose2d(0, 0, new Rotation2d(0)),
-        config)
-    )
-    )
+    _autoChooser.addOption("Test trajectory", TrajectoryHelper.createTrajectoryCommand(
+      TrajectoryHelper.generateTrajectory(
+      new Pose2d(0,0, new Rotation2d(0)),
+      List.of(new Translation2d(1,0), new Translation2d(2,1)),
+      new Pose2d(3,0, new Rotation2d(0)),
+      false, 2, 2, 0, 0, 7
+      ))
     );
-    //3. Drive 10 ft back and 10 ft forward to pick up a ball and then shoot it. (Incomplete, to be replaced by trajectory based commands)
-    _autoChooser.addOption("2 Ball", new SequentialCommandGroup(
-      new ParallelRaceGroup(new RunIntake(s_intake), new DriveDistance(s_drivetrain, 120)),
-      new DriveDistance(s_drivetrain, -120)//insert limelight command
-     // new ParallelRaceGroup(new WaitCommand(5), new SpinShooter(s_shooter, _driverController), new RunIntake(s_intake))
-      ));
-
-      //Put the chooser on the dashboard
-      SmartDashboard.putData("Auto Mode", _autoChooser);
+    SmartDashboard.putData("Auto Mode", _autoChooser);
   }
 
-//view joystick button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
-//This is where we bind commands to joysticks
+  /**
+   * This is where we set button bindings. 
+   * See button numbers at http://www.team358.org/files/programming/ControlSystem2015-2019/images/XBoxControlMapping.jpg
+   */
   private void configureButtonBindings() {      
     final JoystickButton rightBumper = new JoystickButton(_driverController, 5 );
     rightBumper.whileHeld(c_reverseIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
     leftBumper.whileHeld(c_runIntake);
+    /*
     final JoystickButton bButton = new JoystickButton(_driverController, 2 );
-   // bButton.whileHeld(c_spinShooter);
+    bButton.whileHeld(c_spinShooter);
     final JoystickButton aButton = new JoystickButton(_driverController, 1);
-   // aButton.whileHeld(c_aimDrivetrain);
+    aButton.whileHeld(c_aimDrivetrain);
     final JoystickButton yButton = new JoystickButton(_driverController, 4);
-   // yButton.whileHeld(c_targetBall);
+    yButton.whileHeld(c_targetBall);
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
-    //startButton.whenPressed(c_toggleCompressor);
-    SmartDashboard.putData(new resetGyro(s_drivetrain));
+    startButton.whenPressed(c_toggleCompressor);
+    */
   }
-  
-  //Trajectory Code 
-  public Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
-    //PID controllers to control velocity of each side
-    var leftController = new PIDController(Constants.kP, 0, 0);
-    var rightController = new PIDController(Constants.kP, 0, 0);
-    //Print the trajectory path to the field widget. 
-    s_drivetrain.getField2d().getObject("traj").setTrajectory(_trajectoryToFollow);
-    //Ramsete controller to handle trajectory following
-    //Ramsete stands for italian Robotica Articolata e Mobile per i SErvizi e le TEcnologie, the title of a paper on nonlinear controllers like the WPILib Ramsete commands. 
-    RamseteController ramseteThing = new RamseteController(Constants.kRamseteB, Constants.kRamseteZ);
-    //Ramsete trajectory following command. 
-    RamseteCommand ramseteCommand = new RamseteCommand(
-      _trajectoryToFollow,
-      s_drivetrain::getPose,
-      ramseteThing,
-      new SimpleMotorFeedforward(Constants.ks, Constants.kv,Constants.ka),
-      Constants.kDriveKinematics,
-      s_drivetrain::getWheelSpeeds,
-      leftController,
-      rightController,
-      (leftVolts, rightVolts) -> {
-        s_drivetrain.tankDriveVolts(leftVolts, rightVolts);
-      },
-      s_drivetrain);//The subsystem to require
-      s_drivetrain.resetOdometry(_trajectoryToFollow.getInitialPose());
-      //We now return a command that zeroes the robot's pose when the command starts and then runs the trajectory command
-      //return ramseteCommand;
-      return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), s_drivetrain), ramseteCommand);
-    }
     
     /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
+     * This is a method run by {@link Robot} that schedules the autonomous command selected in the dropdown. 
      */
     public Command getAutonomousCommand() {
-      //Set the autonomous routine to be what the chooser says. To change auto commands go to the setAutoChooserOptions() method
       return _autoChooser.getSelected();
     }
     
-    //This function is run by the constructor whenever the robot starts
-    private void init() {
-      setDefaultCommands();
-      setAutoChooserOptions();
-      configureButtonBindings();
-    }
   }

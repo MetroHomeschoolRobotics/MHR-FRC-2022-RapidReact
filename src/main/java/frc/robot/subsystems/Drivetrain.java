@@ -19,9 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.*;
 import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.ADIS16448_IMU;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import com.kauailabs.navx.frc.AHRS;
 
 
@@ -33,18 +30,9 @@ public class Drivetrain extends SubsystemBase {
   private static CANSparkMax rearLeft = new CANSparkMax(RobotMap.leftRearMotor, MotorType.kBrushless);
   private static CANSparkMax frontRight = new CANSparkMax(RobotMap.rightFrontMotor, MotorType.kBrushless);
   private static CANSparkMax rearRight = new CANSparkMax(RobotMap.rightRearMotor, MotorType.kBrushless);
-
-
-  //private ADIS16448_IMU gyro = new ADIS16448_IMU(ADIS16448_IMU.IMUAxis.kZ, SPI.Port.kMXP, ADIS16448_IMU.CalibrationTime._1s);
-  //private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-  //using this constructor to prevent a known WPILib Issue
-  //see https://docs.wpilib.org/en/latest/docs/yearly-overview/known-issues.html#adis16448-not-reading-values-in-java
   
-  //We may switch back to navx at some point in the future
-  //private AHRS gyro = new AHRS(Port.kUSB1); //constructor for USB navx
   private AHRS gyro = new AHRS(SPI.Port.kMXP); //constructor for MXP navx
 
-  //Create field2d widget to view robot pose and trajectory in glass
   private final Field2d m_field = new Field2d();
   
 
