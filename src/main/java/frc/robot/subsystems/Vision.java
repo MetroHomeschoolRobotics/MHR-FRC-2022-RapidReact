@@ -42,4 +42,11 @@ public class Vision extends SubsystemBase {
   public void setPipeline(int number) {
     limelight.getEntry("pipeline").setNumber(number);
   }
+
+  public double get_arm_angle (double target_angle){ 
+    return 0;
+  };
+  public double get_shooter_rps (double target_angle){
+    return 0;
+  };
 }

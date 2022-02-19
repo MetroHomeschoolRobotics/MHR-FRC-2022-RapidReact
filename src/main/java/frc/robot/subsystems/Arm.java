@@ -25,4 +25,8 @@ public class Arm extends SubsystemBase {
   public double getArmPot() {
       return armPot.get();
   }
+
+  public void setArmMotor(double speed) {
+    
+  }
 }

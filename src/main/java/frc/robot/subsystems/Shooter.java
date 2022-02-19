@@ -64,6 +64,10 @@ public class Shooter extends SubsystemBase {
     rightPID.setReference(rps, ControlType.kVelocity); 
   }
 
+  public double getAverageVelocity() {
+    return (leftShooterMotor.getEncoder().getVelocity()+rightShooterMotor.getEncoder().getVelocity())/2;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -7,13 +7,15 @@ public class RobotMap {
     public static int leftRearMotor = 2;
     public static int rightFrontMotor = 3;
     public static int rightRearMotor = 4;
+    //Shooter motors
+    public static int leftShooterMotor = 5;
+    public static int rightShooterMotor = 6;
 
     
     //PWM ports
-    //Shooter motors
-    public static int leftShooterMotor = 1;
-    public static int rightShooterMotor = 2;
     //intake & indexing
     public static int intakeMotorPort = 0;
+    public static int magazineMotor = 1;
+
 
 }
