@@ -4,69 +4,42 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.photonvision.*;
-import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
+  private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   public Vision() {}
-  //Create photonvision camera objects
-  private PhotonCamera intakeCamera = new PhotonCamera("IntakeCam");
-  private PhotonCamera limelight = new PhotonCamera("limelight");
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    //Tell the dashboard if each of the cameras has a target
-    SmartDashboard.putBoolean("target visible", limelight.getLatestResult().hasTargets());
-    SmartDashboard.putBoolean("IntakeHasTarget", intakeHasTarget());
-  }
-
-  //toggle lights on the limelight to not blind people
-  public void setLimelightLEDS(int state) { //0 = off; 1 = on; 2 = blink
-    if(state == 0) {
-      limelight.setLED(VisionLEDMode.kOff);
-    } else if(state ==1) {
-      limelight.setLED(VisionLEDMode.kOn);
-    } else if(state == 2) {
-      limelight.setLED(VisionLEDMode.kBlink);
+  public boolean getLimelightHasTarget() {
+    if(limelight.getEntry("tv").getDouble(0)==1) {
+      return true;
+    } else {
+      return false;
     }
   }
-
-  //gets image processing results from each camera
-  public PhotonPipelineResult getIntakeCameraResult() {
-    return intakeCamera.getLatestResult();
+  public double getLimelightTY() {
+    return limelight.getEntry("ty").getDouble(0);
   }
-  public PhotonPipelineResult getLimelightResult() {
-    return limelight.getLatestResult();
+  public double getLimelightTX() {
+    return limelight.getEntry("tx").getDouble(0);
   }
-
-  //Set cameras to driver mode (switches them to color and disables processing)
-  public void setLimelightDriverMode(boolean state) {
-    limelight.setDriverMode(state);
+  public void setLights(boolean on) {
+    if(on) {
+      limelight.getEntry("ledMode").setNumber(0);
+    } else {
+      limelight.getEntry("ledMode").setNumber(1);
+    }
   }
-  public void setIntakeDriverMode(boolean state) {
-    intakeCamera.setDriverMode(state);
+  public void setMode(boolean processing) {
+    if(processing) {
+      limelight.getEntry("camMode").setNumber(0);
+    } else {
+      limelight.getEntry("camMode").setNumber(1);
+    }
+  } 
+  public void setPipeline(int number) {
+    limelight.getEntry("pipeline").setNumber(number);
   }
-
-  //Get target object from each camera
-  public PhotonTrackedTarget getLimelightTarget() {
-    return limelight.getLatestResult().getBestTarget();
-  }
-  public PhotonTrackedTarget getIntakeTarget() {
-    return intakeCamera.getLatestResult().getBestTarget();
-  }
-
-  //get if each camera has a target in sight
-  public boolean intakeHasTarget() {
-    return intakeCamera.getLatestResult().hasTargets();
-  }
-  public boolean limelightHasTarget() {
-    return limelight.getLatestResult().hasTargets();
-  }
-  
 }

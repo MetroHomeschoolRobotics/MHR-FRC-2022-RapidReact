@@ -34,28 +34,28 @@ public class AimDrivetrain extends CommandBase {
   public void initialize() {
     SmartDashboard.putData(aimPID);
     SmartDashboard.putData(drivePID);
-    _vision.setLimelightLEDS(1);
+    //_vision.setLimelightLEDS(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(_vision.limelightHasTarget()) {
-      PhotonTrackedTarget target = _vision.getLimelightTarget();
-      turnError = target.getYaw();
-      distanceError = target.getPitch();
-      if(Math.abs(turnError)>2) {
-        _drivetrain.moveManual(0,-aimPID.calculate(turnError, 0));
-      } else {
-        _drivetrain.moveManual(-drivePID.calculate(distanceError,0), 0);
-      }
-    }
+    // if(_vision.limelightHasTarget()) {
+    //   PhotonTrackedTarget target = _vision.getLimelightTarget();
+    //   turnError = target.getYaw();
+    //   distanceError = target.getPitch();
+    //   if(Math.abs(turnError)>2) {
+    //     _drivetrain.moveManual(0,-aimPID.calculate(turnError, 0));
+    //   } else {
+    //     _drivetrain.moveManual(-drivePID.calculate(distanceError,0), 0);
+    //   }
+    // }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _vision.setLimelightLEDS(0);
+    //_vision.setLimelightLEDS(0);
   }
 
   // Returns true when the command should end.

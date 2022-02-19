@@ -42,14 +42,14 @@ public class TargetBall extends CommandBase {
   @Override
   public void execute() {
     
-    if(_vision.intakeHasTarget()){
-        currentTarget = _vision.getIntakeTarget();
-        turnError = currentTarget.getYaw();
-        //distanceError = currentTarget.getPitch();
-        if(/*Math.abs(turnError)>2*/true) {
-          _drivetrain.moveManual(0.5, -aimPID.calculate(turnError, 0));
-        }
-    }
+    // if(_vision.intakeHasTarget()){
+    //     currentTarget = _vision.getIntakeTarget();
+    //     turnError = currentTarget.getYaw();
+    //     //distanceError = currentTarget.getPitch();
+    //     if(/*Math.abs(turnError)>2*/true) {
+    //       _drivetrain.moveManual(0.5, -aimPID.calculate(turnError, 0));
+    //     }
+    // }
   }
 
   // Called once the command ends or is interrupted.
