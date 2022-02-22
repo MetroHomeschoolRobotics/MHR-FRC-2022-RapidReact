@@ -32,9 +32,16 @@ public class DriveTeleop extends CommandBase {
   public void execute() {
     forward = -_driverController.getLeftY();
     spin = _driverController.getLeftX();
-    _drivetrain.move(forward, spin);
-    if(_driverController.getLeftTriggerAxis()>.5) {
-      
+     
+    if(_driverController.getLeftTriggerAxis()>.6) {
+      _drivetrain.setMaxOutput(.25);
+      _drivetrain.move(forward, spin, true);
+    } else if(_driverController.getRightTriggerAxis()>.6) {
+      _drivetrain.setMaxOutput(1);
+      _drivetrain.MoveCurvature(forward, spin);
+    }else{
+      _drivetrain.setMaxOutput(.5);
+      _drivetrain.move(forward, spin, true);
     }
     SmartDashboard.putNumber("forward", forward);
   }
@@ -42,7 +49,7 @@ public class DriveTeleop extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _drivetrain.move(0,0);
+    _drivetrain.move(0,0, false);
   }
 
   // Returns true when the command should end.

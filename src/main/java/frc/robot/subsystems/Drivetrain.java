@@ -52,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     SmartDashboard.putData("field", m_field);
     differentialDrivetrain.setMaxOutput(1);
-    differentialDrivetrain.setDeadband(.01);
+    differentialDrivetrain.setDeadband(.1);
     gyro.calibrate();
     //Right side must spin in reverse for robot to drive forward
     frontRight.setInverted(true);
@@ -101,9 +101,9 @@ public class Drivetrain extends SubsystemBase {
 
 
 
-  public void move(double forward, double spin) {
+  public void move(double forward, double spin, boolean _boolean) {
     //Teleop moving command; squares outputs to the motor
-    differentialDrivetrain.arcadeDrive(forward, spin, true);
+    differentialDrivetrain.arcadeDrive(forward, spin, _boolean);
   }
 
   public void moveManual(double forward, double spin) {
@@ -112,6 +112,11 @@ public class Drivetrain extends SubsystemBase {
     frontRight.set(forward-spin);
     differentialDrivetrain.feed();
   }
+
+  public void MoveCurvature(double forward, double spin) {
+    differentialDrivetrain.curvatureDrive(forward, spin, false);
+  }
+
   public void moveTank(double left, double right) {
     //Set each motor output directly
     frontLeft.set(left);

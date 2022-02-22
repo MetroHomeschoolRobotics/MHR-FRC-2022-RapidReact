@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.BlueBalls;
+import frc.RedBalls;
 import frc.TrajectoryHelper;
 import frc.robot.commands.DriveTeleop;
 import frc.robot.commands.ReverseIntake;
@@ -48,6 +50,7 @@ public class RobotContainer {
   private final Object imgLock = new Object();
   private RedBalls redBallPipeline = new RedBalls();
   private BlueBalls blueBallPipeline = new BlueBalls();
+  
   /**
    * Constructor
    */
@@ -62,13 +65,14 @@ public class RobotContainer {
   private void setUpIntakeVision() {
     intakeCam = CameraServer.startAutomaticCapture(); //Starts USB camera on RIO. 
       intakeCam.setResolution(IMG_WIDTH, IMG_HEIGHT);
-        visionThread = new VisionThread(intakeCam, redBallPipeline, pipeline -> {
+        visionThread = new VisionThread(intakeCam, blueBallPipeline, pipeline -> {
         if (!pipeline.filterContoursOutput().isEmpty()) {
           Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
           synchronized (imgLock) {
             centerX = r.x + (r.width / 2);
             centerY = r.y + (r.height / 2);
           }
+          SmartDashboard.putBoolean("TV", !pipeline.filterContoursOutput().isEmpty());
           SmartDashboard.putNumber("centerX", centerX);
           SmartDashboard.putNumber("centerY", centerY);
         }

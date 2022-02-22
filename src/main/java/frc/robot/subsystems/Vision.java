@@ -49,4 +49,9 @@ public class Vision extends SubsystemBase {
   public double get_shooter_rps (double target_angle){
     return 0;
   };
+  
+  @Override public void periodic() {
+    NetworkTable intakeCam = NetworkTableInstance.getDefault().getTable("blueBallsBlobs"); //actually red balls
+    //intakeCam.getEntry()
+  }
 }
