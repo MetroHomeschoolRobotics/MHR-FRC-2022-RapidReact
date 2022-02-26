@@ -12,6 +12,8 @@ public class ToggleCompressor extends CommandBase {
   Pneumatics _pneumatics;
   public ToggleCompressor(Pneumatics pneumatics) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(pneumatics);
+    _pneumatics=pneumatics;
   }
 
   // Called when the command is initially scheduled.

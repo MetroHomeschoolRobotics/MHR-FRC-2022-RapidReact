@@ -55,7 +55,7 @@ public class LimelightAim extends CommandBase {
       if(Math.abs(arm.getArmPot()-vision.get_arm_angle(vision.getLimelightTY()))<vertical_threshold) {
         arm.setArmMotor(vertical_PID.calculate(arm.getArmPot(), vision.get_arm_angle(vision.getLimelightTY())));
       }
-      shooter.setShooter(vision.get_shooter_rps(vision.getLimelightTY()));
+      //shooter.setShooter(vision.get_shooter_rps(vision.getLimelightTY()));
       
     }
 

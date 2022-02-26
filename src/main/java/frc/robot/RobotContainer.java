@@ -132,8 +132,8 @@ public class RobotContainer {
     // yButton.whileHeld(c_targetBall);
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
     startButton.whenPressed(c_toggleCompressor);
-    final JoystickButton xButton = new JoystickButton(_driverController, 3);
-    xButton.whenPressed(c_toggleIntake);
+    final JoystickButton yButton = new JoystickButton(_driverController, 4);
+    yButton.whenPressed(c_toggleIntake);
   }
     
     /**

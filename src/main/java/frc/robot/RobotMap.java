@@ -15,8 +15,8 @@ public class RobotMap {
     //PWM ports
     //intake & indexing
     public static int intakeMotorPort = 0;
-    public static int magazineMotor = 1;
-    public static int indexerMotor = 2;
+    public static int magazineMotor = 2;
+    public static int indexerMotor = 1;
 
     //Pneumatics
     public static int intakeSolenoid1 = 0;

@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
-  private Compressor compressor = new Compressor( 0, PneumaticsModuleType.CTREPCM);
+  private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   private DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,RobotMap.intakeSolenoid1, RobotMap.intakeSolenoid2);
   public Pneumatics() {}
 

@@ -55,8 +55,12 @@ public class Drivetrain extends SubsystemBase {
     differentialDrivetrain.setDeadband(.1);
     gyro.calibrate();
     //Right side must spin in reverse for robot to drive forward
+    frontLeft.setInverted(false);
+    frontRight.setInverted(false);
     frontRight.setInverted(true);
     rearRight.setInverted(true);
+    frontRight.burnFlash();
+    rearRight.burnFlash();
     //Rear motors have the same output as front motors because they are in the same gearboxes
     rearLeft.follow(frontLeft);
     rearRight.follow(frontRight);
