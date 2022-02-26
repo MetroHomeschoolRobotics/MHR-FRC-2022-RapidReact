@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -40,16 +38,15 @@ public class AimDrivetrain extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if(_vision.limelightHasTarget()) {
-    //   PhotonTrackedTarget target = _vision.getLimelightTarget();
-    //   turnError = target.getYaw();
-    //   distanceError = target.getPitch();
-    //   if(Math.abs(turnError)>2) {
-    //     _drivetrain.moveManual(0,-aimPID.calculate(turnError, 0));
-    //   } else {
-    //     _drivetrain.moveManual(-drivePID.calculate(distanceError,0), 0);
-    //   }
-    // }
+    if(_vision.getLimelightHasTarget()) {
+      turnError = _vision.getLimelightTX();
+      distanceError = _vision.getLimelightTY();
+      if(Math.abs(turnError)>2) {
+        _drivetrain.moveManual(0,-aimPID.calculate(turnError, 0));
+      } else {
+        _drivetrain.moveManual(-drivePID.calculate(distanceError,0), 0);
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.

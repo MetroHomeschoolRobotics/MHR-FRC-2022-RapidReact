@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -17,12 +15,8 @@ public class TargetBall extends CommandBase {
   private Vision _vision;
   private Drivetrain _drivetrain;
 
-  //private PIDController drivePID = new PIDController(0.05, 0, 0);
   private PIDController aimPID = new PIDController(0.015, 0, 0.0002);
-
-  private double turnError;
-  private PhotonTrackedTarget currentTarget;
-  //private double distanceError;
+  private double setpoint = Vision.IMG_WIDTH/2;
 
   public TargetBall(Vision vision, Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -42,14 +36,9 @@ public class TargetBall extends CommandBase {
   @Override
   public void execute() {
     
-    // if(_vision.intakeHasTarget()){
-    //     currentTarget = _vision.getIntakeTarget();
-    //     turnError = currentTarget.getYaw();
-    //     //distanceError = currentTarget.getPitch();
-    //     if(/*Math.abs(turnError)>2*/true) {
-    //       _drivetrain.moveManual(0.5, -aimPID.calculate(turnError, 0));
-    //     }
-    // }
+    if(_vision.getIntakeHasTarget()){
+      _drivetrain.moveManual(.25, aimPID.calculate(_vision.getIntakeTX(),setpoint));
+    }
   }
 
   // Called once the command ends or is interrupted.

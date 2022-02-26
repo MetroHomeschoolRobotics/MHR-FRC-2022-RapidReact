@@ -6,33 +6,30 @@ package frc.robot;
 
 import java.util.List;
 
-import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.vision.VisionThread;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.BlueBalls;
-import frc.RedBalls;
 import frc.TrajectoryHelper;
 import frc.robot.commands.DriveTeleop;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.SpinShooter;
+import frc.robot.commands.ToggleCompressor;
+import frc.robot.commands.ToggleIntake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Magazine;
+import frc.robot.subsystems.Pneumatics;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -41,15 +38,7 @@ import frc.robot.subsystems.Intake;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private UsbCamera intakeCam;
-  private static final int IMG_WIDTH = 320;
-  private static final int IMG_HEIGHT = 240;
-  private VisionThread visionThread;
-  private double centerX = 0.0;
-  private double centerY = 0.0;
-  private final Object imgLock = new Object();
-  private RedBalls redBallPipeline = new RedBalls();
-  private BlueBalls blueBallPipeline = new BlueBalls();
+
   
   /**
    * Constructor
@@ -57,28 +46,10 @@ public class RobotContainer {
   public RobotContainer() {
     setDefaultCommands();  //Sets the default commands for each subsystem
     setAutoChooserOptions();  //Sets up autonomous routines
-    configureButtonBindings();  //Configures button bindings for joysticks
-    setUpIntakeVision();
+    configureButtonBindings();  //Configures button bindings for joystick
   }
 
-  /**Intake Vision Pipeline Code */
-  private void setUpIntakeVision() {
-    intakeCam = CameraServer.startAutomaticCapture(); //Starts USB camera on RIO. 
-      intakeCam.setResolution(IMG_WIDTH, IMG_HEIGHT);
-        visionThread = new VisionThread(intakeCam, blueBallPipeline, pipeline -> {
-        if (!pipeline.filterContoursOutput().isEmpty()) {
-          Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-          synchronized (imgLock) {
-            centerX = r.x + (r.width / 2);
-            centerY = r.y + (r.height / 2);
-          }
-          SmartDashboard.putBoolean("TV", !pipeline.filterContoursOutput().isEmpty());
-          SmartDashboard.putNumber("centerX", centerX);
-          SmartDashboard.putNumber("centerY", centerY);
-        }
-    });
-    visionThread.start();
-  }
+  
   /**
    * Create joysticks objects. We use xbox controllers. 
    These will be used for button bindings in the configureButtonBindings() method is called. 
@@ -94,10 +65,10 @@ public class RobotContainer {
   public static final Drivetrain s_drivetrain = new Drivetrain();
   public static final Intake s_intake = new Intake();
   public static final Arm s_arm = new Arm();
-  //TODO: comment these back in
-  //public static final  Shooter s_shooter = new Shooter();
-  //public static final Vision s_vision = new Vision();
-  //public static final Pneumatics s_pneumatics = new Pneumatics();
+  public static final  Shooter s_shooter = new Shooter();
+  public static final Vision s_vision = new Vision();
+  public static final Pneumatics s_pneumatics = new Pneumatics();
+  public static final Magazine s_magazine = new Magazine();
   
   /**
    * These are the commands. Instances of these commands are bound to buttons. 
@@ -107,10 +78,9 @@ public class RobotContainer {
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
-  //private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
-  //private final AimDrivetrain c_aimDrivetrain = new AimDrivetrain(s_vision, s_drivetrain);
-  //private final TargetBall c_targetBall = new TargetBall(s_vision, s_drivetrain);
-  //private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
+  private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
+  private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
+  private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
   
   /**
    * This is a menu displayed on the dashboard that we use to select autonomous routines
@@ -154,16 +124,16 @@ public class RobotContainer {
     rightBumper.whileHeld(c_reverseIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
     leftBumper.whileHeld(c_runIntake);
-    /*
     final JoystickButton bButton = new JoystickButton(_driverController, 2 );
     bButton.whileHeld(c_spinShooter);
-    final JoystickButton aButton = new JoystickButton(_driverController, 1);
-    aButton.whileHeld(c_aimDrivetrain);
-    final JoystickButton yButton = new JoystickButton(_driverController, 4);
-    yButton.whileHeld(c_targetBall);
+    // final JoystickButton aButton = new JoystickButton(_driverController, 1);
+    // aButton.whileHeld(c_aimDrivetrain);
+    // final JoystickButton yButton = new JoystickButton(_driverController, 4);
+    // yButton.whileHeld(c_targetBall);
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
     startButton.whenPressed(c_toggleCompressor);
-    */
+    final JoystickButton xButton = new JoystickButton(_driverController, 3);
+    xButton.whenPressed(c_toggleIntake);
   }
     
     /**

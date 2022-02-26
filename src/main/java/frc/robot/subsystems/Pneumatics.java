@@ -5,12 +5,16 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
   private Compressor compressor = new Compressor( 0, PneumaticsModuleType.CTREPCM);
+  private DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,RobotMap.intakeSolenoid1, RobotMap.intakeSolenoid2);
   public Pneumatics() {}
 
   @Override
@@ -18,6 +22,22 @@ public class Pneumatics extends SubsystemBase {
     // This method will be called once per scheduler run
   }
   
+  public void setIntake(boolean down) {
+    if(down) {
+      intakeSolenoid.set(Value.kForward);
+    } else {
+      intakeSolenoid.set(Value.kReverse);
+    }
+  }
+
+  public boolean getIntake() {
+    if(intakeSolenoid.get()==Value.kForward) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean getCompressorState() {
     return compressor.enabled();//get if the compressor is on or off
   }

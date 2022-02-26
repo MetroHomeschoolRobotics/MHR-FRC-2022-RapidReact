@@ -4,14 +4,78 @@
 
 package frc.robot.subsystems;
 
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.vision.VisionThread;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.BlueBalls;
+import frc.RedBalls;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
-  public Vision() {}
+  public Vision() {
+    setUpIntakeVision();
+  }
+
+  private UsbCamera intakeCam;
+  public static final int IMG_WIDTH = 320;
+  public static final int IMG_HEIGHT = 240;
+  private VisionThread visionThread;
+  private double centerX = 0.0;
+  private double centerY = 0.0;
+  private final Object imgLock = new Object();
+  private RedBalls redBallPipeline = new RedBalls();
+
+  private double intakeTX = 0;
+  private double intakeTY = 0;
+  private boolean intakeTV = false;
+
+  /**Intake Vision Pipeline Code */
+  private void setUpIntakeVision() {
+    intakeCam = CameraServer.startAutomaticCapture(); //Starts USB camera on RIO. 
+      intakeCam.setResolution(IMG_WIDTH, IMG_HEIGHT);
+        visionThread = new VisionThread(intakeCam, 
+        //THIS PIECE MUST CHANGE TO CHANGE PIPELINES!!!!
+        //USE blueBallPipeline or redBallPipeline
+        redBallPipeline,
+        //MAKE SURE TO UPDATE THIS BEFORE EACH MATCH
+        pipeline -> {
+        if (!pipeline.filterContoursOutput().isEmpty()) {
+          Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+          synchronized (imgLock) {
+            centerX = r.x + (r.width / 2);
+            centerY = r.y + (r.height / 2);
+            intakeTX = r.x+(r.width/2);
+            intakeTY=r.y+(r.height/2);
+          }
+          SmartDashboard.putBoolean("TV", !pipeline.filterContoursOutput().isEmpty());
+          intakeTV = !pipeline.filterContoursOutput().isEmpty();
+          SmartDashboard.putNumber("centerX", centerX);
+          SmartDashboard.putNumber("centerY", centerY);
+        }
+    });
+    visionThread.start();
+  }
+
+  public boolean getIntakeHasTarget() {
+    return intakeTV;
+  }
+
+  public double getIntakeTX() {
+    return intakeTX;
+  }
+
+  public double getIntakeTY() {
+    return intakeTY;
+  }
+
   public boolean getLimelightHasTarget() {
     if(limelight.getEntry("tv").getDouble(0)==1) {
       return true;
@@ -51,7 +115,6 @@ public class Vision extends SubsystemBase {
   };
   
   @Override public void periodic() {
-    NetworkTable intakeCam = NetworkTableInstance.getDefault().getTable("blueBallsBlobs"); //actually red balls
-    //intakeCam.getEntry()
+    
   }
 }

@@ -12,11 +12,13 @@ public class Magazine extends SubsystemBase {
   /** Creates a new Magazine. */
   public Magazine() {}
   private Spark Magazine_motor = new Spark(RobotMap.magazineMotor);
+  private Spark Indexer_motor = new Spark(RobotMap.indexerMotor);
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
   public void setMagazine(double speed){
     Magazine_motor.set(speed);
+    Indexer_motor.set(speed);
   }
 }
