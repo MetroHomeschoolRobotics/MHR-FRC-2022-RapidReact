@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import frc.robot.RobotMap;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.BangBangController;
@@ -23,18 +24,30 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax leftShooterMotor = new CANSparkMax(RobotMap.leftShooterMotor, MotorType.kBrushless);
   private CANSparkMax rightShooterMotor = new CANSparkMax(RobotMap.rightShooterMotor, MotorType.kBrushless);
 
-  private PIDController speedAdjuster = new PIDController(1,0,0);
-
-
+  //private PIDController speedAdjuster = new PIDController(1,0,0);
+  
+   private SparkMaxPIDController leftshooter_PID;
+   private SparkMaxPIDController rightshooter_PID;
+   private double kp = 0.0004;
+   private double kff = 0.00017;
+   private double max_RPM = 5700;
+   
+  
+  
   public Shooter() {
-    SmartDashboard.putData(speedAdjuster);
+    leftshooter_PID = leftShooterMotor.getPIDController();
+    rightshooter_PID = rightShooterMotor.getPIDController();
+    leftshooter_PID.setP(kp);
+    leftshooter_PID.setFF(kff);
+    rightshooter_PID.setP(kp);
+    rightshooter_PID.setFF(kff);
     leftShooterMotor.setInverted(true);
     leftShooterMotor.burnFlash();
     rightShooterMotor.setInverted(false);
     rightShooterMotor.burnFlash();
+    leftshooter_PID.setOutputRange(0, 1);
+    rightshooter_PID.setOutputRange(0, 1);
   }
-
-  //private TalonSRX aimingMotor = new TalonSRX(RobotMap.armMotor);
 
   public void setShooterPercentOutput(double speed) {
     leftShooterMotor.set(speed);
@@ -42,8 +55,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterVelocity(double velocity) {
-    leftShooterMotor.set(speedAdjuster.calculate(leftShooterMotor.getEncoder().getVelocity(), 1000));
-    rightShooterMotor.set(speedAdjuster.calculate(rightShooterMotor.getEncoder().getVelocity(), 1000));
+    leftshooter_PID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+    rightshooter_PID.setReference(velocity, CANSparkMax.ControlType.kVelocity);
   }
 
   public double getAverageVelocity() {

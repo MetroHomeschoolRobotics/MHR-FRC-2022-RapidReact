@@ -10,7 +10,10 @@ public class RobotMap {
     //Shooter motors
     public static int leftShooterMotor = 5;
     public static int rightShooterMotor = 6;
-
+    //winches
+    public static int arm_winch = 1;
+    public static int climber_winch = 4;
+    
     
     //PWM ports
     //intake & indexing
@@ -21,6 +24,8 @@ public class RobotMap {
     //Pneumatics
     public static int intakeSolenoid1 = 0;
     public static int intakeSolenoid2 = 1;
+    public static int hookSolenoid1 = 2;
+    public static int hookSolenoid2 = 3;
 
 
 }

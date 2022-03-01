@@ -4,16 +4,28 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
   //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
-  public Arm() {}
+  private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
+  
+  private double maxPotOutput = 0.8;
+  private double minPotOutput = 0.1;
+  
+  public Arm() {
+  
+  }
+
 
   @Override
   public void periodic() {
@@ -27,6 +39,13 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmMotor(double speed) {
-    
+    if (speed > 0 && getArmPot() >= maxPotOutput){
+      //speed = 0;
+    }
+    else if ( speed < 0 && getArmPot() <= minPotOutput){
+      //speed = 0;
+    }
+    arm_motor.set(ControlMode.PercentOutput, speed);
   }
+
 }

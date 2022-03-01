@@ -4,15 +4,20 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Magazine;
+import frc.robot.subsystems.Arm;
 
-public class ReverseMagazine extends CommandBase {
-  /** Creates a new RunMagazine. */
-  private Magazine magazine;
-  public ReverseMagazine(Magazine _magazine) {
+public class ArmManual extends CommandBase {
+  /** Creates a new ArmManual. */
+  private Arm arm;
+  private XboxController driverController;
+
+  public ArmManual(Arm _arm, XboxController _driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
-    magazine = _magazine;
+    addRequirements(_arm);
+    arm=_arm;
+    driverController = _driverController;
   }
 
   // Called when the command is initially scheduled.
@@ -22,14 +27,12 @@ public class ReverseMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    magazine.setMagazine(-.8);
+    arm.setArmMotor(-driverController.getRightY());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    magazine.setMagazine(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

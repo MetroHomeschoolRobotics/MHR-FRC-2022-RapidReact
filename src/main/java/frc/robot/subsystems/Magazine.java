@@ -18,7 +18,7 @@ public class Magazine extends SubsystemBase {
     // This method will be called once per scheduler run
   }
   public void setMagazine(double speed){
-    Magazine_motor.set(speed);
+    Magazine_motor.set(-speed*.75);
     Indexer_motor.set(speed);
   }
 }

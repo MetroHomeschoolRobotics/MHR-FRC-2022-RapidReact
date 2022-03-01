@@ -16,12 +16,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.TrajectoryHelper;
+import frc.robot.commands.AngleArm;
+import frc.robot.commands.ArmManual;
 import frc.robot.commands.DriveTeleop;
 import frc.robot.commands.ReverseIntake;
+import frc.robot.commands.ReverseMagazine;
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.RunMagazine;
 import frc.robot.commands.SpinShooter;
 import frc.robot.commands.ToggleCompressor;
+import frc.robot.commands.ToggleHook;
 import frc.robot.commands.ToggleIntake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -55,7 +61,7 @@ public class RobotContainer {
    These will be used for button bindings in the configureButtonBindings() method is called. 
    */
   private XboxController _driverController = new XboxController(0);
-  //private XboxController _manipulatorController = new XboxController(1);
+  private XboxController _manipulatorController = new XboxController(1);
 
   /**
    * Define instances of the commands. These are static, so only one instance ever exists. 
@@ -94,6 +100,7 @@ public class RobotContainer {
    */
   private void setDefaultCommands() {
     CommandScheduler.getInstance().setDefaultCommand(s_drivetrain, c_driveTeleop);
+    CommandScheduler.getInstance().setDefaultCommand(s_arm, new ArmManual(s_arm, _manipulatorController));
   }
 
   /**
@@ -126,6 +133,12 @@ public class RobotContainer {
     leftBumper.whileHeld(c_runIntake);
     final JoystickButton bButton = new JoystickButton(_driverController, 2 );
     bButton.whileHeld(c_spinShooter);
+    
+    final JoystickButton rightBumperM = new JoystickButton(_manipulatorController, 5 );
+    rightBumperM.whileHeld(new ReverseMagazine(s_magazine));
+    final JoystickButton leftBumperM = new JoystickButton(_manipulatorController, 6 );
+    leftBumperM.whileHeld(new RunMagazine(s_magazine));
+    
     // final JoystickButton aButton = new JoystickButton(_driverController, 1);
     // aButton.whileHeld(c_aimDrivetrain);
     // final JoystickButton yButton = new JoystickButton(_driverController, 4);
@@ -134,6 +147,16 @@ public class RobotContainer {
     startButton.whenPressed(c_toggleCompressor);
     final JoystickButton yButton = new JoystickButton(_driverController, 4);
     yButton.whenPressed(c_toggleIntake);
+    SmartDashboard.putNumber("Arm Value", .1);
+    final POVButton fenderButton = new POVButton(_manipulatorController, 0);
+    fenderButton.toggleWhenPressed(new AngleArm(.1, s_arm));
+    final POVButton tarmacButton = new POVButton(_manipulatorController, 90);
+    tarmacButton.toggleWhenPressed(new AngleArm(.3, s_arm));
+    final POVButton stowButton = new POVButton(_manipulatorController, 180);
+    stowButton.toggleWhenPressed(new AngleArm(.5, s_arm));
+
+    final JoystickButton hooksButton = new JoystickButton(_manipulatorController, 1);
+    hooksButton.whenPressed(new ToggleHook(s_pneumatics));
   }
     
     /**

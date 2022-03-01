@@ -4,15 +4,24 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Magazine;
+import frc.robot.subsystems.Arm;
 
-public class ReverseMagazine extends CommandBase {
-  /** Creates a new RunMagazine. */
-  private Magazine magazine;
-  public ReverseMagazine(Magazine _magazine) {
+public class AngleArm extends CommandBase {
+  /** Creates a new AngleArm. */
+  private Arm arm;
+  private double setpoint;
+  private PIDController armPID = new PIDController(0, 0, 0);
+  public AngleArm(double _setpoint, Arm _arm
+  ) {
+    armPID.setTolerance(.04);
+    SmartDashboard.putData(armPID);
+    arm=_arm;
+    _setpoint = setpoint;
+    addRequirements(_arm);
     // Use addRequirements() here to declare subsystem dependencies.
-    magazine = _magazine;
   }
 
   // Called when the command is initially scheduled.
@@ -22,18 +31,16 @@ public class ReverseMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    magazine.setMagazine(-.8);
+     arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    magazine.setMagazine(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return armPID.atSetpoint();
   }
 }

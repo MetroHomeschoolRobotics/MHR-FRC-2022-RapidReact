@@ -15,6 +15,7 @@ public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
   private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   private DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,RobotMap.intakeSolenoid1, RobotMap.intakeSolenoid2);
+  private DoubleSolenoid hookSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.hookSolenoid1, RobotMap.hookSolenoid2);
   public Pneumatics() {}
 
   @Override
@@ -32,6 +33,22 @@ public class Pneumatics extends SubsystemBase {
 
   public boolean getIntake() {
     if(intakeSolenoid.get()==Value.kForward) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void setHook(boolean down) {
+    if(down) {
+      hookSolenoid.set(Value.kForward);
+    } else {
+      hookSolenoid.set(Value.kOff);
+    }
+  }
+
+  public boolean getHook() {
+    if(hookSolenoid.get()==Value.kForward) {
       return true;
     } else {
       return false;
