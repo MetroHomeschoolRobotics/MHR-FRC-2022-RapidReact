@@ -19,7 +19,7 @@ public class SpinShooter extends CommandBase {
     _shooter = shooter;
     _driverController = driverController;
     addRequirements(shooter);
-    SmartDashboard.putNumber("RPS", 1000);
+    SmartDashboard.putNumber("Shooter RPM", 3000);
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +32,7 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _shooter.setShooterVelocity(2000);
+    _shooter.setShooterVelocity(SmartDashboard.getNumber("Shooter RPM", 0));
   }
 
   // Called once the command ends or is interrupted.

@@ -6,18 +6,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ClimberWinch;
 
-public class ArmManual extends CommandBase {
-  /** Creates a new ArmManual. */
-  private Arm arm;
-  private XboxController driverController;
-
-  public ArmManual(Arm _arm, XboxController _driverController) {
+public class WinchClimber extends CommandBase {
+  /** Creates a new WinchClimber. */
+  ClimberWinch climber;
+  XboxController controller;
+  public WinchClimber(ClimberWinch _climber, XboxController _controller) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(_arm);
-    arm=_arm;
-    driverController = _driverController;
+    climber = _climber;
+    controller = _controller;
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +26,7 @@ public class ArmManual extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setArmMotor(-driverController.getLeftY());
+    climber.setClimberWinchMotor(controller.getRightY());
   }
 
   // Called once the command ends or is interrupted.

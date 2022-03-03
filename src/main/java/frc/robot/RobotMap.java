@@ -11,8 +11,8 @@ public class RobotMap {
     public static int leftShooterMotor = 5;
     public static int rightShooterMotor = 6;
     //winches
-    public static int arm_winch = 1;
-    public static int climber_winch = 4;
+    public static int arm_winch = 2;
+    public static int climber_winch = 1;
     
     
     //PWM ports

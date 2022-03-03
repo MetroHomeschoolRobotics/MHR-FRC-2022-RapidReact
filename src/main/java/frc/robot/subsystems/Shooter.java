@@ -27,7 +27,7 @@ public class Shooter extends SubsystemBase {
   
    private SparkMaxPIDController leftshooter_PID;
    private SparkMaxPIDController rightshooter_PID;
-   private double kp = 0.0004;
+   private double kp = 0.000;
    private double kff = 0.00017;
    private double max_RPM = 5700;
    

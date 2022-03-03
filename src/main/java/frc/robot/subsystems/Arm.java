@@ -19,8 +19,8 @@ public class Arm extends SubsystemBase {
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
   
-  private double maxPotOutput = 0.8;
-  private double minPotOutput = 0.1;
+  public double maxPotOutput = 0.25;
+  public double minPotOutput = 0.042;
   
   public Arm() {
   

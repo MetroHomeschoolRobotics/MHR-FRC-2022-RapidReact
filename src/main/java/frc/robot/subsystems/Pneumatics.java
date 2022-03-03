@@ -6,6 +6,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -16,6 +20,7 @@ public class Pneumatics extends SubsystemBase {
   private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   private DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,RobotMap.intakeSolenoid1, RobotMap.intakeSolenoid2);
   private DoubleSolenoid hookSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.hookSolenoid1, RobotMap.hookSolenoid2);
+  
   public Pneumatics() {}
 
   @Override

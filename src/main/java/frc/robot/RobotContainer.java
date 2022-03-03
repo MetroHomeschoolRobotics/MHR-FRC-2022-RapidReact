@@ -29,7 +29,9 @@ import frc.robot.commands.SpinShooter;
 import frc.robot.commands.ToggleCompressor;
 import frc.robot.commands.ToggleHook;
 import frc.robot.commands.ToggleIntake;
+import frc.robot.commands.WinchClimber;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ClimberWinch;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Magazine;
@@ -75,6 +77,7 @@ public class RobotContainer {
   public static final Vision s_vision = new Vision();
   public static final Pneumatics s_pneumatics = new Pneumatics();
   public static final Magazine s_magazine = new Magazine();
+  public static final ClimberWinch s_climber = new ClimberWinch();
   
   /**
    * These are the commands. Instances of these commands are bound to buttons. 
@@ -87,7 +90,7 @@ public class RobotContainer {
   private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController);
   private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
   private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
-  
+  private final WinchClimber c_winchClimber = new WinchClimber(s_climber, _manipulatorController);
   /**
    * This is a menu displayed on the dashboard that we use to select autonomous routines
    */
@@ -101,6 +104,7 @@ public class RobotContainer {
   private void setDefaultCommands() {
     CommandScheduler.getInstance().setDefaultCommand(s_drivetrain, c_driveTeleop);
     CommandScheduler.getInstance().setDefaultCommand(s_arm, new ArmManual(s_arm, _manipulatorController));
+    CommandScheduler.getInstance().setDefaultCommand(s_climber, c_winchClimber);
   }
 
   /**
