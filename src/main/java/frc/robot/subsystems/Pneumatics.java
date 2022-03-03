@@ -43,7 +43,7 @@ public class Pneumatics extends SubsystemBase {
     if(down) {
       hookSolenoid.set(Value.kForward);
     } else {
-      hookSolenoid.set(Value.kOff);
+      hookSolenoid.set(Value.kReverse);
     }
   }
 
