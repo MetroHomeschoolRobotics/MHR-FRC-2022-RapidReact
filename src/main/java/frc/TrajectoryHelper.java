@@ -70,9 +70,7 @@ public class TrajectoryHelper {
             RobotContainer.s_drivetrain.tankDriveVolts(leftVolts, rightVolts);
           },
           RobotContainer.s_drivetrain);
-          RobotContainer.s_drivetrain.resetOdometry(_trajectoryToFollow.getInitialPose());
-          return new SequentialCommandGroup(new ResetOdometry(_trajectoryToFollow.getInitialPose(), RobotContainer.s_drivetrain), 
-          ramseteCommand);
+          return ramseteCommand;
     }
     
 }

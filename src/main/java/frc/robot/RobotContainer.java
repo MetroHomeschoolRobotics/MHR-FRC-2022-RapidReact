@@ -21,6 +21,7 @@ import frc.TrajectoryHelper;
 import frc.robot.commands.AngleArm;
 import frc.robot.commands.ArmManual;
 import frc.robot.commands.DriveTeleop;
+import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseMagazine;
 import frc.robot.commands.RunIntake;
@@ -115,19 +116,19 @@ public class RobotContainer {
    */
   private void setAutoChooserOptions() {
     _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
-    _autoChooser.addOption("Test trajectory", TrajectoryHelper.createTrajectoryCommand(
+    _autoChooser.addOption("Test trajectory", new ResetOdometry(new Pose2d(0,0,new Rotation2d(0)), s_drivetrain).andThen(TrajectoryHelper.createTrajectoryCommand(
       TrajectoryHelper.generateTrajectory(
       new Pose2d(0,0, new Rotation2d(0)),
       List.of(new Translation2d(1,0.1), new Translation2d(2,1)),
       new Pose2d(3,0, new Rotation2d(0)),
       false, 2, 1, 0, 0, 5
       ))
-      //.andThen(
-      //   TrajectoryHelper.createTrajectoryCommand(TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), 
-      //   List.of(new Translation2d(2,1), new Translation2d(1,1)),
-      //   new Pose2d(3,1, new Rotation2d(0)),
-      //    true, 2, 1, 0, 0, 5))
-      // )
+      .andThen(
+        TrajectoryHelper.createTrajectoryCommand(TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), 
+        List.of(new Translation2d(2,1), new Translation2d(1,1)),
+        new Pose2d(0,1, new Rotation2d(0)),
+         true, 2, 1, 0, 0, 5))
+      ))
     );
     SmartDashboard.putData("Auto Mode", _autoChooser);
   }
