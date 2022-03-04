@@ -50,20 +50,29 @@ public class Drivetrain extends SubsystemBase {
   
 
   public Drivetrain() {
+    //Convert drivetrain motor revolutions to distances of robot travel (in meters)
+    frontLeft.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
+    frontRight.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
+    
+    frontRight.getEncoder().setVelocityConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
+    frontLeft.getEncoder().setVelocityConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
+    
     SmartDashboard.putData("field", m_field);
     differentialDrivetrain.setMaxOutput(1);
     differentialDrivetrain.setDeadband(.1);
     gyro.calibrate();
     //Right side must spin in reverse for robot to drive forward
     frontLeft.setInverted(false);
-    frontRight.setInverted(false);
+    rearLeft.setInverted(false);
     frontRight.setInverted(true);
     rearRight.setInverted(true);
     frontRight.burnFlash();
-    rearRight.burnFlash();
+    //rearRight.burnFlash();
     //Rear motors have the same output as front motors because they are in the same gearboxes
     rearLeft.follow(frontLeft);
     rearRight.follow(frontRight);
+    rearLeft.burnFlash();
+    rearRight.burnFlash();
     
     //Convert drivetrain motor revolutions to distances of robot travel (in meters)
     frontLeft.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));

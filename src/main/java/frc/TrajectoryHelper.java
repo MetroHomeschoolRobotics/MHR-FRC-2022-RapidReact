@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.spline.Spline.ControlVector;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -37,6 +38,7 @@ public class TrajectoryHelper {
    * @param maxVoltage The maximum voltage the motors can use; will affect acceleration. 
    * @return The generated trajectory.
    */
+
     public final static Trajectory generateTrajectory(Pose2d start, List<Translation2d> waypoints, Pose2d end, boolean reversed, double maxVelocity, double maxAccel, double startVelocity, double endVelocity, double maxVoltage) {
         DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, maxVoltage);
         TrajectoryConfig config = new TrajectoryConfig(maxVelocity, maxAccel).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
@@ -53,7 +55,7 @@ public class TrajectoryHelper {
     public final static Command createTrajectoryCommand(Trajectory _trajectoryToFollow) {
         var leftController = new PIDController(Constants.kP, 0, 0);
         var rightController = new PIDController(Constants.kP, 0, 0);
-        RobotContainer.s_drivetrain.getField2d().getObject("traj").setTrajectory(_trajectoryToFollow);
+        //RobotContainer.s_drivetrain.getField2d().getObject("traj").setTrajectory(_trajectoryToFollow);
         RamseteController ramseteController = new RamseteController(Constants.kRamseteB, Constants.kRamseteZ);
         RamseteCommand ramseteCommand = new RamseteCommand(
           _trajectoryToFollow,

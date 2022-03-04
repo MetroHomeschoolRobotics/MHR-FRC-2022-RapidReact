@@ -34,15 +34,15 @@ public final class Constants {
  * Leave all other settings at default. Run the 4 tests for both drivetrain and angular drivetrain. 
  */
     //Feedforward constants from linear tests
-    public static final double ks = .16282;//volts
-    public static final double kv = 2.8616;//volt seconds per meter
-    public static final double ka = 0.48652;//volt seconds squared per meter
+    public static final double ks = .1967;//volts
+    public static final double kv = 2.779;//volt seconds per meter
+    public static final double ka = 0.546;//volt seconds squared per meter
 
     //Track width from angular tests
-    public static final double trackWidth = .60508; //meters
+    public static final double trackWidth = .58892; //meters
 
     //Proportional constant from linear tests
-    public static final double kP = 3.6888E-08; //voltage per velocity
+    public static final double kP = 0.0001021; //voltage per velocity
 
     //Object to tell trajectory how to vary speed for track width
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(trackWidth); 

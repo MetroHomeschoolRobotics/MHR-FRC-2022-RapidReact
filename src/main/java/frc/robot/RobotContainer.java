@@ -118,10 +118,16 @@ public class RobotContainer {
     _autoChooser.addOption("Test trajectory", TrajectoryHelper.createTrajectoryCommand(
       TrajectoryHelper.generateTrajectory(
       new Pose2d(0,0, new Rotation2d(0)),
-      List.of(new Translation2d(1,0), new Translation2d(2,1)),
+      List.of(new Translation2d(1,0.1), new Translation2d(2,1)),
       new Pose2d(3,0, new Rotation2d(0)),
-      false, 2, 2, 0, 0, 7
+      false, 2, 1, 0, 0, 5
       ))
+      //.andThen(
+      //   TrajectoryHelper.createTrajectoryCommand(TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), 
+      //   List.of(new Translation2d(2,1), new Translation2d(1,1)),
+      //   new Pose2d(3,1, new Rotation2d(0)),
+      //    true, 2, 1, 0, 0, 5))
+      // )
     );
     SmartDashboard.putData("Auto Mode", _autoChooser);
   }
