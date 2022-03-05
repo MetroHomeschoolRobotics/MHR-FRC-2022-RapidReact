@@ -19,11 +19,11 @@ public class Arm extends SubsystemBase {
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
   
-  public double maxPotOutput = 0.25;
-  public double minPotOutput = 0.042;
+  public double maxPotOutput = 0.30;
+  public double minPotOutput = 0.065;
   
   public Arm() {
-  
+    arm_motor.setInverted(true);
   }
 
 
@@ -40,10 +40,10 @@ public class Arm extends SubsystemBase {
 
   public void setArmMotor(double speed) {
     if (speed > 0 && getArmPot() >= maxPotOutput){
-      //speed = 0;
+      speed = 0;
     }
     else if ( speed < 0 && getArmPot() <= minPotOutput){
-      //speed = 0;
+      speed = 0;
     }
     arm_motor.set(ControlMode.PercentOutput, speed);
   }

@@ -14,12 +14,13 @@ public class SpinShooter extends CommandBase {
   /** Creates a new SpinShooter. */
   private Shooter _shooter;
   private XboxController _driverController;
-  public SpinShooter(Shooter shooter, XboxController driverController) {
+  private double RPM;
+  public SpinShooter(Shooter shooter, XboxController driverController, double _RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
     _shooter = shooter;
+    RPM = _RPM;
     _driverController = driverController;
     addRequirements(shooter);
-    SmartDashboard.putNumber("Shooter RPM", 3000);
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +33,7 @@ public class SpinShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _shooter.setShooterVelocity(SmartDashboard.getNumber("Shooter RPM", 0));
+    _shooter.setShooterVelocity(RPM);
   }
 
   // Called once the command ends or is interrupted.

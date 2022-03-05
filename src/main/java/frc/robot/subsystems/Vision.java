@@ -54,12 +54,16 @@ public class Vision extends SubsystemBase {
             centerY = r.y + (r.height / 2);
             intakeTX = r.x+(r.width/2);
             intakeTY=r.y+(r.height/2);
-          }
-          SmartDashboard.putBoolean("TV", !pipeline.filterContoursOutput().isEmpty());
-          intakeTV = !pipeline.filterContoursOutput().isEmpty();
-          SmartDashboard.putNumber("centerX", centerX);
-          SmartDashboard.putNumber("centerY", centerY);
+            intakeTV = true;
         }
+        } else {
+          centerX = IMG_WIDTH/2;
+          centerY = IMG_HEIGHT/2;
+          intakeTV = false;
+        }
+        SmartDashboard.putBoolean("TV", intakeTV);
+        SmartDashboard.putNumber("centerX", centerX);
+        SmartDashboard.putNumber("centerY", centerY);
     });
     visionThread.start();
   }

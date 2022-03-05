@@ -5,23 +5,25 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision;
 
-public class AngleArm extends CommandBase {
-  /** Creates a new AngleArm. */
-  private Arm arm;
-  private double setpoint;
-  private PIDController armPID = new PIDController(30, 0, 0);
-  public AngleArm(double _setpoint, Arm _arm
-  ) {
-    armPID.setTolerance(.004);
-    arm=_arm;
-    setpoint = _setpoint;
-    addRequirements(_arm);
+public class TrackBall extends CommandBase {
+  /** Creates a new TrackBall. */
+  Drivetrain drivetrain;
+  boolean isTeleop;
+  XboxController controller;
+  double forward = 0;
+  PIDController ballPID = new PIDController(.01, 0, 0);
+  public TrackBall(Drivetrain _drivetrain, boolean _isTeleop, XboxController _controller) {
     // Use addRequirements() here to declare subsystem dependencies.
-  }
+    isTeleop = _isTeleop;
+    drivetrain = _drivetrain;
+    controller = _controller;
+    SmartDashboard.putData(ballPID); }
 
   // Called when the command is initially scheduled.
   @Override
@@ -30,7 +32,12 @@ public class AngleArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-     arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
+    if(isTeleop) {
+      forward = -controller.getLeftY();
+    } else {
+      forward = .5;
+    }
+    drivetrain.move(forward, -ballPID.calculate(SmartDashboard.getNumber("centerX", 0),Vision.IMG_WIDTH/2), true);
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +47,6 @@ public class AngleArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return armPID.atSetpoint();
+    return false;
   }
 }
