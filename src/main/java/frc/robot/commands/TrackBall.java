@@ -17,7 +17,7 @@ public class TrackBall extends CommandBase {
   boolean isTeleop;
   XboxController controller;
   double forward = 0;
-  PIDController ballPID = new PIDController(.01, 0, 0);
+  PIDController ballPID = new PIDController(.01, 0, 0.001);
   public TrackBall(Drivetrain _drivetrain, boolean _isTeleop, XboxController _controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     isTeleop = _isTeleop;

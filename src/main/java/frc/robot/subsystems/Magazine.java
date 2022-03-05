@@ -12,8 +12,11 @@ import frc.robot.RobotMap;
 
 public class Magazine extends SubsystemBase {
   /** Creates a new Magazine. */
-  public Magazine() {}
   private VictorSPX Magazine_motor = new VictorSPX(RobotMap.magazineMotor);
+  public Magazine() {
+    
+  }
+  
   
   @Override
   public void periodic() {

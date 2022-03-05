@@ -14,8 +14,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.BlueBalls;
+import frc.BlueBallsLHS;
 import frc.RedBalls;
+import frc.RedBallsLHS;
+import frc.robot.BlueBalls;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
@@ -31,7 +33,6 @@ public class Vision extends SubsystemBase {
   private double centerX = 0.0;
   private double centerY = 0.0;
   private final Object imgLock = new Object();
-  private RedBalls redBallPipeline = new RedBalls();
 
   private double intakeTX = 0;
   private double intakeTY = 0;
@@ -44,7 +45,7 @@ public class Vision extends SubsystemBase {
         visionThread = new VisionThread(intakeCam, 
         //THIS PIECE MUST CHANGE TO CHANGE PIPELINES!!!!
         //USE blueBallPipeline or redBallPipeline
-        redBallPipeline,
+        new RedBalls(),
         //MAKE SURE TO UPDATE THIS BEFORE EACH MATCH
         pipeline -> {
         if (!pipeline.filterContoursOutput().isEmpty()) {

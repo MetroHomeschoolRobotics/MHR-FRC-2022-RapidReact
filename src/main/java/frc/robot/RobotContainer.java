@@ -9,16 +9,19 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.TrajectoryHelper;
+import frc.robot.commands.AimDrivetrain;
 import frc.robot.commands.AngleArm;
 import frc.robot.commands.ArmManual;
 import frc.robot.commands.DriveTeleop;
@@ -90,11 +93,11 @@ public class RobotContainer {
   private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain,_driverController);
   private final RunIntake c_runIntake = new RunIntake(s_intake);
   private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
-  private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController, 3000);
+  //private final SpinShooter c_spinShooter = new SpinShooter(s_shooter, _driverController, 3000);
   private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics); 
   private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
-  private final WinchClimber c_winchClimber = new WinchClimber(s_climber, _manipulatorController);
-  private final Command c_emptyMagazine = new SequentialCommandGroup(new AngleArm(.1, s_arm), new ReverseMagazine(s_magazine).withTimeout(.5),
+  private final WinchClimber c_winchClimber = new WinchClimber(s_climber, _driverController);
+  private final Command c_fenderShot = new SequentialCommandGroup(new AngleArm(.1, s_arm), new ReverseMagazine(s_magazine).withTimeout(.5),
   new RunMagazine(s_magazine).alongWith().withTimeout(2)).alongWith(new SpinShooter(s_shooter, _driverController, 2600).withTimeout(2.7));
   /**
    * This is a menu displayed on the dashboard that we use to select autonomous routines
@@ -146,8 +149,8 @@ public class RobotContainer {
     rightBumper.whileHeld(c_reverseIntake);
     final JoystickButton leftBumper = new JoystickButton(_driverController, 6 );
     leftBumper.whileHeld(c_runIntake);
-    final JoystickButton bButton = new JoystickButton(_driverController, 2 );
-    bButton.whenPressed(c_emptyMagazine);
+    final JoystickButton bButton = new JoystickButton(_manipulatorController, 3 );
+    bButton.whenPressed(c_fenderShot);
     
     final JoystickButton rightBumperM = new JoystickButton(_manipulatorController, 5 );
     rightBumperM.whileHeld(new ReverseMagazine(s_magazine));
@@ -155,22 +158,24 @@ public class RobotContainer {
     leftBumperM.whileHeld(new RunMagazine(s_magazine));
     
     final JoystickButton aButton = new JoystickButton(_driverController, 1);
-    aButton.toggleWhenPressed(new TrackBall(s_drivetrain, true, _driverController));
-    // final JoystickButton yButton = new JoystickButton(_driverController, 4);
-    // yButton.whileHeld(c_targetBall);
+    aButton.whileHeld(new TrackBall(s_drivetrain, true, _driverController));
+     final JoystickButton bbutton = new JoystickButton(_driverController, 2);
+     bbutton.whileHeld(new AimDrivetrain(s_vision, s_drivetrain));
     final JoystickButton startButton = new JoystickButton(_driverController, 8);
     startButton.whenPressed(c_toggleCompressor);
     final JoystickButton yButton = new JoystickButton(_driverController, 4);
     yButton.whenPressed(c_toggleIntake);
     SmartDashboard.putNumber("Arm Value", .1);
-    final POVButton fenderButton = new POVButton(_manipulatorController, 0);
-    fenderButton.toggleWhenPressed(new AngleArm(.1, s_arm));
-    final POVButton tarmacButton = new POVButton(_manipulatorController, 90);
-    tarmacButton.toggleWhenPressed(new AngleArm(.15, s_arm));
-    final POVButton stowButton = new POVButton(_manipulatorController, 180);
-    stowButton.toggleWhenPressed(new AngleArm(.25, s_arm));
+    final JoystickButton fenderButton = new JoystickButton(_manipulatorController, 1);
+    //fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new SpinShooter(s_shooter, _manipulatorController, 2600)));
+    fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.2, s_arm), new SpinShooter(s_shooter, _manipulatorController, 1300)));
 
-    final JoystickButton hooksButton = new JoystickButton(_manipulatorController, 1);
+    final JoystickButton tarmacButton = new JoystickButton(_manipulatorController, 4);
+    tarmacButton.whileHeld(new ParallelCommandGroup(new AngleArm(.15, s_arm), new SpinShooter(s_shooter, _manipulatorController, 3000)));
+    final JoystickButton tarmacLineButton = new JoystickButton(_manipulatorController, 3);
+    tarmacLineButton.whileHeld(new ParallelCommandGroup(new AngleArm(.25, s_arm), new SpinShooter(s_shooter, _manipulatorController, 5000)));
+    
+    final JoystickButton hooksButton = new JoystickButton(_driverController, 7);
     hooksButton.whenPressed(new ToggleHook(s_pneumatics));
   }
     
