@@ -4,21 +4,22 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Magazine extends SubsystemBase {
   /** Creates a new Magazine. */
   public Magazine() {}
-  private Spark Magazine_motor = new Spark(RobotMap.magazineMotor);
-  private Spark Indexer_motor = new Spark(RobotMap.indexerMotor);
+  private VictorSPX Magazine_motor = new VictorSPX(RobotMap.magazineMotor);
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
   public void setMagazine(double speed){
-    Magazine_motor.set(-speed*.75);
-    Indexer_motor.set(speed);
+    Magazine_motor.set(VictorSPXControlMode.PercentOutput,-speed);
   }
 }

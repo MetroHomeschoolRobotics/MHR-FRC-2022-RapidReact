@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -12,8 +14,8 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {}
   //Spark motor controller on pwm to run intake motor
-  private Spark intakeMotor = new Spark(RobotMap.intakeMotorPort);
-  
+  private VictorSPX intakeMotor = new VictorSPX(RobotMap.intakeMotorPort);
+  private VictorSPX Indexer_motor = new VictorSPX(RobotMap.indexerMotor);
 
   @Override
   public void periodic() {
@@ -21,7 +23,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntake(double speed) {//Set intake motor to a percentage output
-    intakeMotor.set(speed);
+    intakeMotor.set(VictorSPXControlMode.PercentOutput, speed);
+    Indexer_motor.set(VictorSPXControlMode.PercentOutput, speed);
   }
 
 
