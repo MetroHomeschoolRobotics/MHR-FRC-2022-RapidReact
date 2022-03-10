@@ -15,6 +15,7 @@ import edu.wpi.first.math.spline.Spline.ControlVector;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -39,9 +40,12 @@ public class TrajectoryHelper {
    * @return The generated trajectory.
    */
 
-    public final static Trajectory generateTrajectory(Pose2d start, List<Translation2d> waypoints, Pose2d end, boolean reversed, double maxVelocity, double maxAccel, double startVelocity, double endVelocity, double maxVoltage) {
+    public final static Trajectory generateTrajectory(Pose2d start, List<Translation2d> waypoints, Pose2d end, boolean reversed, double maxVelocity, double maxAccel, double maxCentripAccel, double startVelocity, double endVelocity, double maxVoltage) {
         DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(Constants.ks, Constants.kv, Constants.ka), Constants.kDriveKinematics, maxVoltage);
-        TrajectoryConfig config = new TrajectoryConfig(maxVelocity, maxAccel).setKinematics(Constants.kDriveKinematics).addConstraint(autoVoltageConstraint);
+        CentripetalAccelerationConstraint autoTurningConstraint = new CentripetalAccelerationConstraint(maxCentripAccel);
+        TrajectoryConfig config = new TrajectoryConfig(maxVelocity, maxAccel).setKinematics(Constants.kDriveKinematics);
+        config.addConstraint(autoVoltageConstraint);
+        config.addConstraint(autoTurningConstraint);
         config.setStartVelocity(startVelocity);
         config.setEndVelocity(endVelocity);
         config.setReversed(reversed);

@@ -128,13 +128,13 @@ public class RobotContainer {
       new Pose2d(0,0, new Rotation2d(0)),
       List.of(new Translation2d(1,0.1), new Translation2d(2,1)),
       new Pose2d(3,0, new Rotation2d(0)),
-      false, 2, 1, 0, 0, 5
+      false, 2, 1, 1, 0, 0, 7
       ))
       .andThen(
         TrajectoryHelper.createTrajectoryCommand(TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), 
         List.of(new Translation2d(2,1), new Translation2d(1,1)),
         new Pose2d(0,1, new Rotation2d(0)),
-         true, 2, 1, 0, 0, 5))
+         true, 2, 1, 1, 0, 0, 7))
       )));
       _autoChooser.addOption("2 ball low goal", 
       new ResetOdometry(new Pose2d(0,0,new Rotation2d(0)), s_drivetrain).andThen(
@@ -148,7 +148,7 @@ public class RobotContainer {
           TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), 
           List.of(new Translation2d(1,0)),
           new Pose2d(2,-1, new Rotation2d(0)),
-          false, 2,1,0,0,5
+          false, 2,1, 1, 0,0,7
           )
         )
       ).andThen(
@@ -157,7 +157,7 @@ public class RobotContainer {
           TrajectoryHelper.generateTrajectory(new Pose2d(2,-1, new Rotation2d(0)), 
           List.of(new Translation2d(1,0)),
           new Pose2d(0,0, new Rotation2d(0)),
-          true, 2,1,0,0,5
+          true, 2,1, 1, 0,0,7
           )
         )
       ))
