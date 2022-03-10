@@ -12,7 +12,7 @@ public class RobotMap {
     public static int rightShooterMotor = 6;
     //winches
     public static int arm_winch = 2;
-    public static int climber_winch = 1;
+    public static int climber_winch = 7;
     //intake & indexing
     public static int intakeMotorPort = 5;
     public static int magazineMotor = 3;

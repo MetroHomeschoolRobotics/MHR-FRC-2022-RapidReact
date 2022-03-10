@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -15,6 +17,14 @@ public class DriveTeleop extends CommandBase {
   private XboxController _driverController;
   private double forward;
   private double spin;
+  private double maxSpeed = .5;
+  private SlewRateLimiter slew = new SlewRateLimiter(.1);
+  private double kP = .017;
+  private double kI = 0;
+  private double kD = 0.0025;
+  private boolean lastButtonValue = false;
+  private PIDController turnController = new PIDController(kP, kI, kD);
+  private double measurement = 0;
   //private SlewRateLimiter filter = new SlewRateLimiter(0.5);
   public DriveTeleop(Drivetrain drivetrain, XboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,14 +42,23 @@ public class DriveTeleop extends CommandBase {
   public void execute() {
     forward = -_driverController.getLeftY();
     spin = _driverController.getLeftX();
-     
-    if(_driverController.getLeftTriggerAxis()>.6) {
+    
+    if(_driverController.getLeftStickButton()) {
+      if(!lastButtonValue) {
+        measurement = _drivetrain.getHeading();
+      }
+      spin = turnController.calculate(_drivetrain.getHeading(), measurement);
+    }
+    lastButtonValue = _driverController.getLeftStickButton();
+    
+    if(_driverController.getLeftTriggerAxis()>.2) {
+      _drivetrain.setMaxOutput(.5+(_driverController.getLeftTriggerAxis()/2));
+      _drivetrain.MoveCurvature(forward, spin);
+    } else if(_driverController.getRightTriggerAxis()>.2) {
       _drivetrain.setMaxOutput(.25);
       _drivetrain.move(forward, spin, true);
-    } else if(_driverController.getRightTriggerAxis()>.6) {
-      _drivetrain.setMaxOutput(1);
-      _drivetrain.MoveCurvature(forward, spin);
-    }else{
+    }
+     else {
       _drivetrain.setMaxOutput(.5);
       _drivetrain.move(forward, spin, true);
     }

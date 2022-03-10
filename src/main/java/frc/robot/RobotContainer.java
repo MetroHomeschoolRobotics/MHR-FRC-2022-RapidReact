@@ -135,8 +135,41 @@ public class RobotContainer {
         List.of(new Translation2d(2,1), new Translation2d(1,1)),
         new Pose2d(0,1, new Rotation2d(0)),
          true, 2, 1, 0, 0, 5))
+      )));
+      _autoChooser.addOption("2 ball low goal", 
+      new ResetOdometry(new Pose2d(0,0,new Rotation2d(0)), s_drivetrain).andThen(
+      new ToggleIntake(s_pneumatics).andThen(
+      new ParallelCommandGroup(
+        new AngleArm(.32, s_arm),
+        new SpinShooter(s_shooter, _manipulatorController, 1600),
+        new RunMagazine(s_magazine)).withTimeout(2)
+      .andThen(new RunIntake(s_intake).raceWith(
+        TrajectoryHelper.createTrajectoryCommand(
+          TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), 
+          List.of(new Translation2d(1,0)),
+          new Pose2d(2,-1, new Rotation2d(0)),
+          false, 2,1,0,0,5
+          )
+        )
+      ).andThen(
+        new AngleArm(.1, s_arm).andThen(
+        TrajectoryHelper.createTrajectoryCommand(
+          TrajectoryHelper.generateTrajectory(new Pose2d(2,-1, new Rotation2d(0)), 
+          List.of(new Translation2d(1,0)),
+          new Pose2d(0,0, new Rotation2d(0)),
+          true, 2,1,0,0,5
+          )
+        )
       ))
-    );
+      .andThen(
+        new ParallelCommandGroup(
+        new AngleArm(.32, s_arm),
+        new SpinShooter(s_shooter, _manipulatorController, 1600),
+        new RunMagazine(s_magazine),
+        new RunIntake(s_intake)).withTimeout(2)
+      ))
+    )
+    ));
     SmartDashboard.putData("Auto Mode", _autoChooser);
   }
 
@@ -168,7 +201,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Arm Value", .1);
     final JoystickButton fenderButton = new JoystickButton(_manipulatorController, 1);
     //fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new SpinShooter(s_shooter, _manipulatorController, 2600)));
-    fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.2, s_arm), new SpinShooter(s_shooter, _manipulatorController, 1300)));
+    fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.32, s_arm), new SpinShooter(s_shooter, _manipulatorController, 1600)));
 
     final JoystickButton tarmacButton = new JoystickButton(_manipulatorController, 4);
     tarmacButton.whileHeld(new ParallelCommandGroup(new AngleArm(.15, s_arm), new SpinShooter(s_shooter, _manipulatorController, 3000)));

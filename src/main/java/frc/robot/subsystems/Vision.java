@@ -27,8 +27,8 @@ public class Vision extends SubsystemBase {
   }
 
   private UsbCamera intakeCam;
-  public static final int IMG_WIDTH = 320;
-  public static final int IMG_HEIGHT = 240;
+  public static final int IMG_WIDTH = 160;
+  public static final int IMG_HEIGHT = 120;
   private VisionThread visionThread;
   private double centerX = 0.0;
   private double centerY = 0.0;
@@ -44,7 +44,7 @@ public class Vision extends SubsystemBase {
       intakeCam.setResolution(IMG_WIDTH, IMG_HEIGHT);
         visionThread = new VisionThread(intakeCam, 
         //THIS PIECE MUST CHANGE TO CHANGE PIPELINES!!!!
-        //USE blueBallPipeline or redBallPipeline
+        //USE new RedBalls() for red or new BlueBalls() for blue
         new RedBalls(),
         //MAKE SURE TO UPDATE THIS BEFORE EACH MATCH
         pipeline -> {

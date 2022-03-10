@@ -1,21 +1,20 @@
 package frc;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.HashMap;
+
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.vision.VisionPipeline;
-
-import org.opencv.core.*;
-import org.opencv.core.Core.*;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.*;
-import org.opencv.objdetect.*;
 
 /**
 * BlueBalls class.
@@ -27,11 +26,12 @@ import org.opencv.objdetect.*;
 public class BlueBalls implements VisionPipeline {
 
 	//Outputs
+	private Mat resizeImageOutput = new Mat();
 	private Mat hsvThresholdOutput = new Mat();
-	private Mat cvErodeOutput = new Mat();
 	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> filterContours0Output = new ArrayList<MatOfPoint>();
 	private ArrayList<MatOfPoint> convexHullsOutput = new ArrayList<MatOfPoint>();
-	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> filterContours1Output = new ArrayList<MatOfPoint>();
 
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -41,46 +41,67 @@ public class BlueBalls implements VisionPipeline {
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	@Override	public void process(Mat source0) {
+		// Step Resize_Image0:
+		Mat resizeImageInput = source0;
+		double resizeImageWidth = 160.0;
+		double resizeImageHeight = 120.0;
+		int resizeImageInterpolation = Imgproc.INTER_CUBIC;
+		resizeImage(resizeImageInput, resizeImageWidth, resizeImageHeight, resizeImageInterpolation, resizeImageOutput);
+
 		// Step HSV_Threshold0:
-		Mat hsvThresholdInput = source0;
-		double[] hsvThresholdHue = {79.5581445291528, 149.6969696969697};
-		double[] hsvThresholdSaturation = {16.052158273381295, 255.0};
-		double[] hsvThresholdValue = {98.17828572962524, 252.85353535353534};
+		Mat hsvThresholdInput = resizeImageOutput;
+		double[] hsvThresholdHue = {71.22302158273381, 126.96969696969698};
+		double[] hsvThresholdSaturation = {55.03597122302158, 255.0};
+		double[] hsvThresholdValue = {94.01978417266187, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
-		// Step CV_erode0:
-		Mat cvErodeSrc = hsvThresholdOutput;
-		Mat cvErodeKernel = new Mat();
-		Point cvErodeAnchor = new Point(-1, -1);
-		double cvErodeIterations = 3.0;
-		int cvErodeBordertype = Core.BORDER_CONSTANT;
-		Scalar cvErodeBordervalue = new Scalar(-1);
-		cvErode(cvErodeSrc, cvErodeKernel, cvErodeAnchor, cvErodeIterations, cvErodeBordertype, cvErodeBordervalue, cvErodeOutput);
-
 		// Step Find_Contours0:
-		Mat findContoursInput = cvErodeOutput;
-		boolean findContoursExternalOnly = true;
+		Mat findContoursInput = hsvThresholdOutput;
+		boolean findContoursExternalOnly = false;
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
+		// Step Filter_Contours0:
+		ArrayList<MatOfPoint> filterContours0Contours = findContoursOutput;
+		double filterContours0MinArea = 1.0;
+		double filterContours0MinPerimeter = 0.0;
+		double filterContours0MinWidth = 0.0;
+		double filterContours0MaxWidth = 1000.0;
+		double filterContours0MinHeight = 0.0;
+		double filterContours0MaxHeight = 1000.0;
+		double[] filterContours0Solidity = {82.73381294964028, 100};
+		double filterContours0MaxVertices = 1000000.0;
+		double filterContours0MinVertices = 0.0;
+		double filterContours0MinRatio = 0.4;
+		double filterContours0MaxRatio = 1.6;
+		filterContours(filterContours0Contours, filterContours0MinArea, filterContours0MinPerimeter, filterContours0MinWidth, filterContours0MaxWidth, filterContours0MinHeight, filterContours0MaxHeight, filterContours0Solidity, filterContours0MaxVertices, filterContours0MinVertices, filterContours0MinRatio, filterContours0MaxRatio, filterContours0Output);
+
 		// Step Convex_Hulls0:
-		ArrayList<MatOfPoint> convexHullsContours = findContoursOutput;
+		ArrayList<MatOfPoint> convexHullsContours = filterContours0Output;
 		convexHulls(convexHullsContours, convexHullsOutput);
 
-		// Step Filter_Contours0:
-		ArrayList<MatOfPoint> filterContoursContours = convexHullsOutput;
-		double filterContoursMinArea = 0.0;
-		double filterContoursMinPerimeter = 0.0;
-		double filterContoursMinWidth = 0.0;
-		double filterContoursMaxWidth = 1000.0;
-		double filterContoursMinHeight = 0.0;
-		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {67.44604316546763, 100};
-		double filterContoursMaxVertices = 1000000.0;
-		double filterContoursMinVertices = 12.0;
-		double filterContoursMinRatio = 0.5;
-		double filterContoursMaxRatio = 1.5;
-		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
+		// Step Filter_Contours1:
+		ArrayList<MatOfPoint> filterContours1Contours = convexHullsOutput;
+		double filterContours1MinArea = 1.0;
+		double filterContours1MinPerimeter = 0.0;
+		double filterContours1MinWidth = 0.0;
+		double filterContours1MaxWidth = 1000.0;
+		double filterContours1MinHeight = 0.0;
+		double filterContours1MaxHeight = 1000.0;
+		double[] filterContours1Solidity = {53.05755395683454, 100};
+		double filterContours1MaxVertices = 1000000.0;
+		double filterContours1MinVertices = 10.0;
+		double filterContours1MinRatio = 0.4;
+		double filterContours1MaxRatio = 1.6;
+		filterContours(filterContours1Contours, filterContours1MinArea, filterContours1MinPerimeter, filterContours1MinWidth, filterContours1MaxWidth, filterContours1MinHeight, filterContours1MaxHeight, filterContours1Solidity, filterContours1MaxVertices, filterContours1MinVertices, filterContours1MinRatio, filterContours1MaxRatio, filterContours1Output);
 
+	}
+
+	/**
+	 * This method is a generated getter for the output of a Resize_Image.
+	 * @return Mat output from Resize_Image.
+	 */
+	public Mat resizeImageOutput() {
+		return resizeImageOutput;
 	}
 
 	/**
@@ -92,19 +113,19 @@ public class BlueBalls implements VisionPipeline {
 	}
 
 	/**
-	 * This method is a generated getter for the output of a CV_erode.
-	 * @return Mat output from CV_erode.
-	 */
-	public Mat cvErodeOutput() {
-		return cvErodeOutput;
-	}
-
-	/**
 	 * This method is a generated getter for the output of a Find_Contours.
 	 * @return ArrayList<MatOfPoint> output from Find_Contours.
 	 */
 	public ArrayList<MatOfPoint> findContoursOutput() {
 		return findContoursOutput;
+	}
+
+	/**
+	 * This method is a generated getter for the output of a Filter_Contours.
+	 * @return ArrayList<MatOfPoint> output from Filter_Contours.
+	 */
+	public ArrayList<MatOfPoint> filterContours0Output() {
+		return filterContours0Output;
 	}
 
 	/**
@@ -119,10 +140,23 @@ public class BlueBalls implements VisionPipeline {
 	 * This method is a generated getter for the output of a Filter_Contours.
 	 * @return ArrayList<MatOfPoint> output from Filter_Contours.
 	 */
-	public ArrayList<MatOfPoint> filterContoursOutput() {
-		return filterContoursOutput;
+	public ArrayList<MatOfPoint> filterContours1Output() {
+		return filterContours1Output;
 	}
 
+
+	/**
+	 * Scales and image to an exact size.
+	 * @param input The image on which to perform the Resize.
+	 * @param width The width of the output in pixels.
+	 * @param height The height of the output in pixels.
+	 * @param interpolation The type of interpolation.
+	 * @param output The image in which to store the output.
+	 */
+	private void resizeImage(Mat input, double width, double height,
+		int interpolation, Mat output) {
+		Imgproc.resize(input, output, new Size(width, height), 0.0, 0.0, interpolation);
+	}
 
 	/**
 	 * Segment an image based on hue, saturation, and value ranges.
@@ -138,30 +172,6 @@ public class BlueBalls implements VisionPipeline {
 		Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
 		Core.inRange(out, new Scalar(hue[0], sat[0], val[0]),
 			new Scalar(hue[1], sat[1], val[1]), out);
-	}
-
-	/**
-	 * Expands area of lower value in an image.
-	 * @param src the Image to erode.
-	 * @param kernel the kernel for erosion.
-	 * @param anchor the center of the kernel.
-	 * @param iterations the number of times to perform the erosion.
-	 * @param borderType pixel extrapolation method.
-	 * @param borderValue value to be used for a constant border.
-	 * @param dst Output Image.
-	 */
-	private void cvErode(Mat src, Mat kernel, Point anchor, double iterations,
-		int borderType, Scalar borderValue, Mat dst) {
-		if (kernel == null) {
-			kernel = new Mat();
-		}
-		if (anchor == null) {
-			anchor = new Point(-1,-1);
-		}
-		if (borderValue == null) {
-			borderValue = new Scalar(-1);
-		}
-		Imgproc.erode(src, dst, kernel, anchor, (int)iterations, borderType, borderValue);
 	}
 
 	/**
