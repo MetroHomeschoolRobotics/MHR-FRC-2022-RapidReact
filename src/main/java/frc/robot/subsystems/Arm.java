@@ -23,9 +23,8 @@ public class Arm extends SubsystemBase {
   public double minPotOutput = 0.065;
   
   public Arm() {
-    arm_motor.setInverted(true);
+    arm_motor.setInverted(false);
   }
-
 
   @Override
   public void periodic() {

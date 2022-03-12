@@ -33,6 +33,8 @@ public class AngleArm extends CommandBase {
     armPID.calculate(arm.getArmPot());
     if(!armPID.atSetpoint()) {
      arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
+    } else {
+      arm.setArmMotor(0);
     }
     }
 

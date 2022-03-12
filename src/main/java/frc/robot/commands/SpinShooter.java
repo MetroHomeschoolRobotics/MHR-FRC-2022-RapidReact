@@ -19,6 +19,9 @@ public class SpinShooter extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     _shooter = shooter;
     RPM = _RPM;
+    if(_RPM == 0) {
+      RPM = SmartDashboard.getNumber("shooter RPM given angle",0);
+    }
     _driverController = driverController;
     addRequirements(shooter);
   }
