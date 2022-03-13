@@ -113,10 +113,12 @@ public class Vision extends SubsystemBase {
   }
 
   public double get_arm_angle (double target_angle){ 
-    return 0;
+    return (1.7376954e-6)*(Math.pow(target_angle, 3))+1.545765e-4*(Math.pow(target_angle,2))+-.0030598857*(target_angle)+.2092726891;
+    //return 0;
   };
   public double get_shooter_rps (double target_angle){
-    return 0;
+    return .0162975343*Math.pow(target_angle, 3)+ .3382847382*Math.pow(target_angle,2)-26.08795704*target_angle+3127.269879;
+    //return 0;
   };
   
   @Override public void periodic() {

@@ -9,10 +9,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import com.ctre.phoenix.motorcontrol.ControlMode;
 //import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -29,7 +27,7 @@ public class Shooter extends SubsystemBase {
    private SparkMaxPIDController rightshooter_PID;
    private double kp = 0.000;
    private double kff = 0.00017;
-   private double max_RPM = 5700;
+   //private double max_RPM = 5700;
    
   
   

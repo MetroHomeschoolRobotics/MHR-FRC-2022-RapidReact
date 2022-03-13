@@ -10,9 +10,11 @@ import frc.robot.subsystems.Magazine;
 public class RunMagazine extends CommandBase {
   /** Creates a new RunMagazine. */
   private Magazine magazine;
-  public RunMagazine(Magazine _magazine) {
+  private double speed;
+  public RunMagazine(Magazine _magazine, double _speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     magazine = _magazine;
+    speed = _speed;
   }
 
   // Called when the command is initially scheduled.
@@ -22,7 +24,7 @@ public class RunMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    magazine.setMagazine(.6);
+    magazine.setMagazine(speed);
   }
 
   // Called once the command ends or is interrupted.

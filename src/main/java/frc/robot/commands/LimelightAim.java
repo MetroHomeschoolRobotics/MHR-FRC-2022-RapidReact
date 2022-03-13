@@ -9,37 +9,29 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
 
 
 public class LimelightAim extends CommandBase {
   /** Creates a new LimelightAim. */
   private Drivetrain drivetrain;
-  private Arm arm;
   private Vision vision;
   private double TX_threshold;
-  private Shooter shooter;
 
   
-  public LimelightAim(Drivetrain _drivetrain, Arm _arm, Vision _vision, Shooter _shooter) {
+  public LimelightAim(Drivetrain _drivetrain, Vision _vision) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(_arm);
     addRequirements(_drivetrain);
     addRequirements(_vision);
     drivetrain = _drivetrain;
-    arm = _arm;
+
     vision = _vision; 
-    shooter = _shooter;
+
   }
   
-  private PIDController horizontal_PID = new PIDController(0, 0, 0);
-  private PIDController vertical_PID = new PIDController(0, 0, 0);
-  private double vertical_threshold = .03;
+  private PIDController horizontal_PID = new PIDController(0.015, 0, 0.0003);
   private double horizontal_Threshold  = .1;
-  private double rps_threshold = 1;
   
 
 
@@ -47,14 +39,17 @@ public class LimelightAim extends CommandBase {
   @Override
   public void initialize() {
     SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
+SmartDashboard.putData(horizontal_PID);
+CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTY()), RobotContainer.s_arm));
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTX()), RobotContainer.s_arm));
+    SmartDashboard.putNumber("arm from limelight", vision.get_arm_angle(vision.getLimelightTY()));
     if (Math.abs(vision.getLimelightTX()) > TX_threshold){
-      drivetrain.moveManual(0, horizontal_PID.calculate(vision.getLimelightTX(), 0));
+      drivetrain.moveManual(0, -horizontal_PID.calculate(vision.getLimelightTX(), 0));
     }
   }
 
