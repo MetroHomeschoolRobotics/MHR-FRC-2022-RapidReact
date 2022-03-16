@@ -87,7 +87,6 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {// This method will be called once per scheduler run
   //Print Gyro compass to the dashboard  
 	SmartDashboard.putData(gyro);
-  SmartDashboard.putNumber("gyro angle", getHeading());
   //Print encoder distances to the dashboard
   SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
   SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());

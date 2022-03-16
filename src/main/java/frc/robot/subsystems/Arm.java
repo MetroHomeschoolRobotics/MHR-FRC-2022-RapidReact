@@ -5,8 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,18 +20,24 @@ public class Arm extends SubsystemBase {
   //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
-  
+  private PIDController armPID = new PIDController(30, 0, 0);
   public double maxPotOutput = 0.36;
   public double minPotOutput = 0.065;
+  public double potOutputToHold = 0;
+  public boolean hold = false;
   
   public Arm() {
     arm_motor.setInverted(false);
+    arm_motor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //Print armpot value to the dashboard every cycle
+    if(hold) {
+      setArmMotor(armPID.calculate(getArmPot(), potOutputToHold));
+    }
     SmartDashboard.putNumber("Arm Potentiometer Value", armPot.get());
   }
   //Get current armpot value
@@ -43,6 +51,12 @@ public class Arm extends SubsystemBase {
     }
     else if ( speed < 0 && getArmPot() <= minPotOutput){
       speed = 0;
+    }
+    if(speed == 0) {
+      hold = true;
+      potOutputToHold = getArmPot();
+    } else {
+      hold = false;
     }
     arm_motor.set(ControlMode.PercentOutput, speed);
   }

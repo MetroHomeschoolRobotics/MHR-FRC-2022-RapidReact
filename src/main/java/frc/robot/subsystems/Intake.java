@@ -12,7 +12,10 @@ import frc.robot.RobotMap;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  public Intake() {}
+  Pneumatics sPneumatics;
+  public Intake(Pneumatics s_pneumatics) {
+    sPneumatics = s_pneumatics;
+  }
   //Spark motor controller on pwm to run intake motor
   private VictorSPX intakeMotor = new VictorSPX(RobotMap.intakeMotorPort);
   private VictorSPX Indexer_motor = new VictorSPX(RobotMap.indexerMotor);
@@ -23,7 +26,9 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntake(double speed) {//Set intake motor to a percentage output
+    if(sPneumatics.getIntake()) {
     intakeMotor.set(VictorSPXControlMode.PercentOutput, speed);
+    }
     Indexer_motor.set(VictorSPXControlMode.PercentOutput, speed);
   }
 

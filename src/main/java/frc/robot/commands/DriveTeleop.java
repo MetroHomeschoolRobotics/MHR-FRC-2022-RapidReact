@@ -48,10 +48,10 @@ public class DriveTeleop extends CommandBase {
     }
     lastButtonValue = _driverController.getLeftStickButton();
     
-    if(_driverController.getLeftTriggerAxis()>.2) {
-      _drivetrain.setMaxOutput(.5+(_driverController.getLeftTriggerAxis()/2));
-      _drivetrain.MoveCurvature(forward/2, spin);
-    } else if(_driverController.getRightTriggerAxis()>.2) {
+    if(_driverController.getRightTriggerAxis()>.2) {
+      _drivetrain.setMaxOutput(.5+(_driverController.getRightTriggerAxis()/2));
+      _drivetrain.move(forward, spin,true);
+    } else if(_driverController.getLeftTriggerAxis()>.2) {
       _drivetrain.setMaxOutput(.25);
       _drivetrain.move(forward, spin, true);
     }
