@@ -20,15 +20,16 @@ public class Arm extends SubsystemBase {
   //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
-  private PIDController armPID = new PIDController(30, 0, 0);
+  private PIDController armPID = new PIDController(500, 0, 0);
   public double maxPotOutput = 0.36;
-  public double minPotOutput = 0.065;
+  public double minPotOutput = 0.04;
   public double potOutputToHold = 0;
   public boolean hold = false;
   
   public Arm() {
     arm_motor.setInverted(false);
     arm_motor.setNeutralMode(NeutralMode.Brake);
+    SmartDashboard.putData(armPID);
   }
 
   @Override
@@ -36,7 +37,7 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run
     //Print armpot value to the dashboard every cycle
     if(hold) {
-      setArmMotor(armPID.calculate(getArmPot(), potOutputToHold));
+      arm_motor.set(ControlMode.PercentOutput, armPID.calculate(getArmPot(), potOutputToHold));
     }
     SmartDashboard.putNumber("Arm Potentiometer Value", armPot.get());
   }
@@ -52,9 +53,11 @@ public class Arm extends SubsystemBase {
     else if ( speed < 0 && getArmPot() <= minPotOutput){
       speed = 0;
     }
-    if(speed == 0) {
+    if(Math.abs(speed)<.1) {
+      if(!hold) {
+        potOutputToHold = getArmPot();
+      }
       hold = true;
-      potOutputToHold = getArmPot();
     } else {
       hold = false;
     }

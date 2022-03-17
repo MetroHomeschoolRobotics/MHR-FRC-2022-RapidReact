@@ -4,33 +4,34 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberWinch;
 
-public class WinchClimber extends CommandBase {
-  /** Creates a new WinchClimber. */
-  ClimberWinch climber;
-  XboxController controller;
-  public WinchClimber(ClimberWinch _climber, XboxController _controller) {
+public class WinchToSetpoint extends CommandBase {
+  /** Creates a new WinchToSetpoint. */
+  private PIDController winchPID = new PIDController(0.05, 0, 0);
+  private ClimberWinch winch;
+  private double setpoint;
+  public WinchToSetpoint(double _setpoint, ClimberWinch _Winch) {
     // Use addRequirements() here to declare subsystem dependencies.
-    climber = _climber;
-    controller = _controller;
-    addRequirements(climber);
+    winch = _Winch;
+    setpoint = _setpoint;
+    addRequirements(winch);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    winchPID.setTolerance(10);
+    SmartDashboard.putData(winchPID);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = -controller.getRightY();
-    if(Math.abs(speed)<.1) {
-      speed = 0;
-    }
-    climber.setClimberWinchMotor(speed);
+    winch.setClimberWinchMotor(winchPID.calculate(winch.getClimberEncoder(), setpoint));
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +41,6 @@ public class WinchClimber extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return winchPID.atSetpoint();
   }
 }

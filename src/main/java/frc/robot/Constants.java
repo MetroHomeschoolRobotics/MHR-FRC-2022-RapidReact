@@ -49,6 +49,6 @@ public final class Constants {
 
     //Ramsete constants recommended by WPILib as "consistent" for all sorts of robots. 
     //Results of changes unknown. 
-    public static final double kRamseteB = .1;
-    public static final double kRamseteZ = .8;
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZ = .7;
 }

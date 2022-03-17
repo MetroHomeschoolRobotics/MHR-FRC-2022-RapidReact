@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -49,7 +52,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(1);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -58,7 +63,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(3);
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -75,6 +80,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(3);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

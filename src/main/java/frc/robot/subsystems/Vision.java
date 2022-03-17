@@ -66,7 +66,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("centerX", centerX);
         SmartDashboard.putNumber("centerY", centerY);
     });
-    visionThread.start();
+    //visionThread.start();
   }
 
   public boolean getIntakeHasTarget() {
