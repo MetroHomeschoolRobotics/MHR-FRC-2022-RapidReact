@@ -233,7 +233,7 @@ s_arm).andThen(
         new RunIntake(s_intake)
 .alongWith(new RunMagazine(
 s_magazine,
-.4)).raceWith(
+.3)).raceWith(
 TrajectoryHelper.createTrajectoryCommand(
 TrajectoryHelper.generateTrajectory(
 new Pose2d(7.74, 2.81,
@@ -241,16 +241,16 @@ Rotation2d.fromDegrees(
 -110.64)),
 List.of(new Translation2d(
 6,
-2.46),
+2.),
 new Translation2d(
 4.71,
 1.25),
 new Translation2d(
 5.92,
-.64)),
-new Pose2d(7.18, .52,
+1)),
+new Pose2d(8, .52,
 Rotation2d.fromDegrees(
--11.31)),
+-90)),
 false,
 3,
 2,
@@ -262,9 +262,9 @@ false,
 .andThen(
 TrajectoryHelper.createTrajectoryCommand(
 TrajectoryHelper.generateTrajectory(
-new Pose2d(7.18, .52,
+new Pose2d(8, .52,
 Rotation2d.fromDegrees(
--11.31)),
+-90)),
 List.of(),
 new Pose2d(7.74, 2.81, Rotation2d.fromDegrees(-110.64)),
 true,
@@ -272,10 +272,9 @@ true,
 2,
 1,
 0,
-0,
+1,
 7))
-.andThen(new ToggleIntake(
-s_pneumatics).andThen(
+.andThen(
 new RunMagazine(
 s_magazine,
 -.6)
@@ -291,7 +290,7 @@ s_magazine,
 new SpinShooter(
 s_shooter,
 manipulatorController,
-3000))))))))))));
+3000)))))))))));
 
 _autoChooser.addOption("3 ball high goal left tarmac",
 (
@@ -317,7 +316,7 @@ Rotation2d.fromDegrees(
 List.of(new Translation2d(
 3.72,
 4.13)),
-new Pose2d(1.66, 1.60,
+new Pose2d(1.58, .68,
 Rotation2d.fromDegrees(
 -135.34)),
 false,
@@ -334,9 +333,9 @@ false,
         .4)).withTimeout(1).andThen(
 TrajectoryHelper.createTrajectoryCommand(
 TrajectoryHelper.generateTrajectory(
-new Pose2d(1.66, 1.60,
-Rotation2d
-.fromDegrees(-135.34)),
+        new Pose2d(1.58, .68,
+Rotation2d.fromDegrees(
+-135.34)),
 List.of(new Translation2d(
 3.69,
 4.01)),
@@ -348,7 +347,7 @@ true,
 2,
 1,
 0,
-0,
+1,
 7)))
 .andThen(
 new RunMagazine(s_magazine,
@@ -378,7 +377,7 @@ new Pose2d(6.94, 4.58,
 Rotation2d.fromDegrees(
 158.73)),
 List.of(),
-new Pose2d(5, 6.21,
+new Pose2d(5, 6.4,
 Rotation2d.fromDegrees(
 135.81)),
 false, 3, 2, 1, 0, 0,
@@ -387,7 +386,7 @@ false, 3, 2, 1, 0, 0,
 .andThen(
 TrajectoryHelper.createTrajectoryCommand(
 TrajectoryHelper.generateTrajectory(
-new Pose2d(5, 6.21,
+new Pose2d(5, 6.4,
 Rotation2d.fromDegrees(
 135.81)),
 List.of(),
@@ -399,7 +398,7 @@ true,
 1,
 1,
 0,
-0,
+1,
 7))
 .andThen(new RunMagazine(
 s_magazine,
@@ -412,8 +411,7 @@ new SpinShooter(s_shooter,
 manipulatorController,
 3000),
 new RunMagazine(s_magazine,
-.6)).withTimeout(
-1.5)))))));
+.6), new RunIntake(s_intake))))))));
 
 _autoChooser.addOption("Two ball right tarmac right ball",
 new ToggleIntake(s_pneumatics).andThen(
@@ -428,7 +426,7 @@ new Pose2d(7.80, 2.77,
 Rotation2d.fromDegrees(
 -108.24)),
 List.of(),
-new Pose2d(7.6, 0.73,
+new Pose2d(8.25, 0.7,
 Rotation2d.fromDegrees(
 -92.94)),
 false, 3, 2, 1, 0, 0,
@@ -443,7 +441,7 @@ List.of(),
 new Pose2d(7.80, 2.77,
 Rotation2d.fromDegrees(
 -108.24)),
-true, 2, 1, 1, 0, 0,
+true, 2, 1, 1, 0, 1,
 7)))
 .andThen(new RunMagazine(s_magazine, -.6)
 .withTimeout(.5)
@@ -454,7 +452,7 @@ new SpinShooter(s_shooter,
 manipulatorController,
 3000),
 new RunMagazine(s_magazine,
-.6)).withTimeout(
+.6), new RunIntake(s_intake)).withTimeout(
 1.5))));
 
 _autoChooser.addOption("Two ball right tarmac left ball",
@@ -471,53 +469,63 @@ new Pose2d(7.74, 2.83,
 Rotation2d.fromDegrees(
 -111.23)),
 List.of(),
-new Pose2d(5.20, 1.94,
+new Pose2d(4.71, 1.5,
 Rotation2d.fromDegrees(
 -164.74)),
-false, 8, 5, 3, 0, 0,
+false, 3, 2, 2, 0, 0,
 7))
 ))
 .andThen(TrajectoryHelper.createTrajectoryCommand(
 TrajectoryHelper.generateTrajectory(
-new Pose2d(5.20, 1.94,
+new Pose2d(4.71, 1.5,
 Rotation2d.fromDegrees(
 -164.74)),
 List.of(),
 new Pose2d(7.74, 2.83,
 Rotation2d.fromDegrees(
 -111.23)),
-true, 8, 5, 3, 0, 0,
+true, 3, 2, 1, 0, 1,
 7)))
-.andThen(new RunMagazine(s_magazine, -.6).withTimeout(.25).andThen(new ParallelCommandGroup(new AngleArm(.17,s_arm),new SpinShooter(s_shooter,manipulatorController,3000),new RunMagazine(s_magazine,.4)).withTimeout(1)))));
+.andThen(new RunMagazine(s_magazine, -.6).withTimeout(.25).andThen(new ParallelCommandGroup(new AngleArm(.17,s_arm),new SpinShooter(s_shooter,manipulatorController,3000),new RunMagazine(s_magazine,.3)).withTimeout(1)))));
 
 _autoChooser.addOption("Four ball from Right tarmac", 
 new AngleArm(.17, s_arm).andThen(
 new ToggleIntake(s_pneumatics)).andThen(
-new ResetOdometry(new Pose2d(7.67, 1.72, Rotation2d.fromDegrees(-179.27)), s_drivetrain).andThen(
+new ResetOdometry(new Pose2d(7.74, 2.81,
+Rotation2d.fromDegrees(
+-110.64)), s_drivetrain).andThen(
         new RunIntake(s_intake).raceWith(        
 TrajectoryHelper.createTrajectoryCommand(
-                TrajectoryHelper.generateTrajectory(new Pose2d(7.67, 1.72, Rotation2d.fromDegrees(-179.27)), List.of(), new Pose2d(4.78, 1.99, Rotation2d.fromDegrees(168.56)), false, 3, 3, 1, 0, 0, 7)
-        ))).andThen(new WaitCommand(1).andThen(
-                new RunMagazine(s_magazine, -.6).withTimeout(.5)).andThen(
+                TrajectoryHelper.generateTrajectory(new Pose2d(7.74, 2.81,
+                Rotation2d.fromDegrees(
+                -110.64)), List.of(), new Pose2d(5.5, 1.8, Rotation2d.fromDegrees(180)), false, 8, 5, 3, 0, 0, 7)
+        ))).andThen(((new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .1))).raceWith(new WaitCommand(1)).andThen(
+                new RunMagazine(s_magazine, -.6).withTimeout(.2))).alongWith(
                 TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(4.78, 1.99, Rotation2d.fromDegrees(168.56)), List.of(), new Pose2d(7.80, 2.77,
+                        TrajectoryHelper.generateTrajectory(new Pose2d(5.5, 1.8, Rotation2d.fromDegrees(90)), List.of(), new Pose2d(7.80, 2.77,
                         Rotation2d.fromDegrees(
-                        -108.24)), true, 8, 5, 3, 0, 0, 7)
+                        -108.24)), true, 8, 5, 3, 0, 1, 7)
                         
-                ).andThen(new ParallelCommandGroup(new AngleArm(.17,s_arm),new RunIntake(s_intake),new SpinShooter(s_shooter,manipulatorController,3000),new RunMagazine(s_magazine,.6)).withTimeout(.75)))   
+                ).andThen(new ParallelCommandGroup(new AngleArm(.17,s_arm),new RunIntake(s_intake),new SpinShooter(s_shooter,manipulatorController,3000),new RunMagazine(s_magazine,.6)).withTimeout(1)))   
         ).andThen(
                
-                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .4))).raceWith(
+                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .3))).raceWith(
                 TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(7.80, 2.77,
+                        TrajectoryHelper.generateTrajectory(new Pose2d(7.74, 2.81,
                         Rotation2d.fromDegrees(
-                        -108.24)), List.of(), new Pose2d(1.62, 1.51, Rotation2d.fromDegrees(-140.81)), false, 5, 3, 2, 0, 0, 7)
+                        -110.64)), List.of(), 
+                        new Pose2d(1.64, .2,
+                        Rotation2d.fromDegrees(
+                        -115.34)), false, 5, 3, 2, 0, 0, 7)
                 ))).andThen(
-                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .4).withTimeout(1).andThen(new RunMagazine(s_magazine, -.6).withTimeout(.5)))).raceWith(
+                        (new RunIntake(s_intake).alongWith(new AngleArm(.17,s_arm).alongWith(new RunMagazine(s_magazine, .6)))).withTimeout(.5).andThen(new RunMagazine(s_magazine, -.6).withTimeout(.2).andThen(new WaitCommand(15))).raceWith(
                         TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(1.62, 1.51, Rotation2d.fromDegrees(-140.81)), List.of(), new Pose2d(7.80, 2.77,
-                        Rotation2d.fromDegrees(
-                        -108.24)), true, 8, 5, 3, 0, 0, 7)
+                        TrajectoryHelper.generateTrajectory(
+                                new Pose2d(1.64, .2,
+                                Rotation2d.fromDegrees(
+                                -115.34)), List.of(), new Pose2d(7.74, 2.81,
+                                Rotation2d.fromDegrees(
+                                -110.64)), true, 8, 5, 3, 0, 1, 7)
                 )).andThen((new RunIntake(s_intake)).raceWith(
                 new ParallelCommandGroup(new AngleArm(.17,s_arm),new RunIntake(s_intake),new SpinShooter(s_shooter,manipulatorController,3000),new RunMagazine(s_magazine,.4)).withTimeout(5)))   
         ))
