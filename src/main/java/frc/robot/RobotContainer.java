@@ -153,7 +153,7 @@ _autoChooser.addOption("Two ball straight back",
                 )
         ).andThen(
                 TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), List.of(), new Pose2d(0,0, new Rotation2d(0)), true, 3, 2, 1, 0, 0, 7)
+                        TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), List.of(), new Pose2d(1,0, new Rotation2d(0)), true, 3, 2, 1, 0, 0, 7)
                 )
         ).andThen(
                 new LimelightAim(s_drivetrain, s_vision).andThen(
