@@ -26,9 +26,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntake(double speed) {//Set intake motor to a percentage output
-    if(sPneumatics.getIntake()) {
-    intakeMotor.set(VictorSPXControlMode.PercentOutput, speed);
-    }
+    
+    intakeMotor.set(VictorSPXControlMode.PercentOutput, speed); //Intake motor is now set regardless due to bug. 
     Indexer_motor.set(VictorSPXControlMode.PercentOutput, speed);
   }
 

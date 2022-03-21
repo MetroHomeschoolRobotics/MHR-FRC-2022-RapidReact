@@ -134,14 +134,15 @@ CommandScheduler.getInstance().setDefaultCommand(s_climber, c_winchClimber);
 private void setAutoChooserOptions() {
 _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
 
-_autoChooser.addOption("one ball + taxi", new LimelightAim(s_drivetrain, s_vision).andThen(
-        new ParallelCommandGroup(
-                new SpinShooter(s_shooter, manipulatorController, 0),
-                new RunIntake(s_intake),
-                new RunMagazine(s_magazine, .6)
-        ).withTimeout(1).andThen(
-                TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), List.of(), new Pose2d(3,0, new Rotation2d(0)), false, 3, 2, 1, 0, 0, 7)
+_autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(new LimelightAim(s_drivetrain, s_vision).andThen(
+                new ParallelCommandGroup(
+                        new SpinShooter(s_shooter, manipulatorController, 0),
+                        new RunIntake(s_intake),
+                        new RunMagazine(s_magazine, .6)
+                ).withTimeout(1).andThen(
+                        TrajectoryHelper.createTrajectoryCommand(
+                                TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), List.of(), new Pose2d(3,0, new Rotation2d(0)), false, 3, 2, 1, 0, 0, 7)
+                        )
                 )
         )
 ));
