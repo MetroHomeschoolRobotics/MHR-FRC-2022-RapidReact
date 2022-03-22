@@ -13,7 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 public class DriveDistance extends CommandBase {
   /** Creates a new DriveDistance. */
   private Drivetrain _drivetrain;
-  private double kP = 0.05;
+  private double kP = 0.5;
   private double kI = 0;
   private double kD = 0;
 
@@ -40,7 +40,7 @@ public class DriveDistance extends CommandBase {
     pidController.setTolerance(2, 5);
     pidController.setIntegratorRange(-.5, .5);
     _drivetrain.resetEncoders();
-    SmartDashboard.putData(pidController);
+    //SmartDashboard.putData(pidController);
     _angle = _drivetrain.getHeading();
   }
 

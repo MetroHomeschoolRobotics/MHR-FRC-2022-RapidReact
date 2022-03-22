@@ -22,9 +22,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.TrajectoryHelper;
 import frc.robot.commands.AngleArm;
+import frc.robot.commands.AngleArmSlow;
 import frc.robot.commands.ArmManual;
+import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveTeleop;
 import frc.robot.commands.LimelightAim;
+import frc.robot.commands.ResetClimberEncoder;
 import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseMagazine;
@@ -104,7 +107,7 @@ private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneum
 private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
 private final WinchClimber c_winchClimber = new WinchClimber(s_climber, driverController);
 private final Command c_fenderShot = new SequentialCommandGroup(new AngleArm(.1, s_arm),
-new ReverseMagazine(s_magazine).withTimeout(.5),
+new ReverseMagazine(s_magazine, s_shooter).withTimeout(.5),
 new RunMagazine(s_magazine, .6).alongWith().withTimeout(2))
 .alongWith(new SpinShooter(s_shooter, driverController, 2600).withTimeout(2.7));
 /**
@@ -134,37 +137,110 @@ CommandScheduler.getInstance().setDefaultCommand(s_climber, c_winchClimber);
 private void setAutoChooserOptions() {
 _autoChooser.setDefaultOption("No autonomous", new WaitCommand(15));
 
+_autoChooser.addOption("Test trajectory",
+new ResetOdometry(new Pose2d(0, 0, new Rotation2d(0)), s_drivetrain)
+        .andThen(TrajectoryHelper.createTrajectoryCommand(
+                TrajectoryHelper.generateTrajectory(
+                        new Pose2d(0, 0, new Rotation2d(0)),
+                        List.of(new Translation2d(1, 0.1), new Translation2d(2, 1)),
+                        new Pose2d(5, 0, new Rotation2d(0)),
+                        false, 3, 2, 1, 0, 0, 7))
+                .andThen(new WaitCommand(1)
+                        .andThen(
+                                TrajectoryHelper.createTrajectoryCommand(
+                                        TrajectoryHelper.generateTrajectory(
+                                                new Pose2d(3, 0, new Rotation2d(0)),
+                                                List.of(new Translation2d(2, 1),
+                                                        new Translation2d(1, 0)),
+                                                new Pose2d(0, 0, new Rotation2d(0)),
+                                                true, 3, 1, 1, 0, 0, 7))))));
+
 _autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(new LimelightAim(s_drivetrain, s_vision).andThen(
                 new ParallelCommandGroup(
                         new SpinShooter(s_shooter, manipulatorController, 0),
                         new RunIntake(s_intake),
                         new RunMagazine(s_magazine, .6)
-                ).withTimeout(1).andThen(
-                        TrajectoryHelper.createTrajectoryCommand(
-                                TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), List.of(), new Pose2d(3,0, new Rotation2d(0)), false, 3, 2, 1, 0, 0, 7)
-                        )
+                ).withTimeout(2).andThen(
+                        new DriveDistance(s_drivetrain, 3)
                 )
         )
 ));
 
 _autoChooser.addOption("Two ball straight back", 
+new ToggleIntake(s_pneumatics).andThen(
         new RunIntake(s_intake).raceWith(
-                TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(0,0, new Rotation2d(0)), List.of(), new Pose2d(3,0, new Rotation2d(0)), false, 3, 2, 1, 0, 0, 7)
-                )
+                new DriveDistance(s_drivetrain, 4)
         ).andThen(
-                TrajectoryHelper.createTrajectoryCommand(
-                        TrajectoryHelper.generateTrajectory(new Pose2d(3,0, new Rotation2d(0)), List.of(), new Pose2d(1,0, new Rotation2d(0)), true, 3, 2, 1, 0, 0, 7)
-                )
+                new DriveDistance(s_drivetrain, -4)
         ).andThen(
                 new LimelightAim(s_drivetrain, s_vision).andThen(
                         new ParallelCommandGroup(
                                 new SpinShooter(s_shooter, manipulatorController, 0),
                                 new RunIntake(s_intake),
                                 new RunMagazine(s_magazine, .6)
-                ).withTimeout(1)  
+                ).withTimeout(3)  
         )
-));
+)));
+
+_autoChooser.addOption("three ball right tarmac",
+        new ToggleIntake(s_pneumatics).andThen(
+                new ParallelCommandGroup(
+                        new SpinShooter(s_shooter, manipulatorController, 0),
+                        new RunIntake(s_intake),
+                        new RunMagazine(s_magazine, .6)
+                ).withTimeout(1).andThen(
+                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .3))).raceWith(
+                                TrajectoryHelper.createTrajectoryCommand(
+                                        TrajectoryHelper.generateTrajectory(Constants.rightFender, List.of(Constants.intakingRLBall.getTranslation()), Constants.intakingRRBall, false, 3, 2, 1, 0, 0, 7)
+                                ).andThen(
+                                        TrajectoryHelper.createTrajectoryCommand(
+                                                TrajectoryHelper.generateTrajectory(Constants.intakingRRBall, List.of(), Constants.rightFender, true, 3, 2, 1, 0, 1, 7)
+                                        ).andThen(
+                                                new RunMagazine(s_magazine, -.6).withTimeout(.5).andThen(
+                                                        new ParallelCommandGroup(
+                                                                new SpinShooter(s_shooter, manipulatorController, 0),
+                                                                new RunIntake(s_intake),
+                                                                new RunMagazine(s_magazine, .6)
+                                                        ).withTimeout(1).andThen(
+                                                                TrajectoryHelper.createTrajectoryCommand(
+                                                                        TrajectoryHelper.generateTrajectory(Constants.rightFender, List.of(), Constants.intakingTerminalBalls, false, 3, 2, 1, 0, 1, 7)
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        )
+);
+
+_autoChooser.addOption("three ball left tarmac",
+        new ToggleIntake(s_pneumatics).andThen(
+                new ParallelCommandGroup(
+                        new SpinShooter(s_shooter, manipulatorController, 0),
+                        new RunIntake(s_intake),
+                        new RunMagazine(s_magazine, .6)
+                ).withTimeout(1).andThen(
+                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .3))).raceWith(
+                                TrajectoryHelper.createTrajectoryCommand(
+                                        TrajectoryHelper.generateTrajectory(Constants.leftFender, List.of(new Translation2d(4.13, 4.28)), Constants.intakingTerminalBalls, false, 3, 2, 1, 0, 0, 7)
+                                ).andThen(
+                                        TrajectoryHelper.createTrajectoryCommand(
+                                                TrajectoryHelper.generateTrajectory(Constants.intakingTerminalBalls, List.of(new Translation2d(4.13, 4.28)), Constants.leftFender, true, 3, 2, 1, 0, 1, 7)
+                                        ).andThen(
+                                                new RunMagazine(s_magazine, -.6).withTimeout(.5).andThen(
+                                                        new ParallelCommandGroup(
+                                                                new SpinShooter(s_shooter, manipulatorController, 0),
+                                                                new RunIntake(s_intake),
+                                                                new RunMagazine(s_magazine, .6)
+                                                        ).withTimeout(1)
+                                                )
+                                        )
+                                )
+                        )
+                )
+        )
+);
 
 
 
@@ -186,7 +262,7 @@ final JoystickButton leftBumper = new JoystickButton(driverController, 6);
 leftBumper.whileHeld(c_runIntake);
 
 final JoystickButton rightBumperM = new JoystickButton(manipulatorController, 5);
-rightBumperM.whileHeld(new ReverseMagazine(s_magazine).alongWith(new ReverseIntake(s_intake)));
+rightBumperM.whileHeld(new ReverseMagazine(s_magazine, s_shooter).alongWith(new ReverseIntake(s_intake)));
 final JoystickButton leftBumperM = new JoystickButton(manipulatorController, 6);
 leftBumperM.whileHeld(new RunMagazine(s_magazine, .6).alongWith(new RunIntake(s_intake)));
 
@@ -224,9 +300,12 @@ final POVButton winchUp = new POVButton(driverController, 0);
 winchDown.whileHeld(new WinchToSetpoint(0, s_climber));
 winchUp.whileHeld(new WinchToSetpoint(130, s_climber));
 final POVButton cannonOutButton = new POVButton(driverController, 90);
-cannonOutButton.whileHeld(new AngleArm(.36, s_arm));
+cannonOutButton.whileHeld(new AngleArmSlow(.4, s_arm));
 final POVButton cannonInButton = new POVButton(driverController, 270);
-cannonInButton.whileHeld(new AngleArm(.04, s_arm));
+cannonInButton.whileHeld(new AngleArmSlow(.04, s_arm));
+
+final JoystickButton resetWinchEncoder = new JoystickButton(driverController, 10);
+resetWinchEncoder.whenPressed(new ResetClimberEncoder(s_climber));
 }      
 
 /**

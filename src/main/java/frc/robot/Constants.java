@@ -71,25 +71,12 @@ public final class Constants {
     public static double maxBackwardCAccel = 3;
 
     //Points on the Field
-    private static final Pose2d rightFender = new Pose2d(7.78, 2.87, Rotation2d.fromDegrees(-111));
-    private static final Pose2d leftFender = new Pose2d(7.01, 4.64, Rotation2d.fromDegrees(159));
+    public static final Pose2d rightFender = new Pose2d(7.78, 2.87, Rotation2d.fromDegrees(-111));
+    public static final Pose2d leftFender = new Pose2d(7.01, 4.64, Rotation2d.fromDegrees(159));
     
-    private static final Pose2d intakingRLBall = new Pose2d(5.64, 1.93, Rotation2d.fromDegrees(-180));
-    private static final Pose2d intakingRRBall = new Pose2d(7.68, 0.84, Rotation2d.fromDegrees(-90));
-    private static final Pose2d intakingLBall = new Pose2d(5.3, 5.96, Rotation2d.fromDegrees(135));
+    public static final Pose2d intakingRLBall = new Pose2d(5.64, 1.93, Rotation2d.fromDegrees(-180));
+    public static final Pose2d intakingRRBall = new Pose2d(7.68, 0.84, Rotation2d.fromDegrees(-90));
+    public static final Pose2d intakingLBall = new Pose2d(5.3, 5.96, Rotation2d.fromDegrees(135));
 
-    private static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(-135));
-
-    public static final Trajectory intakeBothRightFenderBalls = TrajectoryHelper.generateTrajectory(rightFender, List.of(intakingRLBall.getTranslation()), intakingRRBall, false, 3, 2, 1, 0, 0, 7);
-    public static final Trajectory intakeRRBall = TrajectoryHelper.generateTrajectory(rightFender, List.of(), intakingRRBall, false, maxForwardVel, maxForwardAccel, maxForwardCAccel, 0, 0, 7);
-    public static final Trajectory intakeRLBall = TrajectoryHelper.generateTrajectory(rightFender, List.of(), intakingRLBall, false, maxForwardVel, maxForwardAccel, maxForwardCAccel, 0, 0, 7);
-    public static final Trajectory intakeLBall = TrajectoryHelper.generateTrajectory(leftFender, List.of(), intakingLBall, false, maxForwardVel, maxForwardAccel, maxForwardCAccel, 0, 0, 7);
-    public static final Trajectory toTerminalFromLFender = TrajectoryHelper.generateTrajectory(leftFender, List.of(), intakingTerminalBalls, false, maxForwardVel, maxForwardAccel, maxForwardCAccel, 0, 0, 7);
-
-    public static final Trajectory backToFenderFromRLBall = TrajectoryHelper.generateTrajectory(intakingRLBall, List.of(), rightFender, true, maxBackwardVel, maxBackwardAccel, maxBackwardCAccel, 0, 1, 7);
-    public static final Trajectory backToFenderFromRRBall = TrajectoryHelper.generateTrajectory(intakingRRBall, List.of(), rightFender, true, maxBackwardVel, maxBackwardAccel, maxBackwardCAccel, 0, 1, 7);
-    public static final Trajectory backToLFenderFromLBall = TrajectoryHelper.generateTrajectory(intakingLBall, List.of(), leftFender, true, maxBackwardVel, maxBackwardAccel, maxBackwardCAccel, 0, 1, 7);
-    public static final Trajectory backToLFenderFromTerminal = TrajectoryHelper.generateTrajectory(intakingTerminalBalls, List.of(), leftFender, true, maxBackwardVel, maxBackwardAccel, maxBackwardCAccel, 0, 1, 7);
-    public static final Trajectory backToRFenderFromTerminal = TrajectoryHelper.generateTrajectory(intakingTerminalBalls, List.of(), rightFender, true, maxBackwardVel, maxBackwardAccel, maxBackwardCAccel, 0, 1, 7);
-
+    public static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(-135));
 }

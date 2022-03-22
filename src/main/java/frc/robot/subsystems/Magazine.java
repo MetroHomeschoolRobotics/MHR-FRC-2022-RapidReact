@@ -26,8 +26,8 @@ public class Magazine extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("ultrasonic value", getUltrasonic());
-    SmartDashboard.putBoolean("Has Ball?", hasBall());
+    //SmartDashboard.putNumber("ultrasonic value", getUltrasonic());
+    //SmartDashboard.putBoolean("Has Ball?", hasBall());
   }
   public void setMagazine(double speed){
     Magazine_motor.set(VictorSPXControlMode.PercentOutput,-speed);

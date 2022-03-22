@@ -30,8 +30,8 @@ public class LimelightAim extends CommandBase {
 
   }
   
-  private PIDController horizontal_PID = new PIDController(0.015, 0, 0.0003);
-  private double horizontal_Threshold  = .1;
+  private static PIDController horizontal_PID = new PIDController(0.04, 0, 0.003);
+  private double horizontal_Threshold  = .12;
   
 
 
@@ -62,8 +62,12 @@ CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.abs(vision.getLimelightTX())<horizontal_Threshold) {
-      return true;
+    if(vision.getLimelightHasTarget()) {
+      if(Math.abs(vision.getLimelightTX())<horizontal_Threshold) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }

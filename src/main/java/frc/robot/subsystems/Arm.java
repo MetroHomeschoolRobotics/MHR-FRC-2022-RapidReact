@@ -22,7 +22,7 @@ public class Arm extends SubsystemBase {
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
   private PIDController armPID = new PIDController(35, 0, 0);
-  public double maxPotOutput = 0.36;
+  public double maxPotOutput = 0.4;
   public double minPotOutput = 0.045;
   public double potOutputToHold = 0;
   public boolean hold = false;
@@ -30,7 +30,7 @@ public class Arm extends SubsystemBase {
   public Arm() {
     arm_motor.setInverted(false);
     arm_motor.setNeutralMode(NeutralMode.Brake);
-    SmartDashboard.putData(armPID);
+    //SmartDashboard.putData(armPID);
   }
 
   @Override

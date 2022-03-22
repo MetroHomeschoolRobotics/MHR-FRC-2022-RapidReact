@@ -23,7 +23,7 @@ public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   public Vision() {
-    setUpIntakeVision();
+    //setUpIntakeVision();
   }
 
   private UsbCamera intakeCam;

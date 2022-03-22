@@ -57,7 +57,7 @@ public class Drivetrain extends SubsystemBase {
     frontRight.getEncoder().setVelocityConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
     frontLeft.getEncoder().setVelocityConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
     
-    SmartDashboard.putData("field", m_field);
+    //SmartDashboard.putData("field", m_field);
     differentialDrivetrain.setMaxOutput(1);
     differentialDrivetrain.setDeadband(.1);
     gyro.calibrate();
@@ -86,14 +86,15 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {// This method will be called once per scheduler run
   //Print Gyro compass to the dashboard  
-	SmartDashboard.putData(gyro);
+	//SmartDashboard.putData(gyro);
+  SmartDashboard.putNumber("gyro", gyro.getAngle());
   //Print encoder distances to the dashboard
-  SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
-  SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());
+  //SmartDashboard.putNumber("Front Left Encoder", getLeftEncoderDistance());
+  //SmartDashboard.putNumber("Front Right Encoder", getRightEncoderDistance());
   //Update current robot pose
   m_odometry.update(getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
   //Show current pose on the field
-  m_field.setRobotPose(getPose());
+  //m_field.setRobotPose(getPose());
   }
 
   public Field2d getField2d() {
