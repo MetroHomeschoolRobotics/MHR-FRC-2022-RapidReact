@@ -71,12 +71,12 @@ public final class Constants {
     public static double maxBackwardCAccel = 3;
 
     //Points on the Field
-    public static final Pose2d rightFender = new Pose2d(7.78, 2.87, Rotation2d.fromDegrees(-111));
+    public static final Pose2d rightFender = new Pose2d(7.76, 2.83, Rotation2d.fromDegrees(-111));
     public static final Pose2d leftFender = new Pose2d(7.01, 4.64, Rotation2d.fromDegrees(159));
     
     public static final Pose2d intakingRLBall = new Pose2d(5.64, 1.93, Rotation2d.fromDegrees(-180));
     public static final Pose2d intakingRRBall = new Pose2d(7.68, 0.84, Rotation2d.fromDegrees(-90));
-    public static final Pose2d intakingLBall = new Pose2d(5.3, 5.96, Rotation2d.fromDegrees(135));
+    public static final Pose2d intakingLBall = new Pose2d(5.3, 5.96, Rotation2d.fromDegrees(-45));
 
-    public static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(-135));
+    public static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(45));
 }

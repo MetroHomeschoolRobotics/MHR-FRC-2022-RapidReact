@@ -182,7 +182,7 @@ new ToggleIntake(s_pneumatics).andThen(
         )
 )));
 
-_autoChooser.addOption("three ball right tarmac",
+/*_autoChooser.addOption("three ball right tarmac",
         new ToggleIntake(s_pneumatics).andThen(
                 new ParallelCommandGroup(
                         new SpinShooter(s_shooter, manipulatorController, 0),
@@ -194,7 +194,7 @@ _autoChooser.addOption("three ball right tarmac",
                                         TrajectoryHelper.generateTrajectory(Constants.rightFender, List.of(Constants.intakingRLBall.getTranslation()), Constants.intakingRRBall, false, 3, 2, 1, 0, 0, 7)
                                 ).andThen(
                                         TrajectoryHelper.createTrajectoryCommand(
-                                                TrajectoryHelper.generateTrajectory(Constants.intakingRRBall, List.of(), Constants.rightFender, true, 3, 2, 1, 0, 1, 7)
+                                                TrajectoryHelper.generateTrajectory(Constants.intakingRRBall, List.of(new Translation2d(7.68,1.2)), Constants.rightFender, true, 3, 2, 1, 0, 1, 7)
                                         ).andThen(
                                                 new RunMagazine(s_magazine, -.6).withTimeout(.5).andThen(
                                                         new ParallelCommandGroup(
@@ -240,7 +240,7 @@ _autoChooser.addOption("three ball left tarmac",
                         )
                 )
         )
-);
+);*/
 
 
 
