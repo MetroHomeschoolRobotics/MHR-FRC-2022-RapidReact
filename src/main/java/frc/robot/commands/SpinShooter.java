@@ -29,8 +29,8 @@ public class SpinShooter extends CommandBase {
   @Override
   public void initialize() {
     
-    _driverController.setRumble(RumbleType.kLeftRumble, .7);
-    _driverController.setRumble(RumbleType.kRightRumble, .7);
+    
+    _driverController.setRumble(RumbleType.kRightRumble, .2);
     if(RPM == 0) {
       sd = true;
       RPM = SmartDashboard.getNumber("shooter RPM given angle",0);
@@ -52,7 +52,6 @@ public class SpinShooter extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     _shooter.setShooterPercentOutput(0);
-    _driverController.setRumble(RumbleType.kLeftRumble, 0);
     _driverController.setRumble(RumbleType.kRightRumble, 0);
 
   }

@@ -26,7 +26,7 @@ public class WinchClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = -controller.getRightY();
+    double speed = controller.getRightY();
     if(Math.abs(speed)<.1) {
       speed = 0;
     }

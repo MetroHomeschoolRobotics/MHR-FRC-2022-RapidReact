@@ -78,5 +78,12 @@ public final class Constants {
     public static final Pose2d intakingRRBall = new Pose2d(7.68, 0.84, Rotation2d.fromDegrees(-90));
     public static final Pose2d intakingLBall = new Pose2d(5.3, 5.96, Rotation2d.fromDegrees(-45));
 
+
+    public static Trajectory testPP = TrajectoryHelper.generateFromPathPlanner("Test");
+
+    public static Trajectory threeIntakingR = TrajectoryHelper.generateFromPathPlanner("3bd");
+    public static Trajectory fiveballFrom3Ball = TrajectoryHelper.generateFromPathPlanner("5bf3");
+    public static Trajectory threeIntakingL = TrajectoryHelper.generateFromPathPlanner("3bdl");
+
     public static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(45));
 }

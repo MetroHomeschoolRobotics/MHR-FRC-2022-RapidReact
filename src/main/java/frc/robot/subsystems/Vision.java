@@ -9,6 +9,7 @@ import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionThread;
@@ -24,6 +25,11 @@ public class Vision extends SubsystemBase {
   private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   public Vision() {
     //setUpIntakeVision();
+    UsbCamera cam = CameraServer.startAutomaticCapture();
+    cam.setResolution(80, 60);
+    cam.setFPS(10);
+    setPIP(2);
+    
   }
 
   private UsbCamera intakeCam;
@@ -73,6 +79,10 @@ public class Vision extends SubsystemBase {
     return intakeTV;
   }
 
+  public void setPIP(int number) {
+    limelight.getEntry("stream").setNumber(number);
+  }
+
   public double getIntakeTX() {
     return intakeTX;
   }
@@ -101,6 +111,15 @@ public class Vision extends SubsystemBase {
       limelight.getEntry("ledMode").setNumber(1);
     }
   }
+
+  public boolean getLights() {
+    if(limelight.getEntry("ledMode").getDouble(0)==3) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public void setMode(boolean processing) {
     if(processing) {
       limelight.getEntry("camMode").setNumber(0);
@@ -117,7 +136,8 @@ public class Vision extends SubsystemBase {
     //return 0;
   };
   public double get_shooter_rps (double target_angle){
-    return .0162975343*Math.pow(target_angle, 3)+ .3382847382*Math.pow(target_angle,2)-26.08795704*target_angle+3127.269879;
+    return .1034824632*Math.pow(target_angle, 3)+ 1.624632*Math.pow(target_angle,2)-28.50503783*target_angle+3140.563397;
+    //return 3146.95-.939146*target_angle;
     //return 0;
   };
   

@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(1);
+    //CommandScheduler.getInstance().schedule(new SetBrakeMode(false, RobotContainer.s_drivetrain));
   }
 
   @Override

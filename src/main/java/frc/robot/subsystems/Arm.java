@@ -24,8 +24,8 @@ public class Arm extends SubsystemBase {
   private PIDController armPID = new PIDController(35, 0, 0);
   public double maxPotOutput = 0.4;
   public double minPotOutput = 0.045;
-  public double potOutputToHold = 0;
-  public boolean hold = false;
+  public double potOutputToHold = .17;
+  public boolean hold = true;
   
   public Arm() {
     arm_motor.setInverted(false);
@@ -38,7 +38,7 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run
     //Print armpot value to the dashboard every cycle
     if(hold) {
-      if(!DriverStation.isAutonomous()) {
+      if(true) {
       arm_motor.set(ControlMode.PercentOutput, armPID.calculate(getArmPot(), potOutputToHold));
       }
     }

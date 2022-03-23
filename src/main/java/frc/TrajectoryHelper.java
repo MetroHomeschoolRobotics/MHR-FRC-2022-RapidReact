@@ -4,6 +4,8 @@
 
 package frc;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -15,8 +17,11 @@ import edu.wpi.first.math.spline.Spline.ControlVector;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -50,6 +55,19 @@ public class TrajectoryHelper {
         config.setEndVelocity(endVelocity);
         config.setReversed(reversed);
         return TrajectoryGenerator.generateTrajectory(start, waypoints, end, config);
+    }
+    public final static Trajectory generateFromPathPlanner(String trajectoryJSON) {
+      trajectoryJSON = "pathplanner/generatedJSON/"+trajectoryJSON+".wpilib.json";
+      Trajectory trajectory;
+      try {
+        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+     } catch (IOException ex) {
+        DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+        TrajectoryConfig config = new TrajectoryConfig(1, 1);
+        trajectory= TrajectoryGenerator.generateTrajectory(new Pose2d(), List.of(), new Pose2d(), config);
+        }
+        return trajectory;
     }
   /**
    * Creates a command that runs the given trajectory. 
