@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -66,13 +67,13 @@ public class Drivetrain extends SubsystemBase {
     rearLeft.setInverted(false);
     frontRight.setInverted(true);
     rearRight.setInverted(true);
-    frontRight.burnFlash();
+    //frontRight.burnFlash();
     //rearRight.burnFlash();
     //Rear motors have the same output as front motors because they are in the same gearboxes
     rearLeft.follow(frontLeft);
     rearRight.follow(frontRight);
-    rearLeft.burnFlash();
-    rearRight.burnFlash();
+    //rearLeft.burnFlash();
+    //rearRight.burnFlash();
     
     //Convert drivetrain motor revolutions to distances of robot travel (in meters)
     frontLeft.getEncoder().setPositionConversionFactor((Units.inchesToMeters(kWheelRadiusInches)*2*Math.PI)/(kGearRatio));
@@ -112,6 +113,27 @@ public class Drivetrain extends SubsystemBase {
     return new DifferentialDriveWheelSpeeds(frontLeft.getEncoder().getVelocity(), frontRight.getEncoder().getVelocity());
   }
 
+  public void setBrakeMode() {
+      frontLeft.setIdleMode(IdleMode.kBrake);
+      frontRight.setIdleMode(IdleMode.kBrake);
+      rearLeft.setIdleMode(IdleMode.kBrake);
+      rearRight.setIdleMode(IdleMode.kBrake);
+    frontLeft.burnFlash();
+    frontRight.burnFlash();
+    rearLeft.burnFlash();
+    rearRight.burnFlash();
+  }
+
+  public void setCoastMode() {
+    frontLeft.setIdleMode(IdleMode.kCoast);
+    frontRight.setIdleMode(IdleMode.kCoast);
+    rearLeft.setIdleMode(IdleMode.kCoast);
+    rearRight.setIdleMode(IdleMode.kCoast);
+  frontLeft.burnFlash();
+  frontRight.burnFlash();
+  rearLeft.burnFlash();
+  rearRight.burnFlash();
+}
 
 
   public void move(double forward, double spin, boolean _boolean) {

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.SetBrakeMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    //CommandScheduler.getInstance().schedule(new SetBrakeMode(RobotContainer.s_drivetrain, false));
   }
 
   /**
@@ -54,7 +56,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(1);
-    //CommandScheduler.getInstance().schedule(new SetBrakeMode(false, RobotContainer.s_drivetrain));
+    //CommandScheduler.getInstance().schedule(new SetBrakeMode(RobotContainer.s_drivetrain, false));
   }
 
   @Override
@@ -66,6 +68,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(3);
     // schedule the autonomous command (example)
+    //CommandScheduler.getInstance().schedule(new SetBrakeMode(RobotContainer.s_drivetrain, true));
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -82,6 +85,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setDouble(3);
+    //CommandScheduler.getInstance().schedule(new SetBrakeMode(RobotContainer.s_drivetrain, true));
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

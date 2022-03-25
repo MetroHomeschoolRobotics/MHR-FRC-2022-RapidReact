@@ -34,6 +34,7 @@ import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseMagazine;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunMagazine;
+import frc.robot.commands.SetBrakeMode;
 import frc.robot.commands.SpinShooter;
 import frc.robot.commands.ToggleCompressor;
 import frc.robot.commands.ToggleHook;
@@ -173,7 +174,7 @@ _autoChooser.addOption("5 ball (right fender)", new ToggleIntake(s_pneumatics).a
                                                         new RunIntake(s_intake),
                                                         new RunMagazine(s_magazine, .5)
                                                 ).withTimeout(1).andThen(
-                                                        (((new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .6))).withTimeout(3.25)).andThen((new ReverseMagazine(s_magazine, s_shooter).alongWith(new ReverseIntake(s_intake))).withTimeout(.15).andThen(new WaitCommand(10))).raceWith(TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball)).andThen(
+                                                        (((new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .6))).withTimeout(4)).andThen((new ReverseMagazine(s_magazine, s_shooter).alongWith(new ReverseIntake(s_intake))).withTimeout(.15).andThen(new WaitCommand(10))).raceWith(TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball)).andThen(
                                                                 new ParallelCommandGroup(
                                                                         new AngleArm(.27, s_arm),
                                                                         new SpinShooter(s_shooter, manipulatorController, 3400),
@@ -224,8 +225,7 @@ _autoChooser.addOption("3 ball left tarmac", new ToggleIntake(s_pneumatics).andT
                                 (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .6).withTimeout(4))).raceWith(TrajectoryHelper.createTrajectoryCommand(Constants.threeIntakingL)).andThen(
                                         new ReverseMagazine(s_magazine, s_shooter).withTimeout(.3).andThen(
                                                 new AngleArm(.27, s_arm).andThen(
-                                                        new ParallelRaceGroup(
-                                                                new WaitCommand(1),
+                                                        new ParallelCommandGroup(
                                                                 new SpinShooter(s_shooter, manipulatorController, 3400),
                                                                 new RunIntake(s_intake),
                                                                 new RunMagazine(s_magazine, .6)
@@ -240,16 +240,17 @@ _autoChooser.addOption("3 ball left tarmac", new ToggleIntake(s_pneumatics).andT
 
 
 
-_autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(new LimelightAim(s_drivetrain, s_vision, manipulatorController, true).andThen(
+_autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(
                 new ParallelCommandGroup(
-                        new SpinShooter(s_shooter, manipulatorController, 0),
+                        new SpinShooter(s_shooter, manipulatorController, 3500),
+                        new AngleArm(.3,s_arm),
                         new RunIntake(s_intake),
                         new RunMagazine(s_magazine, .6)
                 ).withTimeout(2).andThen(
                         new DriveDistance(s_drivetrain, 3.5)
                 )
         )
-));
+);
 
 _autoChooser.addOption("Two ball straight back", 
 new ToggleIntake(s_pneumatics).andThen(
@@ -257,15 +258,14 @@ new ToggleIntake(s_pneumatics).andThen(
                 new DriveDistance(s_drivetrain, 3.5)
         ).andThen(
                 new DriveDistance(s_drivetrain, -3.5)
-        ).andThen(
-                new LimelightAim(s_drivetrain, s_vision, manipulatorController, true).andThen(
-                        new ParallelCommandGroup(
-                                new SpinShooter(s_shooter, manipulatorController, 0),
+        ).andThen(      new ParallelCommandGroup(
+                                new SpinShooter(s_shooter, manipulatorController, 3500),
                                 new RunIntake(s_intake),
+                                new AngleArm(.3, s_arm),
                                 new RunMagazine(s_magazine, .6)
-                ).withTimeout(3)  
+                ).withTimeout(3)
         )
-)));
+));
 
 /*_autoChooser.addOption("three ball right tarmac",
         new ToggleIntake(s_pneumatics).andThen(
