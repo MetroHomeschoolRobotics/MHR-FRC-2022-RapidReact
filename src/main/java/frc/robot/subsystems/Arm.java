@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 
@@ -37,6 +38,7 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //Print armpot value to the dashboard every cycle
+    //SmartDashboard.putNumber("arm from limelight rc", RobotContainer.armFromLimelight);
     if(hold) {
       if(true) {
       arm_motor.set(ControlMode.PercentOutput, armPID.calculate(getArmPot(), potOutputToHold));

@@ -47,7 +47,7 @@ turn = _turn;
     SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
 controller.setRumble(RumbleType.kLeftRumble, .2);
 vision.setPIP(1);
-CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTY()), RobotContainer.s_arm));
+//CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTY()), RobotContainer.s_arm));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -75,6 +75,7 @@ CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision
         count+=1;
         SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
         SmartDashboard.putNumber("arm from limelight", vision.get_arm_angle(vision.getLimelightTY()));
+        RobotContainer.armFromLimelight = vision.get_arm_angle(vision.getLimelightTY());
         return true;
       }
       } else {

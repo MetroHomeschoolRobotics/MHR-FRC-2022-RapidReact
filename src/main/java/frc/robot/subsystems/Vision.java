@@ -10,6 +10,7 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionThread;
@@ -99,7 +100,7 @@ public class Vision extends SubsystemBase {
     }
   }
   public double getLimelightTY() {
-    return limelight.getEntry("ty").getDouble(0);
+    return limelight.getEntry("ty").getDouble(0)/Math.cos(-Units.degreesToRadians(limelight.getEntry("tx").getDouble(0)));
   }
   public double getLimelightTX() {
     return limelight.getEntry("tx").getDouble(0);
@@ -134,10 +135,13 @@ public class Vision extends SubsystemBase {
   public double get_arm_angle (double target_angle){ 
     return (1.7376954e-6)*(Math.pow(target_angle, 3))+1.545765e-4*(Math.pow(target_angle,2))+-.0030598857*(target_angle)+.2092726891;
     //return 0;
+    //TODO: Switch to quadratic
   };
   public double get_shooter_rps (double target_angle){
-    return .1034824632*Math.pow(target_angle, 3)+ 1.624632*Math.pow(target_angle,2)-28.50503783*target_angle+3140.563397;
+    //return .1034824632*Math.pow(target_angle, 3)+ 1.624632*Math.pow(target_angle,2)-28.50503783*target_angle+3140.563397;
     //return 3146.95-.939146*target_angle;
+    return 3109.484067-21.50986343*target_angle;
+    //TODO: switch to logarithmic
     //return 0;
   };
   

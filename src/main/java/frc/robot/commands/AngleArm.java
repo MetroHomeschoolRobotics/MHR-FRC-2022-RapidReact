@@ -5,18 +5,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Vision;
 
 public class AngleArm extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
-  private double setpoint;
+  private double setpoint = 0;
+  private Vision s_vision;
   private PIDController armPID = new PIDController(30, 0, 0);
-  public AngleArm(double _setpoint, Arm _arm
+  public AngleArm(double _setpoint, Arm _arm, Vision _vision
   ) {
     armPID.setTolerance(.004);
     arm=_arm;
+    s_vision = _vision;
+    setpoint = 0;
     setpoint = _setpoint;
     addRequirements(_arm);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,9 +37,13 @@ public class AngleArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //armPID.calculate(arm.getArmPot(), setpoint);
+    armPID.calculate(arm.getArmPot(), setpoint);
     if(!armPID.atSetpoint()) {
-     arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
+      if(setpoint!=0) {
+        arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
+      } else {
+        arm.setArmMotor(armPID.calculate(arm.getArmPot(), s_vision.get_arm_angle(s_vision.getLimelightTY())));
+      }
     } else {
       arm.setArmMotor(0);
     }
