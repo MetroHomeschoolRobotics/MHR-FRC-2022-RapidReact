@@ -16,7 +16,8 @@ public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
   private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   private DoubleSolenoid intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,RobotMap.intakeSolenoid1, RobotMap.intakeSolenoid2);
-  private DoubleSolenoid hookSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.hookSolenoid1, RobotMap.hookSolenoid2);
+  private DoubleSolenoid hookSolenoid1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.hookSolenoid1, RobotMap.hookSolenoid2);
+  private DoubleSolenoid hookSolenoid2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.hookSolenoid3, RobotMap.hookSolenoid4);
   
   public Pneumatics() {
     //setCompressor(false);
@@ -26,6 +27,7 @@ public class Pneumatics extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Compressor Running", getCompressorState());
+    //hookSolenoid2.set(hookSolenoid1.get());
   }
   
   public void setIntake(boolean down) {
@@ -46,19 +48,27 @@ public class Pneumatics extends SubsystemBase {
 
   public void setHook(boolean down) {
     if(down) {
-      hookSolenoid.set(Value.kForward);
+      hookSolenoid1.set(Value.kForward);
+      hookSolenoid2.set(Value.kForward);
     } else {
-      hookSolenoid.set(Value.kReverse);
+      hookSolenoid1.set(Value.kReverse);
+      hookSolenoid2.set(Value.kReverse);
     }
   }
 
   public boolean getHook() {
-    if(hookSolenoid.get()==Value.kForward) {
+    if(hookSolenoid1.get()==Value.kForward) {
       return true;
     } else {
       return false;
     }
   }
+
+  public void toggleHooks() {
+    hookSolenoid1.toggle();
+    hookSolenoid2.toggle();
+  }
+
 
   public boolean getCompressorState() {
     return compressor.enabled();//get if the compressor is on or off

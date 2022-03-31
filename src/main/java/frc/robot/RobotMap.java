@@ -23,6 +23,8 @@ public class RobotMap {
     public static int intakeSolenoid2 = 1;
     public static int hookSolenoid1 = 2;
     public static int hookSolenoid2 = 3;
+    public static int hookSolenoid3 = 4;
+    public static int hookSolenoid4 = 5;
 
 
 }

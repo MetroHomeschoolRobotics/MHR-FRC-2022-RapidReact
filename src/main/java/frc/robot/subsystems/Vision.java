@@ -8,6 +8,7 @@ import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.math.util.Units;
@@ -24,11 +25,15 @@ import frc.robot.BlueBalls;
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+  private UsbCamera intakeCamera = new UsbCamera("USB Camera 0", 0);
+  private MjpegServer mjpegServer1 = new MjpegServer("serve_USB Camera 0", 1181);
+
   public Vision() {
     //setUpIntakeVision();
-    UsbCamera cam = CameraServer.startAutomaticCapture();
-    cam.setResolution(80, 60);
-    cam.setFPS(10);
+    mjpegServer1.setSource(intakeCamera);
+    mjpegServer1.setResolution(160,120);
+    mjpegServer1.setFPS(10);
+    CameraServer.putVideo("serve_USB Camera 0", 160, 120);
     setPIP(2);
     
   }

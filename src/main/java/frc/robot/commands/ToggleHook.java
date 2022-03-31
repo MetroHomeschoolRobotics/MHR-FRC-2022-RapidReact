@@ -20,6 +20,7 @@ public class ToggleHook extends CommandBase {
   @Override
   public void initialize() {
     pneumatics.setHook(!pneumatics.getHook());
+    //pneumatics.toggleHooks();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

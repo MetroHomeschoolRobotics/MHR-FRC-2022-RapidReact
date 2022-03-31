@@ -29,7 +29,7 @@ public class Arm extends SubsystemBase {
   public boolean hold = true;
   
   public Arm() {
-    arm_motor.setInverted(false);
+    arm_motor.setInverted(true);
     arm_motor.setNeutralMode(NeutralMode.Brake);
     //SmartDashboard.putData(armPID);
   }
