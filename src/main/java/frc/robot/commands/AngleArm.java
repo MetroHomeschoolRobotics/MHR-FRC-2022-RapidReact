@@ -31,13 +31,16 @@ public class AngleArm extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    armPID.calculate(arm.getArmPot(), setpoint);
+    if(setpoint!=0) {
+      armPID.calculate(arm.getArmPot(), setpoint);
+    } else {
+      armPID.calculate(arm.getArmPot(), s_vision.get_arm_angle(s_vision.getLimelightTY()));
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    armPID.calculate(arm.getArmPot(), setpoint);
     if(!armPID.atSetpoint()) {
       if(setpoint!=0) {
         arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));

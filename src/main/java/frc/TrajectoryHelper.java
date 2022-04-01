@@ -13,7 +13,6 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.Spline.ControlVector;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -22,12 +21,12 @@ import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstrain
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.ResetOdometry;
+import frc.robot.commands.AddTrajectoryToField;
 
 /** Add your docs here. */
 public class TrajectoryHelper {
@@ -69,6 +68,10 @@ public class TrajectoryHelper {
         }
         return trajectory;
     }
+
+    public final static void putTrajectoryOnField(Trajectory trajectory, Field2d field) {
+      field.getObject("traj").setTrajectory(trajectory);
+    }
   /**
    * Creates a command that runs the given trajectory. 
    * @param trajectoryToFollow The trajectory the robot should follow. 
@@ -92,7 +95,6 @@ public class TrajectoryHelper {
             RobotContainer.s_drivetrain.tankDriveVolts(leftVolts, rightVolts);
           },
           RobotContainer.s_drivetrain);
-          return ramseteCommand;
+          return new AddTrajectoryToField(RobotContainer.s_drivetrain.getField2d(), _trajectoryToFollow).andThen(ramseteCommand);
     }
-    
 }

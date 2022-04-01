@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.TrajectoryHelper;
 import frc.robot.commands.AngleArm;
 import frc.robot.commands.AngleArmSlow;
@@ -33,9 +33,9 @@ import frc.robot.commands.ResetClimberEncoder;
 import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.ReverseMagazine;
+import frc.robot.commands.RunClimberTillLimit;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunMagazine;
-import frc.robot.commands.SetBrakeMode;
 import frc.robot.commands.SpinShooter;
 import frc.robot.commands.ToggleCompressor;
 import frc.robot.commands.ToggleHook;
@@ -81,6 +81,7 @@ SmartDashboard.putNumber("shooter RPM given angle", 0);
 */
 public XboxController driverController = new XboxController(0);
 public XboxController manipulatorController = new XboxController(1);
+public Joystick tableStick = new Joystick(2);
 
 /**
 * Define instances of the commands. These are static, so only one instance ever
@@ -115,6 +116,43 @@ private final Command c_fenderShot = new SequentialCommandGroup(new AngleArm(.1,
 new ReverseMagazine(s_magazine, s_shooter).withTimeout(.5),
 new RunMagazine(s_magazine, .6).alongWith().withTimeout(2))
 .alongWith(new SpinShooter(s_shooter, driverController, 2600, s_vision).withTimeout(2.7));
+
+private final Command c_autoClimb = new AngleArmSlow(Arm.minPotOutput, s_arm).andThen(
+        new RunClimberTillLimit(s_climber, -.5).andThen(
+                new AngleArmSlow(Constants.armPotPassValue+.2, s_arm).andThen(
+                        new ParallelCommandGroup(
+                              new RunClimberTillLimit(s_climber, .5),
+                              new AngleArmSlow(Arm.maxPotOutput, s_arm),
+                              new ToggleHook(s_pneumatics)  
+                        ).andThen(
+                                new AngleArmSlow(Constants.armPotNextBar, s_arm).andThen(
+                                        new ParallelCommandGroup(
+                                                new RunClimberTillLimit(s_climber, -.5),
+                                                new AngleArmSlow(Arm.minPotOutput, s_arm),
+                                                new ToggleHook(s_pneumatics)  
+                                        ).andThen(
+                                                //Repetition starts
+                                                new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen(
+                                                        new ParallelCommandGroup(
+                                                                new RunClimberTillLimit(s_climber, .5),
+                                                                new AngleArmSlow(Arm.maxPotOutput, s_arm),
+                                                                new ToggleHook(s_pneumatics)  
+                                                          ).andThen(
+                                                                new AngleArmSlow(Constants.armPotNextBar, s_arm).andThen(
+                                                                        new ParallelCommandGroup(
+                                                                                new RunClimberTillLimit(s_climber, -.5),
+                                                                                new AngleArmSlow(Arm.minPotOutput, s_arm),
+                                                                                new ToggleHook(s_pneumatics)  
+                                                                        ).withTimeout(1.5) 
+                                                                )
+                                                          )  
+                                                )
+                                        ) 
+                                )
+                        )      
+                )
+        )        
+);
 /**
 * This is a menu displayed on the dashboard that we use to select autonomous
 * routines
@@ -269,211 +307,6 @@ new ToggleIntake(s_pneumatics).andThen(
         )
 ));
 
-/*_autoChooser.addOption("three ball right tarmac",
-        new ToggleIntake(s_pneumatics).andThen(
-                new ParallelCommandGroup(
-                        new SpinShooter(s_shooter, manipulatorController, 0),
-                        new RunIntake(s_intake),
-                        new RunMagazine(s_magazine, .6)
-                ).withTimeout(1).andThen(
-                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .3))).raceWith(
-                                TrajectoryHelper.createTrajectoryCommand(
-                                        TrajectoryHelper.generateTrajectory(Constants.rightFender, List.of(Constants.intakingRLBall.getTranslation()), Constants.intakingRRBall, false, 3, 2, 1, 0, 0, 7)
-                                ).andThen(
-                                        TrajectoryHelper.createTrajectoryCommand(
-                                                TrajectoryHelper.generateTrajectory(Constants.intakingRRBall, List.of(new Translation2d(7.68,1.2)), Constants.rightFender, true, 3, 2, 1, 0, 1, 7)
-                                        ).andThen(
-                                                new RunMagazine(s_magazine, -.6).withTimeout(.5).andThen(
-                                                        new ParallelCommandGroup(
-                                                                new SpinShooter(s_shooter, manipulatorController, 0),
-                                                                new RunIntake(s_intake),
-                                                                new RunMagazine(s_magazine, .6)
-                                                        ).withTimeout(1).andThen(
-                                                                TrajectoryHelper.createTrajectoryCommand(
-                                                                        TrajectoryHelper.generateTrajectory(Constants.rightFender, List.of(), Constants.intakingTerminalBalls, false, 3, 2, 1, 0, 1, 7)
-                                                                )
-                                                        )
-                                                )
-                                        )
-                                )
-                        )
-                )
-        )
-);
-
-_autoChooser.addOption("three ball left tarmac",
-        new ToggleIntake(s_pneumatics).andThen(
-                new ParallelCommandGroup(
-                        new SpinShooter(s_shooter, manipulatorController, 0),
-                        new RunIntake(s_intake),
-                        new RunMagazine(s_magazine, .6)
-                ).withTimeout(1).andThen(
-                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, .3))).raceWith(
-                                TrajectoryHelper.createTrajectoryCommand(
-                                        TrajectoryHelper.generateTrajectory(Constants.leftFender, List.of(new Translation2d(4.13, 4.28)), Constants.intakingTerminalBalls, false, 3, 2, 1, 0, 0, 7)
-                                ).andThen(
-                                        TrajectoryHelper.createTrajectoryCommand(
-                                                TrajectoryHelper.generateTrajectory(Constants.intakingTerminalBalls, List.of(new Translation2d(4.13, 4.28)), Constants.leftFender, true, 3, 2, 1, 0, 1, 7)
-                                        ).andThen(
-                                                new RunMagazine(s_magazine, -.6).withTimeout(.5).andThen(
-                                                        new ParallelCommandGroup(
-                                                                new SpinShooter(s_shooter, manipulatorController, 0),
-                                                                new RunIntake(s_intake),
-                                                                new RunMagazine(s_magazine, .6)
-                                                        ).withTimeout(1)
-                                                )
-                                        )
-                                )
-                        )
-                )
-        )
-);*/
-
-/*_autoChooser.addOption("3 ball high goal right tarmac",
-new ToggleIntake(s_pneumatics).andThen(
-new ResetOdometry(new Pose2d(7.8, 2.85, Rotation2d.fromDegrees(-111)), s_drivetrain)
-.andThen(
-new ParallelCommandGroup(new AngleArm(.17, s_arm),
-new SpinShooter(s_shooter,
-manipulatorController,
-3000),
-new RunMagazine(s_magazine, .6))
-.withTimeout(1.5)
-.andThen(
-new AngleArm(.07,
-s_arm).andThen(
-        new RunIntake(s_intake)
-.alongWith(new RunMagazine(
-s_magazine,
-.3)).raceWith(
-TrajectoryHelper.createTrajectoryCommand(
-TrajectoryHelper.generateTrajectory(
-new Pose2d(7.78, 2.85,
-Rotation2d.fromDegrees(
--110.64)),
-List.of(new Translation2d(
-5.65,
-1.92)),
-new Pose2d(7.64, .93,
-Rotation2d.fromDegrees(
--90)),
-false,
-3,
-2,
-1,
-0,
-0,
-7))
-)
-.andThen(
-TrajectoryHelper.createTrajectoryCommand(
-TrajectoryHelper.generateTrajectory(
-new Pose2d(7.64, .93,
-Rotation2d.fromDegrees(
--90)),
-List.of(),
-new Pose2d(7.8, 2.85, Rotation2d.fromDegrees(-111)),
-true,
-3,
-2,
-1,
-0,
-1,
-7))
-.andThen(
-new RunMagazine(
-s_magazine,
--.6)
-.withTimeout(
-.4)
-.andThen(new AngleArm(.17, s_arm).andThen(
-new ParallelCommandGroup(
-new RunIntake(
-s_intake),
-new RunMagazine(
-s_magazine,
-.6)).alongWith(
-new SpinShooter(
-s_shooter,
-manipulatorController,
-3000)))))))))));*/
-
-/*_autoChooser.addOption("3 ball high goal left tarmac",
-(
-new ToggleIntake(s_pneumatics).andThen(
-new ResetOdometry(new Pose2d(7.00, 4.62, Rotation2d.fromDegrees(159)), s_drivetrain)
-.andThen(
-new ParallelCommandGroup(new AngleArm(.17, s_arm),
-new SpinShooter(s_shooter,
-manipulatorController,
-3000),
-new RunMagazine(s_magazine, .6))
-.withTimeout(.75)
-.andThen(
-        new RunIntake(s_intake)
-.alongWith(new RunMagazine(
-s_magazine,
-.3)).raceWith(
-TrajectoryHelper.createTrajectoryCommand(
-TrajectoryHelper.generateTrajectory(
-new Pose2d(7, 4.62,
-Rotation2d.fromDegrees(
-159)),
-List.of(new Translation2d(
-3.72,
-3.73)),
-new Pose2d(1.73, 1.58,
-Rotation2d.fromDegrees(-135)),
-false,
-3,
-2,
-1,
-0,
-0,
-7))
-)
-.andThen(new RunIntake(
-        s_intake).alongWith(
-        new RunMagazine(s_magazine,
-        .4)).withTimeout(1).andThen(
-TrajectoryHelper.createTrajectoryCommand(
-TrajectoryHelper.generateTrajectory(
-        new Pose2d(1.73, 1.58,
-Rotation2d.fromDegrees(
--135)),
-List.of(new Translation2d(
-3.72,
-3.73)),
-new Pose2d(7, 4.62,
-Rotation2d.fromDegrees(
-159)),
-true,
-3,
-2,
-1,
-0,
-1,
-7)))
-.andThen(
-new RunMagazine(s_magazine,
--.6)
-.withTimeout(.5)
-.andThen(
-new ParallelCommandGroup(
-new AngleArm(
-.17,
-s_arm),
-new SpinShooter(
-s_shooter,
-manipulatorController,
-3000),
-new RunMagazine(
-s_magazine,
-.6).alongWith(new RunIntake(s_intake))).withTimeout(
-1.5)))))))));*/
-
-
-
 SmartDashboard.putData("Auto Mode", _autoChooser);
 }
 
@@ -541,6 +374,22 @@ final JoystickButton tarmacHighShot = new JoystickButton(manipulatorController, 
 tarmacHighShot.whileHeld(
 new ParallelCommandGroup(new AngleArm(.3, s_arm, s_vision),
 new SpinShooter(s_shooter, manipulatorController, 3500, s_vision)));
+
+SmartDashboard.putData(new RunClimberTillLimit(s_climber, -.5));
+
+final POVButton pullWinchIn = new POVButton(tableStick, 0);
+final POVButton letWinchOut = new POVButton(tableStick, 180);
+pullWinchIn.whileHeld(new RunClimberTillLimit(s_climber, -.5));
+letWinchOut.whileHeld(new RunClimberTillLimit(s_climber, .5));
+
+final Trigger armUp = new Trigger(() -> -tableStick.getY()>.2);
+final Trigger armDown = new Trigger(() -> -tableStick.getY()<-.2);
+
+armUp.whileActiveContinuous(new AngleArmSlow(Arm.minPotOutput, s_arm));
+armDown.whileActiveContinuous(new AngleArmSlow(Arm.maxPotOutput, s_arm));
+
+final JoystickButton toggleHooks = new JoystickButton(tableStick, 1);
+toggleHooks.whenPressed(new ToggleHook(s_pneumatics));
 
 }      
 

@@ -26,5 +26,7 @@ public class RobotMap {
     public static int hookSolenoid3 = 4;
     public static int hookSolenoid4 = 5;
 
+    public static int limitSwitchPort = 0;
+
 
 }
