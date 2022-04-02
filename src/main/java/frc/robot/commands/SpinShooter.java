@@ -33,7 +33,6 @@ public class SpinShooter extends CommandBase {
   public void initialize() {
     
     
-    _driverController.setRumble(RumbleType.kRightRumble, .2);
     //if(RPM == 0) {
       //sd = true;
       //RPM = SmartDashboard.getNumber("shooter RPM given angle",0);
@@ -46,9 +45,20 @@ public class SpinShooter extends CommandBase {
   public void execute() {
     if(RPM!=0) {
     _shooter.setShooterVelocity(RPM);
+      if(Math.abs(_shooter.getAverageVelocity()-RPM)<75) {
+        _driverController.setRumble(RumbleType.kRightRumble, 1);
+      } else {
+          _driverController.setRumble(RumbleType.kRightRumble, 0);
+      }
     } else {
       _shooter.setShooterVelocity(vision.get_shooter_rps(vision.getLimelightTY()));
+      if(Math.abs(_shooter.getAverageVelocity()-vision.get_shooter_rps(vision.getLimelightTY()))<75) {
+        _driverController.setRumble(RumbleType.kRightRumble, 1);
+      } else {
+          _driverController.setRumble(RumbleType.kRightRumble, 0);
+      }
     }
+    
   }
 
   // Called once the command ends or is interrupted.
