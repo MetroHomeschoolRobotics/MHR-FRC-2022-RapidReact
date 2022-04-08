@@ -46,8 +46,8 @@ public final class Constants {
     public static final double kv = 2.7743;//volt seconds per meter
     public static final double ka = 0.56749;//volt seconds squared per meter
 
-    public static final double armPotPassValue = .1;
-    public static final double armPotNextBar = .3;
+    public static final double armPotPassValue = .16;
+    public static final double armPotNextBar = .35;
 
     public static final double robotLengthMeters = Units.inchesToMeters(32+(3.25*2));
 

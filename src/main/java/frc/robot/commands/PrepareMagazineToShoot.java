@@ -7,15 +7,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Magazine;
 
-public class RunMagazine extends CommandBase {
-  /** Creates a new RunMagazine. */
-  private Magazine magazine;
-  private double speed;
-  public RunMagazine(Magazine _magazine, double _speed) {
+public class PrepareMagazineToShoot extends CommandBase {
+  /** Creates a new PrepareMagazineToShoot. */
+  Magazine magazine;
+  public PrepareMagazineToShoot(Magazine s_magazine) {
     // Use addRequirements() here to declare subsystem dependencies.
-    magazine = _magazine;
+    magazine=s_magazine;
     addRequirements(magazine);
-    speed = _speed;
   }
 
   // Called when the command is initially scheduled.
@@ -25,18 +23,20 @@ public class RunMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    magazine.setMagazine(speed);
+    if(magazine.getBeamBreak3()) {
+      magazine.setMagazine(-.6);
+    } else {
+      magazine.setMagazine(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    magazine.setMagazine(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !magazine.getBeamBreak3();
   }
 }

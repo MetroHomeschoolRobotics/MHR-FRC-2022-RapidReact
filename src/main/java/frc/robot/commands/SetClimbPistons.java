@@ -4,39 +4,39 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Magazine;
+import frc.robot.subsystems.Pneumatics;
 
-public class RunMagazine extends CommandBase {
-  /** Creates a new RunMagazine. */
-  private Magazine magazine;
-  private double speed;
-  public RunMagazine(Magazine _magazine, double _speed) {
+public class SetClimbPistons extends CommandBase {
+  /** Creates a new ToggleHook. */
+  Pneumatics pneumatics;
+  Value _direction;
+  public SetClimbPistons(Value direction, Pneumatics s_pneumatics) {
+    addRequirements(s_pneumatics);
+    pneumatics=s_pneumatics;
+    _direction = direction;
     // Use addRequirements() here to declare subsystem dependencies.
-    magazine = _magazine;
-    addRequirements(magazine);
-    speed = _speed;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    pneumatics.setHook(_direction);
+    //pneumatics.toggleHooks();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    magazine.setMagazine(speed);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    magazine.setMagazine(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

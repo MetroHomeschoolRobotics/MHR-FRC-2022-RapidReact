@@ -11,9 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -24,11 +26,14 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.TrajectoryHelper;
 import frc.robot.commands.AngleArm;
+import frc.robot.commands.AngleArmLL;
 import frc.robot.commands.AngleArmSlow;
 import frc.robot.commands.ArmManual;
+import frc.robot.commands.AutoMagazine;
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveTeleop;
 import frc.robot.commands.LimelightAim;
+import frc.robot.commands.PrepareMagazineToShoot;
 import frc.robot.commands.ResetClimberEncoder;
 import frc.robot.commands.ResetOdometry;
 import frc.robot.commands.ReverseIntake;
@@ -36,6 +41,7 @@ import frc.robot.commands.ReverseMagazine;
 import frc.robot.commands.RunClimberTillLimit;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunMagazine;
+import frc.robot.commands.SetClimbPistons;
 import frc.robot.commands.SpinShooter;
 import frc.robot.commands.ToggleCompressor;
 import frc.robot.commands.ToggleHook;
@@ -43,6 +49,7 @@ import frc.robot.commands.ToggleIntake;
 import frc.robot.commands.ToggleLights;
 import frc.robot.commands.TrackBall;
 import frc.robot.commands.WinchClimber;
+import frc.robot.commands.WinchClimberRelative;
 import frc.robot.commands.WinchToSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ClimberWinch;
@@ -117,7 +124,7 @@ new ReverseMagazine(s_magazine, s_shooter).withTimeout(.5),
 new RunMagazine(s_magazine, .6).alongWith().withTimeout(2))
 .alongWith(new SpinShooter(s_shooter, driverController, 2600, s_vision).withTimeout(2.7));
 
-private final Command c_autoClimb = new AngleArmSlow(Arm.minPotOutput, s_arm).andThen(
+private final CommandBase c_autoClimb = new AngleArmSlow(Arm.minPotOutput, s_arm).andThen(
         new RunClimberTillLimit(s_climber, -.5).andThen(
                 new AngleArmSlow(Constants.armPotPassValue+.2, s_arm).andThen(
                         new ParallelCommandGroup(
@@ -169,6 +176,7 @@ private void setDefaultCommands() {
 CommandScheduler.getInstance().setDefaultCommand(s_drivetrain, c_driveTeleop);
 CommandScheduler.getInstance().setDefaultCommand(s_arm, new ArmManual(s_arm, manipulatorController));
 CommandScheduler.getInstance().setDefaultCommand(s_climber, c_winchClimber);
+CommandScheduler.getInstance().setDefaultCommand(s_magazine, new AutoMagazine(s_magazine, s_intake, s_shooter, driverController));
 }
 
 /**
@@ -317,17 +325,18 @@ SmartDashboard.putData("Auto Mode", _autoChooser);
 */
 private void configureButtonBindings() {
 final JoystickButton rightBumper = new JoystickButton(driverController, 5);
-rightBumper.whileHeld(c_reverseIntake);
+
 final JoystickButton leftBumper = new JoystickButton(driverController, 6);
 leftBumper.whileHeld(c_runIntake);
+
+
+
 
 final JoystickButton rightBumperM = new JoystickButton(manipulatorController, 5);
 rightBumperM.whileHeld(new ReverseMagazine(s_magazine, s_shooter).alongWith(new ReverseIntake(s_intake)));
 final JoystickButton leftBumperM = new JoystickButton(manipulatorController, 6);
 leftBumperM.whileHeld(new RunMagazine(s_magazine, .6).alongWith(new RunIntake(s_intake)));
 
-final JoystickButton aButton = new JoystickButton(driverController, 1);
-aButton.whileHeld(new TrackBall(s_drivetrain, true, driverController));
 final JoystickButton bbutton = new JoystickButton(driverController, 2);
 bbutton.whileHeld(new LimelightAim(s_drivetrain, s_vision, manipulatorController, true));
 final JoystickButton startButton = new JoystickButton(driverController, 8);
@@ -338,31 +347,19 @@ SmartDashboard.putNumber("Arm Value", .1);
 final JoystickButton fenderButton = new JoystickButton(manipulatorController, 1);
 // fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new
 // SpinShooter(s_shooter, manipulatorController, 2600)));
-fenderButton.whileHeld(
-new ParallelCommandGroup(new AngleArm(.32, s_arm, s_vision),
-new SpinShooter(s_shooter, manipulatorController, 1600, s_vision)));
-
+fenderButton.whileHeld((new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 1600, s_vision)).raceWith(new AngleArm(.4, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 1600, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
+fenderButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
 final JoystickButton fenderHighButton = new JoystickButton(manipulatorController, 2);
 // fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new
 // SpinShooter(s_shooter, manipulatorController, 2600)));
-fenderHighButton.whileHeld(
-new ParallelCommandGroup(new AngleArm(.17, s_arm, s_vision),
-new SpinShooter(s_shooter, manipulatorController, 3000, s_vision)));
-
+fenderHighButton.whileHeld((new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision)).raceWith(new AngleArm(.25, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
+fenderHighButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
 final JoystickButton hooksButton = new JoystickButton(driverController, 7);
 hooksButton.whenPressed(new ToggleHook(s_pneumatics));
 
 final POVButton spinAtSDRPM = new POVButton(manipulatorController, 0);
-spinAtSDRPM.whileHeld(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).alongWith(new AngleArm(0, s_arm, s_vision)));
-
-final POVButton winchDown = new POVButton(driverController, 180);
-final POVButton winchUp = new POVButton(driverController, 0);
-winchDown.whileHeld(new WinchToSetpoint(0, s_climber));
-winchUp.whileHeld(new WinchToSetpoint(130, s_climber));
-final POVButton cannonOutButton = new POVButton(driverController, 90);
-cannonOutButton.whileHeld(new AngleArmSlow(.04, s_arm));
-final POVButton cannonInButton = new POVButton(driverController, 270);
-cannonInButton.whileHeld(new AngleArmSlow(.4, s_arm));
+spinAtSDRPM.whenPressed((new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision)).raceWith(new AngleArmLL(s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
+spinAtSDRPM.whenReleased(new AngleArm(.35, s_arm, s_vision));
 
 final JoystickButton resetWinchEncoder = new JoystickButton(driverController, 10);
 resetWinchEncoder.whenPressed(new ResetClimberEncoder(s_climber));
@@ -371,25 +368,27 @@ final JoystickButton limelightToggle = new JoystickButton(driverController, 3);
 limelightToggle.whenPressed(new ToggleLights(s_vision));
 
 final JoystickButton tarmacHighShot = new JoystickButton(manipulatorController, 4);
-tarmacHighShot.whileHeld(
-new ParallelCommandGroup(new AngleArm(.3, s_arm, s_vision),
-new SpinShooter(s_shooter, manipulatorController, 3500, s_vision)));
-
+tarmacHighShot.whileHeld((new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 3500, s_vision)).raceWith(new AngleArm(.38,s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3500, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
+tarmacHighShot.whenReleased(new AngleArm(.35, s_arm, s_vision));
 SmartDashboard.putData(new RunClimberTillLimit(s_climber, -.5));
 
-final POVButton pullWinchIn = new POVButton(tableStick, 0);
-final POVButton letWinchOut = new POVButton(tableStick, 180);
-pullWinchIn.whileHeld(new RunClimberTillLimit(s_climber, -.5));
-letWinchOut.whileHeld(new RunClimberTillLimit(s_climber, .5));
 
-final Trigger armUp = new Trigger(() -> -tableStick.getY()>.2);
-final Trigger armDown = new Trigger(() -> -tableStick.getY()<-.2);
+final POVButton driver0 = new POVButton(driverController, 0);
+final POVButton driver90 = new POVButton(driverController, 90);
+final POVButton driver180 = new POVButton(driverController, 180);
+final POVButton driver270 = new POVButton(driverController, 270);
+final JoystickButton aButton = new JoystickButton(driverController, 1);
 
-armUp.whileActiveContinuous(new AngleArmSlow(Arm.minPotOutput, s_arm));
-armDown.whileActiveContinuous(new AngleArmSlow(Arm.maxPotOutput, s_arm));
 
-final JoystickButton toggleHooks = new JoystickButton(tableStick, 1);
-toggleHooks.whenPressed(new ToggleHook(s_pneumatics));
+//driver90.whileHeld(new AngleArmSlow(Arm.maxPotOutput, s_arm));
+//driver270.whileHeld(new AngleArmSlow(Arm.minPotOutput, s_arm));
+
+ driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .7).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-10, s_climber)), true);
+ driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -.5).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).andThen(new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen((new RunClimberTillLimit(s_climber, .7).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm))))), true);
+ driver180.toggleWhenPressed(new RunClimberTillLimit(s_climber, -.5).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)).andThen(new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen((new RunClimberTillLimit(s_climber, .7).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm))))), true);
+ driver270.toggleWhenPressed((new RunClimberTillLimit(s_climber, -.5).withTimeout(1)).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)), true);
+
+SmartDashboard.putData(new WinchClimberRelative(-10, s_climber));
 
 }      
 

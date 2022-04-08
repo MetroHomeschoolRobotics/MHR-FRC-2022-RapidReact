@@ -11,19 +11,17 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Vision;
 
-public class AngleArm extends CommandBase {
+public class AngleArmLL extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
   private double setpoint = 0;
   private Vision s_vision;
   private PIDController armPID = new PIDController(30, 0, 0);
-  public AngleArm(double _setpoint, Arm _arm, Vision _vision
+  public AngleArmLL(Arm _arm, Vision _vision
   ) {
     armPID.setTolerance(.004);
     arm=_arm;
     s_vision = _vision;
-    setpoint = 0;
-    setpoint = _setpoint;
     addRequirements(_arm);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -31,28 +29,16 @@ public class AngleArm extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(setpoint!=0) {
-      armPID.calculate(arm.getArmPot(), setpoint);
-    } else {
       armPID.calculate(arm.getArmPot(), s_vision.get_arm_angle(s_vision.getLimelightTY()));
-    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if(!armPID.atSetpoint()) {
-      if(setpoint!=0) {
-        arm.setArmMotor(armPID.calculate(arm.getArmPot(), setpoint));
-      } else {
-        
         arm.setArmMotor(armPID.calculate(arm.getArmPot(), s_vision.get_arm_angle(s_vision.getLimelightTY())));
-      }
-    } else {
-      arm.setArmMotor(0);
     }
-    }
-
+  }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
@@ -62,6 +48,6 @@ public class AngleArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return armPID.atSetpoint();
+    return Math.abs(arm.getArmPot()-s_vision.get_arm_angle(s_vision.getLimelightTY()))<.03;
   }
 }

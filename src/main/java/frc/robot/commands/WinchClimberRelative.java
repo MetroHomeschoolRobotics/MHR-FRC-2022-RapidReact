@@ -9,23 +9,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberWinch;
 
-public class WinchToSetpoint extends CommandBase {
+public class WinchClimberRelative extends CommandBase {
   /** Creates a new WinchToSetpoint. */
   private PIDController winchPID = new PIDController(0.05, 0, 0);
   private ClimberWinch winch;
   private double setpoint;
-  public WinchToSetpoint(double _setpoint, ClimberWinch _Winch) {
+  private double amount;
+  public WinchClimberRelative(double _amount, ClimberWinch _Winch) {
     // Use addRequirements() here to declare subsystem dependencies.
     winch = _Winch;
-    setpoint = _setpoint;
+    amount = _amount;
     addRequirements(winch);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    winchPID.setTolerance(10);
+    winchPID.setTolerance(3);
+    setpoint = winch.getClimberEncoder()+amount;
     //SmartDashboard.putData(winchPID);
+    winchPID.calculate(winch.getClimberEncoder(), setpoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

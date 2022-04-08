@@ -27,6 +27,7 @@ public class Pneumatics extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Compressor Running", getCompressorState());
+    SmartDashboard.putBoolean("Pressure Switch", getSwitch());
     //hookSolenoid2.set(hookSolenoid1.get());
   }
   
@@ -64,11 +65,19 @@ public class Pneumatics extends SubsystemBase {
     }
   }
 
+  public void setHook(Value direction) {
+    hookSolenoid1.set(direction);
+    hookSolenoid2.set(direction);
+  }
+
   public void toggleHooks() {
     hookSolenoid1.toggle();
     hookSolenoid2.toggle();
   }
 
+  public boolean getSwitch() {
+    return compressor.getPressureSwitchValue();
+  }
 
   public boolean getCompressorState() {
     return compressor.enabled();//get if the compressor is on or off
