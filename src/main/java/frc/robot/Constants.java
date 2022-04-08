@@ -42,9 +42,9 @@ public final class Constants {
  * Leave all other settings at default. Run the 4 tests for both drivetrain and angular drivetrain. 
  */
     //Feedforward constants from linear tests
-    public static final double ks = 0.19098;//volts
-    public static final double kv = 2.7743;//volt seconds per meter
-    public static final double ka = 0.56749;//volt seconds squared per meter
+    public static final double ks = 0.16378;//volts
+    public static final double kv = 1.3407;//volt seconds per meter
+    public static final double ka = 0.26467;//volt seconds squared per meter
 
     public static final double armPotPassValue = .16;
     public static final double armPotNextBar = .35;
@@ -52,10 +52,10 @@ public final class Constants {
     public static final double robotLengthMeters = Units.inchesToMeters(32+(3.25*2));
 
     //Track width from angular tests
-    public static final double trackWidth = 0.59328; //meters
+    public static final double trackWidth = 0.61193; //meters
 
     //Proportional constant from linear tests
-    public static final double kP = 0.0014723; //voltage per velocity
+    public static final double kP = 0.00067575; //voltage per velocity
 
     //Object to tell trajectory how to vary speed for track width
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(trackWidth); 
