@@ -88,5 +88,9 @@ public final class Constants {
     public static Trajectory fiveballFrom3Ball = TrajectoryHelper.generateFromPathPlanner("5bf3");
     public static Trajectory threeIntakingL = TrajectoryHelper.generateFromPathPlanner("3bdl");
 
+    public static Trajectory fiveb1 = TrajectoryHelper.generateFromPathPlanner("5b1");
+    public static Trajectory fiveb2 = TrajectoryHelper.generateFromPathPlanner("5b2");
+    public static Trajectory fiveb3 = TrajectoryHelper.generateFromPathPlanner("5b3");
+
     public static final Pose2d intakingTerminalBalls = new Pose2d(1.71, 1.59, Rotation2d.fromDegrees(45));
 }

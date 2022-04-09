@@ -28,6 +28,7 @@ import frc.TrajectoryHelper;
 import frc.robot.commands.AngleArm;
 import frc.robot.commands.AngleArmLL;
 import frc.robot.commands.AngleArmSlow;
+import frc.robot.commands.ApplyClimberPower;
 import frc.robot.commands.ArmManual;
 import frc.robot.commands.AutoMagazine;
 import frc.robot.commands.DriveDistance;
@@ -118,48 +119,13 @@ private final ReverseIntake c_reverseIntake = new ReverseIntake(s_intake);
 // driverController, 3000);
 private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics);
 private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
-private final WinchClimber c_winchClimber = new WinchClimber(s_climber, driverController);
+private final WinchClimber c_winchClimber = new WinchClimber(s_climber, manipulatorController);
 private final Command c_fenderShot = new SequentialCommandGroup(new AngleArm(.1, s_arm, s_vision),
 new ReverseMagazine(s_magazine, s_shooter).withTimeout(.5),
 new RunMagazine(s_magazine, .6).alongWith().withTimeout(2))
 .alongWith(new SpinShooter(s_shooter, driverController, 2600, s_vision).withTimeout(2.7));
 
-private final CommandBase c_autoClimb = new AngleArmSlow(Arm.minPotOutput, s_arm).andThen(
-        new RunClimberTillLimit(s_climber, -.5).andThen(
-                new AngleArmSlow(Constants.armPotPassValue+.2, s_arm).andThen(
-                        new ParallelCommandGroup(
-                              new RunClimberTillLimit(s_climber, .5),
-                              new AngleArmSlow(Arm.maxPotOutput, s_arm),
-                              new ToggleHook(s_pneumatics)  
-                        ).andThen(
-                                new AngleArmSlow(Constants.armPotNextBar, s_arm).andThen(
-                                        new ParallelCommandGroup(
-                                                new RunClimberTillLimit(s_climber, -.5),
-                                                new AngleArmSlow(Arm.minPotOutput, s_arm),
-                                                new ToggleHook(s_pneumatics)  
-                                        ).andThen(
-                                                //Repetition starts
-                                                new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen(
-                                                        new ParallelCommandGroup(
-                                                                new RunClimberTillLimit(s_climber, .5),
-                                                                new AngleArmSlow(Arm.maxPotOutput, s_arm),
-                                                                new ToggleHook(s_pneumatics)  
-                                                          ).andThen(
-                                                                new AngleArmSlow(Constants.armPotNextBar, s_arm).andThen(
-                                                                        new ParallelCommandGroup(
-                                                                                new RunClimberTillLimit(s_climber, -.5),
-                                                                                new AngleArmSlow(Arm.minPotOutput, s_arm),
-                                                                                new ToggleHook(s_pneumatics)  
-                                                                        ).withTimeout(1.5) 
-                                                                )
-                                                          )  
-                                                )
-                                        ) 
-                                )
-                        )      
-                )
-        )        
-);
+
 /**
 * This is a menu displayed on the dashboard that we use to select autonomous
 * routines
@@ -234,6 +200,22 @@ _autoChooser.addOption("5 ball (right fender)", new ToggleIntake(s_pneumatics).a
                                         )
                                 )
                         )
+                )
+        )
+);
+
+_autoChooser.addOption("5 ball", new ToggleIntake(s_pneumatics).andThen(
+        new ResetOdometry(Constants.fiveb1.getInitialPose(), s_drivetrain).andThen(
+                TrajectoryHelper.createTrajectoryCommand(Constants.fiveb1).andThen(
+                        (new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision)).raceWith(new AngleArmLL(s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).raceWith(new RunMagazine(s_magazine, .4).withTimeout(1.5)))).andThen(
+                                TrajectoryHelper.createTrajectoryCommand(Constants.fiveb2).andThen(
+                                        (new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision)).raceWith(new AngleArmLL(s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).raceWith(new RunMagazine(s_magazine, .6).withTimeout(1.5)))).andThen(
+                                                TrajectoryHelper.createTrajectoryCommand(Constants.fiveb3).andThen(
+                                                        (new PrepareMagazineToShoot(s_magazine).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision)).raceWith(new AngleArmLL(s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).raceWith(new RunMagazine(s_magazine, .4).withTimeout(1.5)))))
+                                                )
+                                        )
+                                )
+                        ) 
                 )
         )
 );
@@ -381,12 +363,12 @@ final JoystickButton aButton = new JoystickButton(driverController, 1);
 
 
 //driver90.whileHeld(new AngleArmSlow(Arm.maxPotOutput, s_arm));
-//driver270.whileHeld(new AngleArmSlow(Arm.minPotOutput, s_arm));
+// driver270.whileHeld(new AngleArmSlow(Arm.minPotOutput, s_arm));
 
- driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .7).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-10, s_climber)), true);
- driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -.5).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).andThen(new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen((new RunClimberTillLimit(s_climber, .7).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm))))), true);
- driver180.toggleWhenPressed(new RunClimberTillLimit(s_climber, -.5).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)).andThen(new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen((new RunClimberTillLimit(s_climber, .7).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm))))), true);
- driver270.toggleWhenPressed((new RunClimberTillLimit(s_climber, -.5).withTimeout(1)).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)), true);
+  driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .5).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-7, s_climber)), true);
+  driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).andThen(new ApplyClimberPower(s_climber, -.7).raceWith(new AngleArm(Constants.armPotPassValue, s_arm, s_vision)).andThen((new WinchClimberRelative(10, s_climber).andThen(new RunClimberTillLimit(s_climber, .6).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm))).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm)))), true);
+//  driver180.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)).andThen(new AngleArmSlow(Constants.armPotPassValue, s_arm).andThen((new RunClimberTillLimit(s_climber, .5).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm))))), true);
+//  driver270.toggleWhenPressed((new RunClimberTillLimit(s_climber, -1).withTimeout(1)).alongWith(new AngleArmSlow(Arm.minPotOutput, s_arm)).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics)), true);
 
 SmartDashboard.putData(new WinchClimberRelative(-10, s_climber));
 

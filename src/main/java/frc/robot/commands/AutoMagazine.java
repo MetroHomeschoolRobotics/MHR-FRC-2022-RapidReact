@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,7 @@ public class AutoMagazine extends CommandBase {
     shooter = s_shooter;
     controller = driverController;
     addRequirements(s_intake, s_magazine, s_shooter);
+    SmartDashboard.putBoolean("run indexer", true);
   }
 
   // Called when the command is initially scheduled.
@@ -40,13 +42,17 @@ public class AutoMagazine extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(controller.getRightBumper()) {
+    if(controller.getRightBumper()||DriverStation.isAutonomous()) {
       intake.setIntake(1);
       
     } else {
       //intake.setIndexer(0);
     }
+    if(SmartDashboard.getBoolean("run indexer", true)) {
     intake.setIndexer(.3);
+    } else {
+      intake.setIndexer(0);
+    }
     if(magazine.colorSensorHasBall()) {
         currentColorBall = magazine.isRightColor();
         if(magazine.getBeamBreak1()||magazine.getBeamBreak3()) {
