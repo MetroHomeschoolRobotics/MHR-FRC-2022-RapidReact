@@ -31,7 +31,7 @@ public class AutoMagazine extends CommandBase {
     intake=s_intake;
     shooter = s_shooter;
     controller = driverController;
-    addRequirements(s_intake, s_magazine, s_shooter);
+    addRequirements(s_intake, s_magazine);
     SmartDashboard.putBoolean("run indexer", true);
   }
 
@@ -71,10 +71,10 @@ public class AutoMagazine extends CommandBase {
 
     if(currentColorBall == 1) {
       //right color
-      indexerSpeed = .4;
-      shooter.setShooterVelocity(0);
+      indexerSpeed = .5;
+      //shooter.setShooterVelocity(0);
       if(!(magazine.getBeamBreak1()||magazine.getBeamBreak3())||magazine.getBeamBreak2()) {
-        magazine.setMagazine(.4);
+        magazine.setMagazine(.5);
       } else {
         magazine.setMagazine(0);
 
@@ -82,15 +82,15 @@ public class AutoMagazine extends CommandBase {
     } else if(currentColorBall == 0) {
       if(magazine.getBeamBreak1()&&magazine.getBeamBreak2()) {
           magazine.setMagazine(-.075);
-          shooter.setShooterVelocity(0);
+          //shooter.setShooterVelocity(0);
         intake.setIndexer(1);
       } else if(hasTwoBalls&&!magazine.getBeamBreak1() && magazine.getBeamBreak2()&&magazine.getBeamBreak3()) {
         //magazine.setMagazine(-.6);
       }else if(!hasTwoBalls){
-        magazine.setMagazine(.4);
-        shooter.setShooterVelocity(1000);
+        magazine.setMagazine(1);
+        //shooter.setShooterVelocity(1000);
       } else {
-        shooter.setShooterVelocity(0);
+        //shooter.setShooterVelocity(0);
       }
     }
     

@@ -49,14 +49,14 @@ public class DriveTeleop extends CommandBase {
     lastButtonValue = _driverController.getLeftStickButton();
     
     if(_driverController.getRightTriggerAxis()>.2) {
-      _drivetrain.setMaxOutput(.5+(_driverController.getRightTriggerAxis()/2));
+      _drivetrain.setMaxOutput(.75+(_driverController.getRightTriggerAxis()/2));
       _drivetrain.move(forward, spin,true);
     } else if(_driverController.getLeftTriggerAxis()>.2) {
       _drivetrain.setMaxOutput(.25);
       _drivetrain.move(forward, spin, true);
     }
      else {
-      _drivetrain.setMaxOutput(.5);
+      _drivetrain.setMaxOutput(.75);
       _drivetrain.move(forward, spin, true);
     }
     SmartDashboard.putNumber("forward", forward);

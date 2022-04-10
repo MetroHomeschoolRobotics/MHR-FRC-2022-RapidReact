@@ -22,6 +22,7 @@ import frc.RedBalls;
 import frc.RedBallsLHS;
 import frc.robot.BlueBalls;
 
+
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -105,7 +106,7 @@ public class Vision extends SubsystemBase {
     }
   }
   public double getLimelightTY() {
-    return limelight.getEntry("ty").getDouble(0)/Math.cos(-Units.degreesToRadians(limelight.getEntry("tx").getDouble(0)));
+    return limelight.getEntry("ty").getDouble(0)/*/Math.cos(-Units.degreesToRadians(limelight.getEntry("tx").getDouble(0)))*/;
   }
   public double getLimelightTX() {
     return limelight.getEntry("tx").getDouble(0);
@@ -138,14 +139,64 @@ public class Vision extends SubsystemBase {
   }
 
   public double get_arm_angle (double target_angle){ 
-    return (1.7376954e-6)*(Math.pow(target_angle, 3))+1.545765e-4*(Math.pow(target_angle,2))+-.0030598857*(target_angle)+.2092726891;
+    //return (1.7376954e-6)*(Math.pow(target_angle, 3))+1.545765e-4*(Math.pow(target_angle,2))+-.0030598857*(target_angle)+.2092726891;
+    //return 1.2831802e-6*Math.pow(target_angle, 4)+2.2548459e-5*Math.pow(target_angle, 3)-2.559467e-4*Math.pow(target_angle, 2)-.0102652388*target_angle+.3654017083;
+    return -6.9277e-5*Math.pow(target_angle, 2)-.0076533432*target_angle+.3606892849;
+    /*if(target_angle>=12) {
+      return .25;
+    }else if(target_angle>=8) {
+      return .28;
+    } else if(target_angle>=3) {
+      return .33;
+    } else if(target_angle>=0) {
+      return .38;
+    } else if(target_angle>=-13) {
+      return .44;
+    } else if(target_angle>=-18) {
+      return .45;
+    } else if(target_angle>=-19) {
+      return .5;
+    } else {
+      return .5;
+    }*/
     //return 0;
     //TODO: Switch to quadratic
   };
   public double get_shooter_rps (double target_angle){
     //return .1034824632*Math.pow(target_angle, 3)+ 1.624632*Math.pow(target_angle,2)-28.50503783*target_angle+3140.563397;
     //return 3146.95-.939146*target_angle;
-    return 3109.484067-21.50986343*target_angle;
+    //return 3109.484067-21.50986343*target_angle;
+    //return -.0035367827*Math.pow(target_angle, 4)-.0455052048*Math.pow(target_angle, 3)+1.081567939*Math.pow(target_angle, 2)-13.93041872*target_angle+3237.459536;
+    //return 3293-22.5154969*target_angle;
+    //var speed = 6284.979609-1038.128849*Math.log(target_angle+30);
+    //var speed = 7750*Math.pow(target_angle+30, -.2721057279);
+    /*if(speed<3100) {
+      speed = 3100;
+    }*/
+    if(target_angle>=6) {
+      return 3100;
+    } else if(target_angle>=3) {
+      return 25*(target_angle-6)+3100;
+    } else if(target_angle>=0) {
+      return 33*(target_angle-3)+3150;
+    } else if(target_angle>=-3) {
+      return 25*(target_angle)+3250;
+    } else if(target_angle>=-7) {
+      return 3300;
+    } else if(target_angle>=-10) {
+      return 3400;
+    } else if(target_angle>=-13) {
+      return 67*(target_angle+10)+3500;
+    } else if(target_angle>=-16) {
+      return 33*(target_angle+13)+3600;
+    } else if(target_angle>=-18) {
+      return 50*(target_angle+16)+3750;
+    } else if(target_angle>=-19) {
+      return 3750;
+    } else {
+      return 766*(target_angle+21)+5000;
+    }
+    //return speed;
     //TODO: switch to logarithmic
     //return 0;
   };

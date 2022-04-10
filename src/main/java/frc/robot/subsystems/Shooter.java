@@ -64,7 +64,7 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //Print current velocities to the dashboard. 
-    //SmartDashboard.putNumber("left rps", leftShooterMotor.getEncoder().getVelocity());
-    //SmartDashboard.putNumber("right rps", rightShooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("left rpm", leftShooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("right rpm", rightShooterMotor.getEncoder().getVelocity());
   }
 }

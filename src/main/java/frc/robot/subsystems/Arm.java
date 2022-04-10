@@ -25,6 +25,7 @@ public class Arm extends SubsystemBase {
   private PIDController armPID = new PIDController(35, 0, 0);
   public static final double maxPotOutput = 0.444;
   public static final double minPotOutput = 0.084;
+  public static final double actualMax = .5;
   public double potOutputToHold = .44;
   public boolean hold = true;
   
@@ -52,7 +53,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmMotor(double speed) {
-    if (speed > 0 && getArmPot() >= maxPotOutput){
+    if (speed > 0 && getArmPot() >= actualMax){
       speed = 0;
     }
     else if ( speed < 0 && getArmPot() <= minPotOutput){
