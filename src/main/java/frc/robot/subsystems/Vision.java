@@ -28,8 +28,14 @@ public class Vision extends SubsystemBase {
     mjpegServer1.setResolution(160,120);
     mjpegServer1.setFPS(10);
     CameraServer.putVideo("Intake Camera", 160, 120);
-    SmartDashboard.putNumber("a", 7750);
-    SmartDashboard.putNumber("b", -.237);
+    // SmartDashboard.putNumber("a", 7750);
+    // SmartDashboard.putNumber("b", -.237);
+    
+    SmartDashboard.putNumber("a", 8072.3);
+    SmartDashboard.putNumber("b", -.258532);
+    SmartDashboard.putNumber("c", .820984);
+    SmartDashboard.putNumber("d", 133.902);
+
     setPIP(2);
     
   }
@@ -107,42 +113,8 @@ public class Vision extends SubsystemBase {
     //return 0;
   };
   public double get_shooter_rps (double target_angle){
-    //return .1034824632*Math.pow(target_angle, 3)+ 1.624632*Math.pow(target_angle,2)-28.50503783*target_angle+3140.563397;
-    //return 3146.95-.939146*target_angle;
-    //return 3109.484067-21.50986343*target_angle;
-    //return -.0035367827*Math.pow(target_angle, 4)-.0455052048*Math.pow(target_angle, 3)+1.081567939*Math.pow(target_angle, 2)-13.93041872*target_angle+3237.459536;
-    //return 3293-22.5154969*target_angle;
-    //return 6750 + 1038.128849*Math.log(target_angle+30);
-    return SmartDashboard.getNumber("a", 0)*Math.pow(target_angle+30, SmartDashboard.getNumber("b", 0));
-    /*if(speed<3100) {
-      speed = 3100;
-    }*/
-    
-    /*if(target_angle>=6) {
-      return 3100;
-    } else if(target_angle>=3) {
-      return 25*(target_angle-6)+3100;
-    } else if(target_angle>=0) {
-      return 33*(target_angle-3)+3150;
-    } else if(target_angle>=-3) {
-      return 25*(target_angle)+3250;
-    } else if(target_angle>=-7) {
-      return 3300;
-    } else if(target_angle>=-10) {
-      return 3400;
-    } else if(target_angle>=-13) {
-      return 100*(target_angle+10)+3750;
-    } else if(target_angle>=-16) {
-      return 33*(target_angle+13)+3750;
-    } else if(target_angle>=-18) {
-      return 50*(target_angle+16)+4000;
-    } else if(target_angle>=-19) {
-      return 3750;
-    } else {
-      return 766*(target_angle+21)+5000;
-    }
-    //return speed;
-    //return 0;*/
+    //return SmartDashboard.getNumber("a", 0)*Math.pow(target_angle+30, SmartDashboard.getNumber("b", 0));
+    return (SmartDashboard.getNumber("a", 0)*Math.pow((target_angle+30)+SmartDashboard.getNumber("c", 0), SmartDashboard.getNumber("b", 0)))+SmartDashboard.getNumber("d", 0);
   };
   
   @Override public void periodic() {
