@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -20,18 +19,16 @@ public class LimelightAim extends CommandBase {
   private Drivetrain drivetrain;
   private Vision vision;
   private double TX_threshold;
-  private boolean turn;
   private int count = 0;
 
   private XboxController controller;
   
-  public LimelightAim(Drivetrain _drivetrain, Vision _vision, XboxController _controller, boolean _turn) {
+  public LimelightAim(Drivetrain _drivetrain, Vision _vision, XboxController _controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(_drivetrain);
     addRequirements(_vision);
     drivetrain = _drivetrain;
     controller = _controller;
-turn = _turn;
     vision = _vision; 
 
   }

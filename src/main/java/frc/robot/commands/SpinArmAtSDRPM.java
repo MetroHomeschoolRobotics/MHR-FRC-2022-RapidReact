@@ -5,18 +5,12 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Vision;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SpinArmAtSDRPM extends CommandBase {
   /** Creates a new SpinShooter. */
   private Shooter _shooter;
-  private XboxController _driverController;
-  private Vision vision;
-  private double RPM=0;
   boolean sd = false;
   public SpinArmAtSDRPM(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.

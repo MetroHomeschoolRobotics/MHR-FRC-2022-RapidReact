@@ -5,14 +5,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Magazine;
 
 public class PrepareMagazineToShoot extends CommandBase {
   /** Creates a new PrepareMagazineToShoot. */
   Magazine magazine;
-  public PrepareMagazineToShoot(Magazine s_magazine) {
+  Intake intake;
+  public PrepareMagazineToShoot(Magazine s_magazine, Intake s_intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     magazine=s_magazine;
+    intake = s_intake;
     addRequirements(magazine);
   }
 
@@ -25,6 +28,7 @@ public class PrepareMagazineToShoot extends CommandBase {
   public void execute() {
     if(magazine.getBeamBreak3()) {
       magazine.setMagazine(-.6);
+      intake.setIndexer(0);
     } else {
       magazine.setMagazine(0);
     }
@@ -32,7 +36,9 @@ public class PrepareMagazineToShoot extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    magazine.setMagazine(0);
+  }
 
   // Returns true when the command should end.
   @Override

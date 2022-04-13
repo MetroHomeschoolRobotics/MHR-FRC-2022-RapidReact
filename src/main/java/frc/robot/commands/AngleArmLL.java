@@ -5,16 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Vision;
 
 public class AngleArmLL extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
-  private double setpoint = 0;
   private Vision s_vision;
   private PIDController armPID = new PIDController(30, 0, 0);
   public AngleArmLL(Arm _arm, Vision _vision

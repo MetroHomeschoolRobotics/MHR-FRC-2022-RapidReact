@@ -4,16 +4,20 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Magazine;
 
 public class RunIntake extends CommandBase {
   private Intake _intake;
+  boolean _index = true;
   /** Creates a new RunIntake. */
   public RunIntake(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     _intake = intake;
+    //_index = index;
   }
 
   // Called when the command is initially scheduled.
@@ -26,12 +30,18 @@ public class RunIntake extends CommandBase {
   @Override
   public void execute() {
     _intake.setIntake(1);
+    if(_index) {
+      _intake.setIndexer(.5);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     _intake.setIntake(0);
+    if(_index) {
+      _intake.setIndexer(0);
+    }
     SmartDashboard.putString("Intake direction", "stopped");
   }
 

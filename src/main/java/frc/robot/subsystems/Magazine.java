@@ -7,9 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,13 +17,12 @@ import frc.robot.RobotMap;
 public class Magazine extends SubsystemBase {
   /** Creates a new Magazine. */
   private VictorSPX Magazine_motor = new VictorSPX(RobotMap.magazineMotor);
-  private final AnalogInput ultrasonic = new AnalogInput(1);
   private final PicoColorSensor colorSensor = new PicoColorSensor();
   private SendableChooser<Integer> colorChooser = new SendableChooser<Integer>();
   private frc.robot.PicoColorSensor.RawColor color;
-  private DigitalInput beamBreak1 = new DigitalInput(2);
-  private DigitalInput beamBreak2 = new DigitalInput(1);
-  private DigitalInput beamBreak3 = new DigitalInput(3);
+  private  DigitalInput beamBreak1 = new DigitalInput(2);
+  private  DigitalInput beamBreak2 = new DigitalInput(1);
+  private  DigitalInput beamBreak3 = new DigitalInput(3);
   public Magazine() {
     colorChooser.setDefaultOption("blue", 1);
     colorChooser.addOption("red",2);
@@ -83,13 +80,13 @@ public class Magazine extends SubsystemBase {
       return 2;
     }
   }
-  public boolean getBeamBreak1() {
+  public  boolean getBeamBreak1() {
     return !beamBreak1.get();
   }
-  public boolean getBeamBreak2() {
+  public  boolean getBeamBreak2() {
     return !beamBreak2.get();
   }
-  public boolean getBeamBreak3() {
+  public  boolean getBeamBreak3() {
     return !beamBreak3.get();
   }
 }
