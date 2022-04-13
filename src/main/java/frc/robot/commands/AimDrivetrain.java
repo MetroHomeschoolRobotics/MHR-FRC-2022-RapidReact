@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
@@ -17,7 +19,7 @@ public class AimDrivetrain extends CommandBase {
   private double distanceError;
   private double turnError;
 
-  private PIDController drivePID = new PIDController(0.05, 0, 0);
+  private ProfiledPIDController drivePID = new ProfiledPIDController(0.05, 0, 0, new TrapezoidProfile.Constraints(2, 2));
   private PIDController aimPID = new PIDController(0.015, 0, 0.0002);
   public AimDrivetrain(Vision vision, Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
