@@ -14,7 +14,7 @@ public class AngleArm extends CommandBase {
   private Arm arm;
   private double setpoint = 0;
   private Vision s_vision;
-  private PIDController armPID = new PIDController(30, 0, 0);
+  private PIDController armPID = new PIDController(15, 0, 1);
   public AngleArm(double _setpoint, Arm _arm, Vision _vision
   ) {
     armPID.setTolerance(.004);

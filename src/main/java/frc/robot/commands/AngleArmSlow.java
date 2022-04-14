@@ -12,7 +12,7 @@ public class AngleArmSlow extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
   private double setpoint;
-  private PIDController armPID = new PIDController(10, 0, 0);
+  private PIDController armPID = new PIDController(10, 0, 1);
   public AngleArmSlow(double _setpoint, Arm _arm
   ) {
     armPID.setTolerance(.004);

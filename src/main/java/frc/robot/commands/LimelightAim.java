@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +35,7 @@ public class LimelightAim extends CommandBase {
 
   }
   
-  private static PIDController horizontal_PID = new PIDController(0.03, 0, 0.001);
+  private static PIDController horizontal_PID = new PIDController(0.03, 0.0, 0.002);
   private double horizontal_Threshold  = .12;
   
 
@@ -41,19 +43,23 @@ public class LimelightAim extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
-controller.setRumble(RumbleType.kLeftRumble, .2);
-vision.setPIP(1);
+    //SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
+    controller.setRumble(RumbleType.kLeftRumble, .2);
+    horizontal_PID.calculate(vision.getLimelightTX(), 0);
+    horizontal_PID.setTolerance(1,10);
+    horizontal_PID.setIntegratorRange(-.1, .1);
+    
+    
+    vision.setPIP(1);
+    SmartDashboard.putData(horizontal_PID);
 //CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTY()), RobotContainer.s_arm));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("arm from limelight", vision.get_arm_angle(vision.getLimelightTY()));
-    if (Math.abs(vision.getLimelightTX()) > TX_threshold){
-      drivetrain.moveManual(0, -horizontal_PID.calculate(vision.getLimelightTX(), 0));
-    }
+    //SmartDashboard.putNumber("arm from limelight", vision.get_arm_angle(vision.getLimelightTY()));
+    drivetrain.moveManual(0, -horizontal_PID.calculate(vision.getLimelightTX(), 0));
   }
 
   // Called once the command ends or is interrupted.
@@ -67,21 +73,6 @@ vision.setPIP(1);
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(vision.getLimelightHasTarget()) {
-      if(Math.abs(vision.getLimelightTX())<horizontal_Threshold) {
-        count+=1;
-        SmartDashboard.putNumber("shooter RPM given angle", vision.get_shooter_rps(vision.getLimelightTY()));
-        SmartDashboard.putNumber("arm from limelight", vision.get_arm_angle(vision.getLimelightTY()));
-        RobotContainer.armFromLimelight = vision.get_arm_angle(vision.getLimelightTY());
-        return true;
-      }
-      } else {
-        count = 0;
-      }
-      if(count>0) {
-        return true;
-      } else {
-        return false;
-      }
+    return horizontal_PID.atSetpoint();
   }
 }

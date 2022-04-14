@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -47,11 +48,7 @@ public class Vision extends SubsystemBase {
 
 
   public boolean getLimelightHasTarget() {
-    if(limelight.getEntry("tv").getDouble(0)==1) {
-      return true;
-    } else {
-      return false;
-    }
+    return new Debouncer(.1).calculate(limelight.getEntry("tv").getDouble(0)==1);
   }
   public double getLimelightTY() {
     if(getLimelightHasTarget()) {

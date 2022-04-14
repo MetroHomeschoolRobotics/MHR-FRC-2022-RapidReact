@@ -204,9 +204,9 @@ _autoChooser.addOption("5 ball (right fender)", new ToggleIntake(s_pneumatics).a
                                 (new AutoMagazine(s_magazine, s_intake, s_shooter, driverController).alongWith(new AngleArmSlow(.35, s_arm)).withTimeout(4.25).andThen(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(/*new SpinShooter(s_shooter, manipulatorController, 3800, s_vision)*/new WaitCommand(10)))).raceWith(
                                         TrajectoryHelper.createTrajectoryCommand(Constants.threeIntakingR)
                                 ).andThen(
-                                        (new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
-                                                new AngleArmSlow(.4, s_arm).andThen(
-                                                        new RunMagazine(s_magazine, .3).alongWith(
+                                        (new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
+                                                new ParallelCommandGroup(new AngleArmSlow(.4, s_arm), new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(.25))).andThen(
+                                                        new RunMagazine(s_magazine, .45).alongWith(
                                                                 new WaitCommand(.2).andThen(
                                                                         new RunIntake(s_intake)
                                                                 )
@@ -216,40 +216,40 @@ _autoChooser.addOption("5 ball (right fender)", new ToggleIntake(s_pneumatics).a
                                                 (new AutoMagazine(s_magazine, s_intake, s_shooter, driverController).withTimeout(5).andThen(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(10)))).raceWith(
                                                         TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball)
                                                 ).andThen(
-                                                        (new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
-                                                        new AngleArmSlow(.4, s_arm).andThen(
-                                                                new RunMagazine(s_magazine, .3).alongWith(
-                                                                        new WaitCommand(.2).andThen(
-                                                                                new RunIntake(s_intake)
-                                                                        )
+                                                        (new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
+                                                new ParallelCommandGroup(new AngleArmSlow(.4, s_arm), new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(
+                                                        new RunMagazine(s_magazine, .45).alongWith(
+                                                                new WaitCommand(.2).andThen(
+                                                                        new RunIntake(s_intake)
                                                                 )
                                                         )
                                                 )
-                                        )
+                                        )))
                                 )
                         )
                 )
         )
-));
+)));
 //));
 
-_autoChooser.addOption("two ball + steal", new RunIntake(s_intake).raceWith(TrajectoryHelper.createTrajectoryCommand(Constants.twobS1)).andThen(
-        new PrepareMagazineToShoot(s_magazine, s_intake).andThen(
-                new ParallelCommandGroup(
-                        new SpinShooter(s_shooter, manipulatorController, 0, s_vision),
-                        new AngleArmLL(s_arm, s_vision),
-                        new RunIntake(s_intake),
-                        new RunMagazine(s_magazine, .6)
-                ).withTimeout(2).andThen(
-                        new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, 0)).raceWith(
-                                TrajectoryHelper.createTrajectoryCommand(Constants.twobS2).andThen(
+_autoChooser.addOption("two ball + steal", new ResetOdometry(Constants.twobS1.sample(0).poseMeters, s_drivetrain).andThen(new ToggleIntake(s_pneumatics).andThen(new RunIntake(s_intake).raceWith(TrajectoryHelper.createTrajectoryCommand(Constants.twobS1)).andThen(
+        (new AngleArmLL(s_arm, s_vision).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).alongWith(
+                new ParallelCommandGroup(new AngleArmLL(s_arm, s_vision), new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(.25))).andThen(
+                        new RunMagazine(s_magazine, .45).alongWith(
+                                new WaitCommand(.2).andThen(
+                                        new RunIntake(s_intake)
+                                )
+                        )
+                )
+        )).withTimeout(2).andThen(
+                        (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, 0))).raceWith(
+                                TrajectoryHelper.createTrajectoryCommand(Constants.twobS2)).andThen(
                                         new ReverseIntake(s_intake).alongWith(new ReverseMagazine(s_magazine, s_shooter))
-                                ).withTimeout(2).andThen(
-                                        TrajectoryHelper.createTrajectoryCommand(Constants.twobS3)
                                 )
                         )
                 )
         )
+)
 ));
 
 _autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(
@@ -264,7 +264,7 @@ _autoChooser.addOption("one ball + taxi", new WaitCommand(1).andThen(
         )
 );
 
-_autoChooser.addOption("Spit preload", new ReverseIntake(s_intake).alongWith(new ReverseMagazine(s_magazine, s_shooter)));
+_autoChooser.addOption("Spit preload", new ToggleIntake(s_pneumatics).andThen(new ReverseIntake(s_intake).alongWith(new RunMagazine(s_magazine, -1))));
 
 _autoChooser.addOption("Two ball straight back", 
 new ToggleIntake(s_pneumatics).andThen(
@@ -305,7 +305,19 @@ final JoystickButton leftBumperM = new JoystickButton(manipulatorController, 6);
 leftBumperM.whileHeld(new RunMagazine(s_magazine, .6).alongWith(new RunIntake(s_intake)));
 
 final JoystickButton bbutton = new JoystickButton(driverController, 2);
-bbutton.whileHeld(new LimelightAim(s_drivetrain, s_vision, manipulatorController));
+bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, driverController, 0, s_vision)).raceWith(new ParallelCommandGroup(
+        new LimelightAim(s_drivetrain, s_vision, manipulatorController) ,
+        new AngleArmLL(s_arm, s_vision)
+)).andThen(
+        new ParallelCommandGroup(
+                new SpinShooter(s_shooter, driverController, 0, s_vision),
+                new RunMagazine(s_magazine, .4),
+                new RunIntake(s_intake) 
+        )
+));
+bbutton.whenReleased(
+        new AngleArm(.35, s_arm, s_vision)
+);
 final JoystickButton startButton = new JoystickButton(driverController, 8);
 startButton.whenPressed(c_toggleCompressor);
 final JoystickButton yButton = new JoystickButton(driverController, 4);
