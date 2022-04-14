@@ -110,7 +110,7 @@ public static final ClimberWinch s_climber = new ClimberWinch();
 * each instance can only be used once in command groups.
 */
 private final DriveTeleop c_driveTeleop = new DriveTeleop(s_drivetrain, driverController);
-private final RunIntake c_runIntake = new RunIntake(s_intake);
+//private final RunIntake c_runIntake = new RunIntake(s_intake);
 private final ToggleCompressor c_toggleCompressor = new ToggleCompressor(s_pneumatics);
 private final ToggleIntake c_toggleIntake = new ToggleIntake(s_pneumatics);
 private final WinchClimber c_winchClimber = new WinchClimber(s_climber, manipulatorController);

@@ -5,13 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
@@ -20,8 +17,6 @@ public class LimelightAim extends CommandBase {
   /** Creates a new LimelightAim. */
   private Drivetrain drivetrain;
   private Vision vision;
-  private double TX_threshold;
-  private int count = 0;
 
   private XboxController controller;
   
@@ -36,7 +31,6 @@ public class LimelightAim extends CommandBase {
   }
   
   private static PIDController horizontal_PID = new PIDController(0.03, 0.0, 0.002);
-  private double horizontal_Threshold  = .12;
   
 
 
