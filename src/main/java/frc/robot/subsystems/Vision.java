@@ -34,8 +34,12 @@ public class Vision extends SubsystemBase {
     
     SmartDashboard.putNumber("a", 8072.3);
     SmartDashboard.putNumber("b", -.258532);
-    SmartDashboard.putNumber("c", .820984);
+    //SmartDashboard.putNumber("c", .820984);
+    SmartDashboard.putNumber("c", 0.2);
     SmartDashboard.putNumber("d", 133.902);
+
+
+
 
     setPIP(2);
     
@@ -48,12 +52,10 @@ public class Vision extends SubsystemBase {
 
 
   public boolean getLimelightHasTarget() {
-    return new Debouncer(.1).calculate(limelight.getEntry("tv").getDouble(0)==1);
+    return limelight.getEntry("tv").getDouble(0)==1;
   }
   public double getLimelightTY() {
-    if(getLimelightHasTarget()) {
       tY = limelight.getEntry("ty").getDouble(0)/Math.cos(-Units.degreesToRadians(limelight.getEntry("tx").getDouble(0)));
-    }
     return tY;
   }
   public double getLimelightTX() {

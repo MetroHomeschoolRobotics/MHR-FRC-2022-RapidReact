@@ -204,27 +204,27 @@ _autoChooser.addOption("5 ball (right fender)", new ToggleIntake(s_pneumatics).a
                                 (new AutoMagazine(s_magazine, s_intake, s_shooter, driverController).alongWith(new AngleArmSlow(.35, s_arm)).withTimeout(4.25).andThen(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(/*new SpinShooter(s_shooter, manipulatorController, 3800, s_vision)*/new WaitCommand(10)))).raceWith(
                                         TrajectoryHelper.createTrajectoryCommand(Constants.threeIntakingR)
                                 ).andThen(
-                                        (new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
-                                                new ParallelCommandGroup(new AngleArmSlow(.4, s_arm), new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(.25))).andThen(
+                                        (new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3600, s_vision).alongWith(
+                                                new ParallelCommandGroup(new AngleArmLL(s_arm, s_vision), new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new LimelightAim(s_drivetrain, s_vision, driverController).withTimeout(.5))).andThen(
                                                         new RunMagazine(s_magazine, .45).alongWith(
                                                                 new WaitCommand(.2).andThen(
                                                                         new RunIntake(s_intake)
                                                                 )
                                                         )
                                                 )
-                                        )).withTimeout(3).andThen(
-                                                (new AutoMagazine(s_magazine, s_intake, s_shooter, driverController).withTimeout(5).andThen(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(10)))).raceWith(
-                                                        TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball)
-                                                ).andThen(
-                                                        (new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3800, s_vision).alongWith(
-                                                new ParallelCommandGroup(new AngleArmSlow(.4, s_arm), new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(
+                                        )).withTimeout(2.5).andThen(
+                                                (new AutoMagazine(s_magazine, s_intake, s_shooter, driverController).withTimeout(6).andThen(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new WaitCommand(60)))).raceWith(
+                                                        TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball1)
+                                                .andThen(new WaitCommand(.5).andThen(TrajectoryHelper.createTrajectoryCommand(Constants.fiveballFrom3Ball2)))).andThen(
+                                                        new AngleArmSlow(.4, s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3600, s_vision).alongWith(
+                                                new ParallelCommandGroup(new AngleArmLL(s_arm, s_vision), new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new LimelightAim(s_drivetrain, s_vision, driverController).withTimeout(.5))).andThen(
                                                         new RunMagazine(s_magazine, .45).alongWith(
                                                                 new WaitCommand(.2).andThen(
                                                                         new RunIntake(s_intake)
                                                                 )
                                                         )
                                                 )
-                                        )))
+                                        ))
                                 )
                         )
                 )
@@ -311,8 +311,8 @@ bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new S
 )).andThen(
         new ParallelCommandGroup(
                 new SpinShooter(s_shooter, driverController, 0, s_vision),
-                new RunMagazine(s_magazine, .4),
-                new RunIntake(s_intake) 
+                new WaitCommand(.4).andThen(new ParallelCommandGroup(new RunMagazine(s_magazine, .4),
+                new RunIntake(s_intake)))
         )
 ));
 bbutton.whenReleased(
@@ -354,6 +354,9 @@ SmartDashboard.putData(new RunClimberTillLimit(s_climber, -.5));
 final JoystickButton spinAtSDRPMButton = new JoystickButton(manipulatorController, 3);
 spinAtSDRPMButton.whileHeld(new SpinArmAtSDRPM(s_shooter));
 
+final JoystickButton toggleMagButton = new JoystickButton(manipulatorController, 9);
+toggleMagButton.toggleWhenPressed(new RunMagazine(s_magazine, 0));
+
 final POVButton driver0 = new POVButton(driverController, 0);
 final POVButton driver90 = new POVButton(driverController, 90);
 final POVButton driver180 = new POVButton(driverController, 180);
@@ -363,8 +366,8 @@ final POVButton driver270 = new POVButton(driverController, 270);
 //driver90.whileHeld(new AngleArmSlow(Arm.maxPotOutput, s_arm));
 // driver270.whileHeld(new AngleArmSlow(Arm.minPotOutput, s_arm));
 
-  driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .5).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-7, s_climber)), true);
-  driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).andThen(new ApplyClimberPower(s_climber, -.7).raceWith(new AngleArm(Constants.armPotPassValue, s_arm, s_vision)).andThen((new WinchClimberRelative(10, s_climber).andThen(new RunClimberTillLimit(s_climber, .6).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm))).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm)))), true);
+  driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .6).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-7, s_climber)), true);
+  driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).andThen(new ApplyClimberPower(s_climber, -1).raceWith(new AngleArm(Constants.armPotPassValue, s_arm, s_vision)).andThen((new WinchClimberRelative(10, s_climber).andThen(new RunClimberTillLimit(s_climber, .6).alongWith(new AngleArmSlow(Arm.maxPotOutput, s_arm))).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmSlow(Constants.armPotNextBar, s_arm)))), true);
   driver180.toggleWhenPressed(new ApplyClimberPower(s_climber, -1).withTimeout(.5).alongWith(new WaitCommand(0).andThen(new ToggleHook(s_pneumatics))), true);
   driver270.toggleWhenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm));
 

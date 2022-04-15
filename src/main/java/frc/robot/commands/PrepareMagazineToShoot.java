@@ -28,7 +28,7 @@ public class PrepareMagazineToShoot extends CommandBase {
   public void execute() {
     if(magazine.getBeamBreak3()) {
       magazine.setMagazine(-.6);
-      intake.setIndexer(0);
+      intake.setIndexer(-.4);
     } else {
       magazine.setMagazine(0);
     }
@@ -38,6 +38,7 @@ public class PrepareMagazineToShoot extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     magazine.setMagazine(0);
+    intake.setIndexer(0);
   }
 
   // Returns true when the command should end.

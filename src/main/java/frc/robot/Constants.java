@@ -43,7 +43,7 @@ public final class Constants {
     public static final double kv = 2.7995;//volt seconds per meter
     public static final double ka = 0.55264;//volt seconds squared per meter
 
-    public static final double armPotPassValue = .16;
+    public static final double armPotPassValue = .14;
     public static final double armPotNextBar = .38;
 
     public static final double robotLengthMeters = Units.inchesToMeters(32+(3.25*2));
@@ -82,7 +82,8 @@ public final class Constants {
     public static Trajectory testPP = TrajectoryHelper.generateFromPathPlanner("Test");
 
     public static Trajectory threeIntakingR = TrajectoryHelper.generateFromPathPlanner("3bdf");
-    public static Trajectory fiveballFrom3Ball = TrajectoryHelper.generateFromPathPlanner("5bf3");
+    public static Trajectory fiveballFrom3Ball1 = TrajectoryHelper.generateFromPathPlanner("5bf31");
+    public static Trajectory fiveballFrom3Ball2 = TrajectoryHelper.generateFromPathPlanner("5bf32");
     public static Trajectory threeIntakingL = TrajectoryHelper.generateFromPathPlanner("3bdl");
 
     public static Trajectory twobS1 = TrajectoryHelper.generateFromPathPlanner("2bLI");
