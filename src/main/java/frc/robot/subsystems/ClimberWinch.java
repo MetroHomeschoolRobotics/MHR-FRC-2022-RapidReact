@@ -16,13 +16,12 @@ public class ClimberWinch extends SubsystemBase {
   /** Creates a new ClimberWinch. */
   public ClimberWinch() {
     climberWinchMotor.setInverted(true);
-    climberWinchMotor.setSmartCurrentLimit(35);
     climberWinchMotor.burnFlash();
     climberWinchMotor.getEncoder().setPosition(4);
     SmartDashboard.putBoolean("Software Limits on Climber", true);
   }
 
-  private CANSparkMax climberWinchMotor = new CANSparkMax(RobotMap.climber_winch, MotorType.kBrushless);
+  private static CANSparkMax climberWinchMotor = new CANSparkMax(RobotMap.climber_winch, MotorType.kBrushless);
 
   private DigitalInput limitSwitch = new DigitalInput(RobotMap.limitSwitchPort);
   @Override
@@ -56,5 +55,8 @@ public class ClimberWinch extends SubsystemBase {
   }
   public double getClimberEncoder() {
     return climberWinchMotor.getEncoder().getPosition();
+  }
+  public static double getMotorOutput() {
+    return climberWinchMotor.get();
   }
 }

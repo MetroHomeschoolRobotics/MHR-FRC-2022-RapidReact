@@ -8,12 +8,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
-public class AngleArmSlow extends CommandBase {
+public class AngleArmFast extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
   private double setpoint;
-  private PIDController armPID = new PIDController(15, 0, 1);
-  public AngleArmSlow(double _setpoint, Arm _arm
+  private PIDController armPID = new PIDController(30, 0, 1);
+  public AngleArmFast(double _setpoint, Arm _arm
   ) {
     armPID.setTolerance(.004);
     arm=_arm;

@@ -65,7 +65,9 @@ public class Arm extends SubsystemBase {
     } else {
       hold = false;
     }
+  if(ClimberWinch.getMotorOutput()==0) {
     arm_motor.set(ControlMode.PercentOutput, speed);
+  }
   }
 
 }
