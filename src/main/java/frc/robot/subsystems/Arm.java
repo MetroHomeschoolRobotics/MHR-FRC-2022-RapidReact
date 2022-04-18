@@ -8,10 +8,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotMap;
 
 
@@ -20,7 +22,8 @@ public class Arm extends SubsystemBase {
   //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
-  private PIDController armPID = new PIDController(35, 0, 0);
+  private PIDController armPID = new PIDController(30, 0, 0);
+  
   public static final double maxPotOutput = 0.444;
   public static final double minPotOutput = 0.084;
   public static final double actualMax = .5;
@@ -30,6 +33,7 @@ public class Arm extends SubsystemBase {
   public Arm() {
     arm_motor.setInverted(true);
     arm_motor.setNeutralMode(NeutralMode.Brake);
+    
     //SmartDashboard.putData(armPID);
   }
 
@@ -40,14 +44,16 @@ public class Arm extends SubsystemBase {
     //SmartDashboard.putNumber("arm from limelight rc", RobotContainer.armFromLimelight);
     if(hold) {
       if(true) {
-      arm_motor.set(ControlMode.PercentOutput, armPID.calculate(getArmPot(), potOutputToHold));
+      arm_motor.set(ControlMode.PercentOutput, MathUtil.clamp(armPID.calculate(getArmPot(), potOutputToHold), 0, 1));
       }
     }
-    SmartDashboard.putNumber("Arm Potentiometer Value", armPot.get());
+    SmartDashboard.putNumber("Arm Potentiometer Value", getArmPot());
+    SmartDashboard.putNumber("actual arm", armPot.get());
+    
   }
   //Get current armpot value
   public double getArmPot() {
-      return armPot.get();
+      return armPot.get()+Constants.armPotOffset;
   }
 
   public void setArmMotor(double speed) {

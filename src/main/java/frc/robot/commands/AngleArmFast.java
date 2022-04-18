@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
@@ -13,6 +15,8 @@ public class AngleArmFast extends CommandBase {
   private Arm arm;
   private double setpoint;
   private PIDController armPID = new PIDController(30, 0, 1);
+  private boolean end;
+  private Debouncer endDeb = new Debouncer(.125);
   public AngleArmFast(double _setpoint, Arm _arm
   ) {
     armPID.setTolerance(.004);
@@ -48,6 +52,7 @@ public class AngleArmFast extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return armPID.atSetpoint();
+    end = armPID.atSetpoint();
+    return endDeb.calculate(end);
   }
 }

@@ -77,7 +77,7 @@ setDefaultCommands(); // Sets the default commands for each subsystem
 setAutoChooserOptions(); // Sets up autonomous routines
 configureButtonBindings(); // Configures button bindings for joystick
 SmartDashboard.putNumber("shooter RPM given angle", 0);
-LiveWindow.disableAllTelemetry();//Will this fix loop overruns? 
+//LiveWindow.disableAllTelemetry();//Will this fix loop overruns? 
 }
 
 /**
@@ -335,7 +335,7 @@ fenderButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
 final JoystickButton fenderHighButton = new JoystickButton(manipulatorController, 2);
 // fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new
 // SpinShooter(s_shooter, manipulatorController, 2600)));
-fenderHighButton.whileHeld((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision)).raceWith(new AngleArm(.25, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
+fenderHighButton.whileHeld((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 3100, s_vision)).raceWith(new AngleArm(.25, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
 fenderHighButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
 final JoystickButton hooksButton = new JoystickButton(driverController, 7);
 hooksButton.whenPressed(new ToggleHook(s_pneumatics));
@@ -370,10 +370,18 @@ final POVButton driver270 = new POVButton(driverController, 270);
 //driver90.whileHeld(new AngleArmSlow(Arm.maxPotOutput, s_arm));
 // driver270.whileHeld(new AngleArmSlow(Arm.minPotOutput, s_arm));
 
-  driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .6).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-7, s_climber)), true);
-  driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).andThen(new ApplyClimberPower(s_climber, -1).raceWith(new AngleArmFast(Constants.armPotPassValue, s_arm)).andThen((new WinchClimberRelative(10, s_climber).andThen(new RunClimberTillLimit(s_climber, .6).alongWith(new AngleArmFast(Arm.maxPotOutput, s_arm))).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmFast(Constants.armPotNextBar, s_arm)))), true);
-  driver180.toggleWhenPressed(new ApplyClimberPower(s_climber, -1).withTimeout(.5).alongWith(new WaitCommand(0).andThen(new ToggleHook(s_pneumatics))), true);
-  driver270.toggleWhenPressed(new AngleArmFast(Arm.minPotOutput, s_arm));
+  driver0.whenPressed(new AngleArmSlow(Arm.minPotOutput, s_arm).alongWith(new RunClimberTillLimit(s_climber, .5).alongWith(new SetClimbPistons(Value.kForward, s_pneumatics))).andThen(new WinchClimberRelative(-7, s_climber)), true);
+  driver90.toggleWhenPressed(new RunClimberTillLimit(s_climber, -1).andThen(new ApplyClimberPower(s_climber, -.8).raceWith(new AngleArmFast(Constants.armPotPassValue, s_arm)).andThen(new ToggleHook(s_pneumatics).andThen(new WaitCommand(1).andThen(new AngleArmFast(Arm.maxPotOutput, s_arm).andThen(new WinchClimberRelative(55, s_climber)))))));
+          //(new WinchClimberRelative(0, s_climber).andThen(new RunClimberTillLimit(s_climber, .6).alongWith(new AngleArmFast(Arm.maxPotOutput, s_arm))).alongWith(new SetClimbPistons(Value.kReverse, s_pneumatics))).andThen(new AngleArmFast(Constants.armPotNextBar, s_arm)))), true);
+  driver270.toggleWhenPressed(
+          (
+                  new ApplyClimberPower(s_climber, -1).withTimeout(.5).alongWith(
+                          new WaitCommand(0).andThen(new ToggleHook(s_pneumatics)
+                          ))).andThen(
+                                  new WaitCommand(.25).andThen(
+                                          new AngleArmFast(Arm.minPotOutput, s_arm)
+                                )));
+  driver180.whileActiveOnce(new RunClimberTillLimit(s_climber, .6).andThen(new AngleArmFast(Constants.armPotNextBar, s_arm)));
 
 SmartDashboard.putData(new WinchClimberRelative(-10, s_climber));
 
