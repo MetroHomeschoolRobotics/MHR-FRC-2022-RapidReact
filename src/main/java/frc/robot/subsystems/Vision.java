@@ -7,12 +7,14 @@ package frc.robot.subsystems;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 
 public class Vision extends SubsystemBase {
@@ -34,8 +36,8 @@ public class Vision extends SubsystemBase {
     
     SmartDashboard.putNumber("a", 8072.3);
     SmartDashboard.putNumber("b", -.258532);
-    //SmartDashboard.putNumber("c", .820984);
-    SmartDashboard.putNumber("c", 0.2);
+    SmartDashboard.putNumber("c", .820984);
+    //SmartDashboard.putNumber("c", 0.2);
     SmartDashboard.putNumber("d", 133.902);
 
 
@@ -113,7 +115,40 @@ public class Vision extends SubsystemBase {
   };
   public double get_shooter_rps (double target_angle){
     //return SmartDashboard.getNumber("a", 0)*Math.pow(target_angle+30, SmartDashboard.getNumber("b", 0));
-    return (SmartDashboard.getNumber("a", 0)*Math.pow((target_angle+30)+SmartDashboard.getNumber("c", 0), SmartDashboard.getNumber("b", 0)))+SmartDashboard.getNumber("d", 0);
+    //return (SmartDashboard.getNumber("a", 0)*Math.pow((target_angle+30)+SmartDashboard.getNumber("c", 0), SmartDashboard.getNumber("b", 0)))+SmartDashboard.getNumber("d", 0);
+    if(target_angle < -20) {
+      return MathUtil.interpolate(Constants.shooterAtm20, Constants.shooterAtm23, -(target_angle+20)/3);
+    } else if(target_angle < -17) {
+      return MathUtil.interpolate(Constants.shooterAtm17, Constants.shooterAtm20, -(target_angle+17)/3);
+    } else if(target_angle < -14) {
+      return MathUtil.interpolate(Constants.shooterAtm14, Constants.shooterAtm17, -(target_angle+14)/3);
+    } else if(target_angle < -11) {
+      return MathUtil.interpolate(Constants.shooterAtm11, Constants.shooterAtm14, -(target_angle+11)/3);
+    } else if(target_angle < -8) {
+      return MathUtil.interpolate(Constants.shooterAtm8, Constants.shooterAtm11, -(target_angle+8)/3);
+    } else if(target_angle < -5) {
+      return MathUtil.interpolate(Constants.shooterAtm5, Constants.shooterAtm8, -(target_angle+5)/3);
+    } else if(target_angle < -2) {
+      return MathUtil.interpolate(Constants.shooterAtm2, Constants.shooterAtm5, -(target_angle+2)/3);
+    } else if(target_angle < 0) {
+      return MathUtil.interpolate(Constants.shooterAtm2, Constants.shooterAt0, (target_angle+2)/2);
+    } else if(target_angle < 2) {
+      return MathUtil.interpolate(Constants.shooterAt0, Constants.shooterAt2, (target_angle-0)/2);
+    } else if(target_angle < 5) {
+      return MathUtil.interpolate(Constants.shooterAt2, Constants.shooterAt5, (target_angle-2)/3);
+    } else if(target_angle < 8) {
+      return MathUtil.interpolate(Constants.shooterAt5, Constants.shooterAt8, (target_angle-5)/3);
+    } else if(target_angle < 11) {
+      return MathUtil.interpolate(Constants.shooterAt8, Constants.shooterAtm11, (target_angle-8)/3);
+    } else if(target_angle < 14) {
+      return MathUtil.interpolate(Constants.shooterAt11, Constants.shooterAt14, (target_angle-11)/3);
+    } else if(target_angle < 17) {
+      return MathUtil.interpolate(Constants.shooterAt14, Constants.shooterAt17, (target_angle-14)/3);
+    } else if(target_angle < 20) {
+      return MathUtil.interpolate(Constants.shooterAt17, Constants.shooterAt20, (target_angle-17)/3);
+    } else {
+      return 0;
+    }
   };
   
   @Override public void periodic() {

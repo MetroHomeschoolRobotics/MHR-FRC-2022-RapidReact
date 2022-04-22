@@ -12,10 +12,12 @@ public class WinchClimber extends CommandBase {
   /** Creates a new WinchClimber. */
   ClimberWinch climber;
   XboxController controller;
-  public WinchClimber(ClimberWinch _climber, XboxController _controller) {
+  XboxController controller2;
+  public WinchClimber(ClimberWinch _climber, XboxController _controller, XboxController _controller2) {
     // Use addRequirements() here to declare subsystem dependencies.
     climber = _climber;
     controller = _controller;
+    controller2 = _controller2;
     addRequirements(climber);
   }
 
@@ -26,7 +28,7 @@ public class WinchClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = controller.getRightY();
+    double speed = controller.getRightY()+controller2.getRightY();
     if(Math.abs(speed)<.1) {
       speed = 0;
     }

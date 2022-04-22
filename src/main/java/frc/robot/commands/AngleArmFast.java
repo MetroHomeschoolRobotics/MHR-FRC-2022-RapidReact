@@ -14,12 +14,12 @@ public class AngleArmFast extends CommandBase {
   /** Creates a new AngleArm. */
   private Arm arm;
   private double setpoint;
-  private PIDController armPID = new PIDController(30, 0, 1);
+  private PIDController armPID = new PIDController(20, 0, 3);
   private boolean end;
-  private Debouncer endDeb = new Debouncer(.125);
+  private Debouncer endDeb = new Debouncer(.0625);
   public AngleArmFast(double _setpoint, Arm _arm
   ) {
-    armPID.setTolerance(.004);
+    armPID.setTolerance(.006);
     arm=_arm;
     setpoint = _setpoint;
     addRequirements(_arm);

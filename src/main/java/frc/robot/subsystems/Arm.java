@@ -24,7 +24,7 @@ public class Arm extends SubsystemBase {
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
   private PIDController armPID = new PIDController(30, 0, 0);
   
-  public static final double maxPotOutput = 0.444;
+  public static final double maxPotOutput = 0.49;
   public static final double minPotOutput = 0.084;
   public static final double actualMax = .5;
   public double potOutputToHold = .44;
@@ -42,6 +42,7 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run
     //Print armpot value to the dashboard every cycle
     //SmartDashboard.putNumber("arm from limelight rc", RobotContainer.armFromLimelight);
+    /*
     if(hold) {
       if(true) {
       arm_motor.set(ControlMode.PercentOutput, MathUtil.clamp(armPID.calculate(getArmPot(), potOutputToHold), 0, 1));
@@ -49,7 +50,7 @@ public class Arm extends SubsystemBase {
     }
     SmartDashboard.putNumber("Arm Potentiometer Value", getArmPot());
     SmartDashboard.putNumber("actual arm", armPot.get());
-    
+    */
   }
   //Get current armpot value
   public double getArmPot() {

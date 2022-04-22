@@ -69,6 +69,25 @@ public final class Constants {
     public static double maxForwardAccel = 5;
     public static double maxForwardCAccel = 3;
 
+    
+    public static double shooterAtm23 = 4500;
+    public static double shooterAtm20 = 3900;
+    public static double shooterAtm17 = 3800;
+    public static double shooterAtm14 = 3750;
+    public static double shooterAtm11 = 3700;
+    public static double shooterAtm8 = 3650;
+    public static double shooterAtm5 = 3600;
+    public static double shooterAtm2 = 3550;
+    public static double shooterAt0 = 3500;
+    public static double shooterAt2 = 3400;
+    public static double shooterAt5 = 3300;
+    public static double shooterAt8 = 3250;
+    public static double shooterAt11 = 3200;
+    public static double shooterAt14 = 3100;
+    public static double shooterAt17 = 3100;
+    public static double shooterAt20 = 3100;
+    
+
     public static double maxBackwardVel = 8;
     public static double maxBackwardAccel = 5;
     public static double maxBackwardCAccel = 3;
