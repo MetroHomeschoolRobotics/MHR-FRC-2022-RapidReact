@@ -242,7 +242,7 @@ _autoChooser.addOption("two ball + steal", new ResetOdometry(Constants.twobS1.sa
                                                                 )
                                                         )
                                                 )
-                                        )).withTimeout(2).andThen(
+                                        )).withTimeout(3).andThen(
                         (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, 0))).raceWith(
                                 TrajectoryHelper.createTrajectoryCommand(Constants.twobS2)).andThen(
                                         new ReverseIntake(s_intake).alongWith(new ReverseMagazine(s_magazine, s_shooter)).alongWith(new AngleArm(.35, s_arm, s_vision))
@@ -309,7 +309,7 @@ final JoystickButton leftBumperM = new JoystickButton(manipulatorController, 6);
 leftBumperM.whileHeld(new RunMagazine(s_magazine, .6).alongWith(new RunIntake(s_intake)));
 
 final JoystickButton bbutton = new JoystickButton(driverController, 2);
-bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, driverController, 0, s_vision)).raceWith(new ParallelCommandGroup(
+bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen((new SpinShooter(s_shooter, driverController, 0, s_vision)).raceWith(new ParallelCommandGroup(
         new LimelightAim(s_drivetrain, s_vision, manipulatorController) ,
         new AngleArmLL(s_arm, s_vision)
 )).andThen(
@@ -318,7 +318,7 @@ bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new S
                 new WaitCommand(.4).andThen(new ParallelCommandGroup(new RunMagazine(s_magazine, .4),
                 new RunIntake(s_intake)))
         )
-));
+)));
 bbutton.whenReleased(
         new AngleArm(.35, s_arm, s_vision)
 );

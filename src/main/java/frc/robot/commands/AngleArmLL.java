@@ -20,6 +20,7 @@ public class AngleArmLL extends CommandBase {
     arm=_arm;
     s_vision = _vision;
     addRequirements(_arm);
+    armPID.calculate(arm.getArmPot(), s_vision.get_arm_angle(s_vision.getLimelightTY()));
     //SmartDashboard.putData(armPID);
     // Use addRequirements() here to declare subsystem dependencies.
   }

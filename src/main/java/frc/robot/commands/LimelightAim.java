@@ -62,6 +62,7 @@ public class LimelightAim extends CommandBase {
     controller.setRumble(RumbleType.kLeftRumble, .0);
     //CommandScheduler.getInstance().schedule(new AngleArm(vision.get_arm_angle(vision.getLimelightTY()), RobotContainer.s_arm));
     vision.setPIP(2);
+    drivetrain.move(0,0, false);
   }
 
   // Returns true when the command should end.
