@@ -24,9 +24,9 @@ public class Arm extends SubsystemBase {
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
   private PIDController armPID = new PIDController(30, 0, 0);
   
-  public static final double maxPotOutput = 0.49;
-  public static final double minPotOutput = 0.084;
-  public static final double actualMax = .5;
+  public static final double maxPotOutput = 0.593; // maybe not needed match to actualMax
+  public static final double minPotOutput = 0.267; // arm pot reading for lower limit aka arm straight up
+  public static final double actualMax = .593; // arm pot reading for max limit aka arm closer to floor
   public double potOutputToHold = .44;
   public boolean hold = true;
   
@@ -48,9 +48,10 @@ public class Arm extends SubsystemBase {
       arm_motor.set(ControlMode.PercentOutput, MathUtil.clamp(armPID.calculate(getArmPot(), potOutputToHold), 0, 1));
       }
     }
-    SmartDashboard.putNumber("Arm Potentiometer Value", getArmPot());
-    SmartDashboard.putNumber("actual arm", armPot.get());
     */
+    SmartDashboard.putNumber("Arm Potentiometer Value", armPot.get());
+    //SmartDashboard.putNumber("actual arm", armPot.get());
+  
   }
   //Get current armpot value
   public double getArmPot() {
