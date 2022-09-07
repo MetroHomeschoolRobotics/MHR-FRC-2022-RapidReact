@@ -40,7 +40,7 @@ public final class Constants {
  */
     //Feedforward constants from linear tests
 
-    public static final double armPotOffset = 0.06;
+    public static final double armPotOffset = 0;
 
     public static final double ks = 0.16475;//volts
     public static final double kv = 2.7995;//volt seconds per meter
