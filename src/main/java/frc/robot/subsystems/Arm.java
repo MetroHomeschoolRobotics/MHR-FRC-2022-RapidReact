@@ -22,7 +22,7 @@ public class Arm extends SubsystemBase {
   //String potentiometer for measuring arm position
   private AnalogPotentiometer armPot = new AnalogPotentiometer(0);
   private TalonSRX arm_motor = new TalonSRX(RobotMap.arm_winch);
-  private PIDController armPID = new PIDController(30, 0, 0);
+  private PIDController armPID = new PIDController(30, 0, 0); 
   
   public static final double maxPotOutput = 0.593; // maybe not needed match to actualMax
   public static final double minPotOutput = 0.267; // arm pot reading for lower limit aka arm straight up
