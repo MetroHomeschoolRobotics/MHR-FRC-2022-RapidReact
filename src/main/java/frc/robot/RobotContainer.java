@@ -96,6 +96,7 @@ public Joystick tableStick = new Joystick(2);
 * so we can access them from helper classes.
 */
 public static double armFromLimelight = 0;
+public static double ArmAngleReturnAfterMacro = 0.5; //added this variable instead of hard coded numbers. 
 public static final Drivetrain s_drivetrain = new Drivetrain();
 public static final Arm s_arm = new Arm();
 public static final Shooter s_shooter = new Shooter();
@@ -245,7 +246,7 @@ _autoChooser.addOption("two ball + steal", new ResetOdometry(Constants.twobS1.sa
                                         )).withTimeout(3).andThen(
                         (new RunIntake(s_intake).alongWith(new RunMagazine(s_magazine, 0))).raceWith(
                                 TrajectoryHelper.createTrajectoryCommand(Constants.twobS2)).andThen(
-                                        new ReverseIntake(s_intake).alongWith(new ReverseMagazine(s_magazine, s_shooter)).alongWith(new AngleArm(.35, s_arm, s_vision))
+                                        new ReverseIntake(s_intake).alongWith(new ReverseMagazine(s_magazine, s_shooter)).alongWith(new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision))
                                 )
                         )
                 )
@@ -320,7 +321,7 @@ bbutton.whileHeld(new PrepareMagazineToShoot(s_magazine, s_intake).andThen((new 
         )
 )));
 bbutton.whenReleased(
-        new AngleArm(.35, s_arm, s_vision)
+        new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision)
 );
 final JoystickButton startButton = new JoystickButton(driverController, 8);
 startButton.whenPressed(c_toggleCompressor);
@@ -331,12 +332,12 @@ final JoystickButton fenderButton = new JoystickButton(manipulatorController, 1)
 // fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new
 // SpinShooter(s_shooter, manipulatorController, 2600)));
 fenderButton.whileHeld((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 1600, s_vision)).raceWith(new AngleArm(.4, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 1600, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
-fenderButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
+fenderButton.whenReleased(new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision)); //AngleArm was .35
 final JoystickButton fenderHighButton = new JoystickButton(manipulatorController, 2);
 // fenderButton.whileHeld(new ParallelCommandGroup(new AngleArm(.1, s_arm), new
 // SpinShooter(s_shooter, manipulatorController, 2600)));
 fenderHighButton.whileHeld((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 3100, s_vision)).raceWith(new AngleArm(.25, s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3000, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
-fenderHighButton.whenReleased(new AngleArm(.35, s_arm, s_vision));
+fenderHighButton.whenReleased(new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision));
 final JoystickButton hooksButton = new JoystickButton(manipulatorController, 7);
 hooksButton.whenPressed(new ToggleHook(s_pneumatics));
 
@@ -345,7 +346,7 @@ hooksButton2.whenPressed(new ToggleHook(s_pneumatics));
 
 final POVButton spinAtSDRPM = new POVButton(manipulatorController, 0);
 spinAtSDRPM.whenPressed((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision)).raceWith(new AngleArmLL(s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 0, s_vision).alongWith(new WaitCommand(.5).andThen(new RunMagazine(s_magazine, .4).alongWith(new RunIntake(s_intake)))))));
-spinAtSDRPM.whenReleased(new AngleArm(.35, s_arm, s_vision));
+spinAtSDRPM.whenReleased(new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision));
 
 final JoystickButton resetWinchEncoder = new JoystickButton(driverController, 10);
 resetWinchEncoder.whenPressed(new ResetClimberEncoder(s_climber));
@@ -355,7 +356,7 @@ limelightToggle.whenPressed(new ToggleLights(s_vision));
 
 final JoystickButton tarmacHighShot = new JoystickButton(manipulatorController, 4);
 tarmacHighShot.whileHeld((new PrepareMagazineToShoot(s_magazine, s_intake).andThen(new SpinShooter(s_shooter, manipulatorController, 3500, s_vision)).raceWith(new AngleArm(.38,s_arm, s_vision)).andThen(new SpinShooter(s_shooter, manipulatorController, 3500, s_vision).alongWith(new RunMagazine(s_magazine, .4)))));
-tarmacHighShot.whenReleased(new AngleArm(.35, s_arm, s_vision));
+tarmacHighShot.whenReleased(new AngleArm(ArmAngleReturnAfterMacro, s_arm, s_vision));
 SmartDashboard.putData(new RunClimberTillLimit(s_climber, -.5));
 
 final JoystickButton spinAtSDRPMButton = new JoystickButton(manipulatorController, 3);
