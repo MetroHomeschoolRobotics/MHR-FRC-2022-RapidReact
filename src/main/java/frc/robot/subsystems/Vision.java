@@ -93,25 +93,27 @@ public class Vision extends SubsystemBase {
   public double get_arm_angle (double target_angle){ 
     //return (1.7376954e-6)*(Math.pow(target_angle, 3))+1.545765e-4*(Math.pow(target_angle,2))+-.0030598857*(target_angle)+.2092726891;
     //return 1.2831802e-6*Math.pow(target_angle, 4)+2.2548459e-5*Math.pow(target_angle, 3)-2.559467e-4*Math.pow(target_angle, 2)-.0102652388*target_angle+.3654017083;
-    return -6.9277e-5*Math.pow(target_angle, 2)-.0076533432*target_angle+.3606892849;
-    /*if(target_angle>=12) {
-      return .25;
+    //return -6.9277e-5*Math.pow(target_angle, 2)-.0076533432*target_angle+.3606892849;
+    //Target angle is from Limelight TY value - return value is setting the poteniomiter value go to
+    //TODO Set poteniomter vaules and angles
+    if(target_angle>=12) {
+      return .37;
     }else if(target_angle>=8) {
-      return .28;
+      return .39;
     } else if(target_angle>=3) {
-      return .33;
-    } else if(target_angle>=0) {
-      return .38;
-    } else if(target_angle>=-13) {
       return .44;
+    } else if(target_angle>=0) {
+      return .47;
+    } else if(target_angle>=-13) {
+      return .49;
     } else if(target_angle>=-18) {
-      return .45;
+      return .52;
     } else if(target_angle>=-19) {
-      return .5;
+      return .54;
     } else {
-      return .5;
-    }*/
-    //return 0;
+      return .59;
+    }
+        //return 0;
   };
   public double get_shooter_rps (double target_angle){
     //return SmartDashboard.getNumber("a", 0)*Math.pow(target_angle+30, SmartDashboard.getNumber("b", 0));
