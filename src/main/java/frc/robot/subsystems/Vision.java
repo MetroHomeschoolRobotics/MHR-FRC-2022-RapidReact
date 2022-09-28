@@ -95,21 +95,27 @@ public class Vision extends SubsystemBase {
     //return 1.2831802e-6*Math.pow(target_angle, 4)+2.2548459e-5*Math.pow(target_angle, 3)-2.559467e-4*Math.pow(target_angle, 2)-.0102652388*target_angle+.3654017083;
     //return -6.9277e-5*Math.pow(target_angle, 2)-.0076533432*target_angle+.3606892849;
     //Target angle is from Limelight TY value - return value is setting the poteniomiter value go to
-    //TODO Set poteniomter vaules and angles
-    if(target_angle>=12) {
-      return .37;
-    }else if(target_angle>=8) {
-      return .39;
-    } else if(target_angle>=3) {
+    //TODO Set potentiomter values and angles
+    if(target_angle>=16) { //at limelight camera value ty(16) arm potentiometer value (.43)
+      return .43;
+    }else if(target_angle>=12) {
       return .44;
-    } else if(target_angle>=0) {
+    } else if(target_angle>=8) {
+      return .45;
+    } else if(target_angle>=3) {
       return .47;
+    } else if(target_angle>=0) {
+      return .48; // was 0.47
+    } else if(target_angle>=-5) {
+      return .51;
+    } else if(target_angle>=-9) {
+      return .525;
     } else if(target_angle>=-13) {
-      return .49;
+      return .53;
     } else if(target_angle>=-18) {
-      return .52;
-    } else if(target_angle>=-19) {
       return .54;
+    } else if(target_angle>=-19) {
+      return .545;
     } else {
       return .59;
     }
@@ -141,7 +147,7 @@ public class Vision extends SubsystemBase {
     } else if(target_angle < 8) {
       return MathUtil.interpolate(Constants.shooterAt5, Constants.shooterAt8, (target_angle-5)/3);
     } else if(target_angle < 11) {
-      return MathUtil.interpolate(Constants.shooterAt8, Constants.shooterAtm11, (target_angle-8)/3);
+      return MathUtil.interpolate(Constants.shooterAt8, Constants.shooterAt11, (target_angle-8)/3);
     } else if(target_angle < 14) {
       return MathUtil.interpolate(Constants.shooterAt11, Constants.shooterAt14, (target_angle-11)/3);
     } else if(target_angle < 17) {

@@ -44,7 +44,7 @@ public class AngleArmLL extends CommandBase {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
-    return Math.abs(arm.getArmPot()-s_vision.get_arm_angle(s_vision.getLimelightTY()))<.03;
+  public boolean isFinished() { //Potentiometer tolerance
+    return Math.abs(arm.getArmPot()-s_vision.get_arm_angle(s_vision.getLimelightTY()))<.005; //.03
   }
 }
