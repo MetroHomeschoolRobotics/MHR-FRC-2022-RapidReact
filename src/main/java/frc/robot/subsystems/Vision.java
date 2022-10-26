@@ -8,7 +8,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer;
+//import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -97,27 +97,27 @@ public class Vision extends SubsystemBase {
     //Target angle is from Limelight TY value - return value is setting the poteniomiter value go to
     //TODO Set potentiomter values and angles
     if(target_angle>=16) { //at limelight camera value ty(16) arm potentiometer value (.43)
-      return .43;
+      return .554;
     }else if(target_angle>=12) {
-      return .44;
+      return .564;
     } else if(target_angle>=8) {
-      return .45;
+      return .574;
     } else if(target_angle>=3) {
-      return .47;
+      return .594;
     } else if(target_angle>=0) {
-      return .48; // was 0.47
+      return .604; // was 0.47
     } else if(target_angle>=-5) {
-      return .51;
+      return .634;
     } else if(target_angle>=-9) {
-      return .525;
+      return .652;
     } else if(target_angle>=-13) {
-      return .53;
+      return .654;
     } else if(target_angle>=-18) {
-      return .54;
+      return .664;
     } else if(target_angle>=-19) {
-      return .545;
+      return .669;
     } else {
-      return .59;
+      return .714;
     }
         //return 0;
   };

@@ -395,20 +395,59 @@ public class RobotContainer {
                 _autoChooser.addOption("Spit preload", new ToggleIntake(s_pneumatics)
                                 .andThen(new ReverseIntake(s_intake).alongWith(new RunMagazine(s_magazine, -1))));
 
+                // _autoChooser.addOption("Two ball straight back",
+                // new ToggleIntake(s_pneumatics).andThen(
+                // new RunIntake(s_intake).raceWith(
+                // new DriveDistance(s_drivetrain, 3.5)).andThen(
+                // new DriveDistance(s_drivetrain, -3.5))
+                // .andThen(new ParallelCommandGroup(
+                // new SpinShooter(s_shooter,
+                // manipulatorController,
+                // 3500, s_vision),
+                // new RunIntake(s_intake),
+                // new AngleArm(.3, s_arm, s_vision),
+                // new RunMagazine(s_magazine, .6))
+                // .withTimeout(3))));
                 _autoChooser.addOption("Two ball straight back",
-                                new ToggleIntake(s_pneumatics).andThen(
-                                                new RunIntake(s_intake).raceWith(
-                                                                new DriveDistance(s_drivetrain, 3.5)).andThen(
-                                                                                new DriveDistance(s_drivetrain, -3.5))
-                                                                .andThen(new ParallelCommandGroup(
-                                                                                new SpinShooter(s_shooter,
-                                                                                                manipulatorController,
-                                                                                                3500, s_vision),
-                                                                                new RunIntake(s_intake),
-                                                                                new AngleArm(.3, s_arm, s_vision),
-                                                                                new RunMagazine(s_magazine, .6))
-                                                                                                .withTimeout(3))));
-
+                                new ResetOdometry(Constants.twobS1.sample(0).poseMeters, s_drivetrain)
+                                                .andThen(new ToggleIntake(s_pneumatics).andThen(new RunIntake(s_intake)
+                                                                .alongWith(new AutoMagazine(s_magazine, s_intake,
+                                                                                s_shooter, driverController))
+                                                                .raceWith(TrajectoryHelper
+                                                                                .createTrajectoryCommand(
+                                                                                                Constants.twobS1))
+                                                                .andThen(
+                                                                                (new AngleArmLL(s_arm, s_vision)
+                                                                                                .raceWith(new PrepareMagazineToShoot(
+                                                                                                                s_magazine,
+                                                                                                                s_intake))
+                                                                                                .andThen(new SpinShooter(
+                                                                                                                s_shooter,
+                                                                                                                manipulatorController,
+                                                                                                                3650,
+                                                                                                                s_vision).alongWith(
+                                                                                                                                new ParallelCommandGroup(
+                                                                                                                                                new AngleArmLL(s_arm,
+                                                                                                                                                                s_vision),
+                                                                                                                                                new PrepareMagazineToShoot(
+                                                                                                                                                                s_magazine,
+                                                                                                                                                                s_intake).andThen(
+                                                                                                                                                                                new LimelightAim(
+                                                                                                                                                                                                s_drivetrain,
+                                                                                                                                                                                                s_vision,
+                                                                                                                                                                                                driverController)
+                                                                                                                                                                                                                .withTimeout(.5)))
+                                                                                                                                                                                                                                .andThen(
+                                                                                                                                                                                                                                                new RunMagazine(s_magazine,
+                                                                                                                                                                                                                                                                .45).alongWith(
+                                                                                                                                                                                                                                                                                new WaitCommand(.2)
+                                                                                                                                                                                                                                                                                                .andThen(
+                                                                                                                                                                                                                                                                                                                new RunIntake(s_intake))))))
+                                                                                                .withTimeout(3).andThen(
+                                                                                                                (new RunIntake(s_intake)
+                                                                                                                                .alongWith(new RunMagazine(
+                                                                                                                                                s_magazine,
+                                                                                                                                                0)))))))));
                 SmartDashboard.putData("Auto Mode", _autoChooser);
         }
 
