@@ -232,7 +232,7 @@ public class RobotContainer {
                                                  */.andThen(
                                                                 (new AutoMagazine(s_magazine, s_intake, s_shooter,
                                                                                 driverController).alongWith(
-                                                                                                new AngleArmSlow(.35,
+                                                                                                new AngleArmSlow(.65,
                                                                                                                 s_arm))
                                                                                                 .withTimeout(4.25)
                                                                                                 .andThen(new PrepareMagazineToShoot(
@@ -252,7 +252,7 @@ public class RobotContainer {
                                                                                                                                                                                 Constants.threeIntakingR))
                                                                                                                                                                 .andThen(
                                                                                                                                                                                 (new AngleArmSlow(
-                                                                                                                                                                                                .4,
+                                                                                                                                                                                                .65,
                                                                                                                                                                                                 s_arm).raceWith(new PrepareMagazineToShoot(s_magazine, s_intake)).andThen(new SpinShooter(s_shooter, manipulatorController, 3500, s_vision).alongWith(
                                                                                                                                                                                                                 new ParallelCommandGroup(
                                                                                                                                                                                                                                 new AngleArmLL(s_arm,

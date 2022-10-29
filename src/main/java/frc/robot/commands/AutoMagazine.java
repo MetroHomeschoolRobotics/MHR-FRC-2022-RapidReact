@@ -89,7 +89,7 @@ public class AutoMagazine extends CommandBase {
           shooter.setShooterVelocity(0);
         intake.setIndexer(1);
       } else if(hasTwoBalls&&!magazine.getBeamBreak1() && magazine.getBeamBreak2()&&magazine.getBeamBreak3()) {
-        //magazine.setMagazine(-.6);
+        magazine.setMagazine(-.6); 
       }else if(!hasTwoBalls){
         magazine.setMagazine(.8);
         shooter.setShooterVelocity(1000);
